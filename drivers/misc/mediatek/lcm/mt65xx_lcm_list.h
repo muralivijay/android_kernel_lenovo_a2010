@@ -211,6 +211,7 @@ extern LCM_DRIVER it6151_lp079qx1_edp_dsi_video_lcm_drv;
 extern LCM_DRIVER RX_498HX_615B_lcm_drv;
 extern LCM_DRIVER RX_498HX_615B_82_lcm_drv;
 extern LCM_DRIVER ili9806c_dsi_vdo_djn_fwvga_lcm_drv;
+extern LCM_DRIVER ili9806e_hlt_hd720_dsi_lcm_drv;
 extern LCM_DRIVER hx8389b_hd720_dsi_vdo_drv;
 extern LCM_DRIVER r69338_hd720_dsi_vdo_jdi_drv;
 extern LCM_DRIVER r69338_hd720_5in_dsi_vdo_jdi_dw8768_drv;
