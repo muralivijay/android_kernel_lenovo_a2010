@@ -678,7 +678,7 @@ static dev_t flashlight_devno;
 static struct cdev flashlight_cdev;
 /* Vanzo:yangzhihong on: Mon, 18 Jan 2016 21:18:19 +0800
  */
-extern int flashlight_gpio_init(struct platform_device *pdev);
+//extern int flashlight_gpio_init(struct platform_device *pdev);
 // End of Vanzo:yangzhihong
 /* ======================================================================== */
 #define ALLOC_DEVNO
@@ -738,7 +738,7 @@ static int flashlight_probe(struct platform_device *dev)
 
 /* Vanzo:yangzhihong on: Mon, 18 Jan 2016 21:04:02 +0800
  */
-    flashlight_gpio_init(dev);
+    //flashlight_gpio_init(dev);
 // End of Vanzo:yangzhihong
 
 	logI("[flashlight_probe] Done ~");
