@@ -51,7 +51,7 @@ LCM_DRIVER *lcm_driver_list[] = {
 	&ili9806e_hsd50_ykl_lfwvga_lcm_drv,
 #endif
 #if defined(ILI9806E_HLT_HD720_DSI)
-    &ili9806e_hlt_hd720_dsi_lcm_drv;
+    &ili9806e_hlt_hd720_dsi_lcm_drv,
 #endif
 #if defined(ILI9881C_HD_DSI_VDO_ILITEK_NT50358_3LANE)
 	&ili9881c_hd_dsi_vdo_ilitek_nt50358_3lane_lcm_drv,
