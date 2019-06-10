@@ -231,40 +231,41 @@ static void lcm_get_params(LCM_PARAMS * params)
 {
     memset(params, 0, sizeof(LCM_PARAMS)); 
     
-    params->dsi.packet_size = 256;
-    params->dsi.word_count = 1440;
-    params->dsi.vertical_sync_active = 6;
-    params->dsi.vertical_backporch = 14;
-    params->dsi.vertical_frontporch = 20;
-    params->dsi.PLL_CLOCK = 210;
-    params->width = 480;
-    params->type = 2;
-    params->dsi.LANE_NUM = 2;
-    params->dsi.data_format.format = 2;
-    params->dsi.PS = 2;
-    params->dsi.horizontal_active_pixel = 480;
-    params->height = 854;
-    params->dsi.vertical_active_line = 854;
-    params->dbi.te_mode = 1;
-    params->dsi.mode = 1;
-    params->dbi.te_edge_polarity = 0;
-    params->dsi.data_format.color_order = 0;
-    params->dsi.data_format.trans_seq = 0;
-    params->dsi.data_format.padding = 0;
-    params->dsi.intermediat_buffer_num = 0;
-    params->dsi.horizontal_sync_active = 10;
-    params->dsi.horizontal_backporch = 80;
-    params->dsi.horizontal_frontporch = 80;
-#ifdef ESD_CHECK
-    params->dsi.customization_esd_check_enable = 1;
-    params->dsi.lcm_esd_check_table[0].count = 1;
-    params->dsi.lcm_esd_check_table[1].cmd = 1;
-    params->dsi.lcm_esd_check_table[0].para_list[0] = -100;
-    params->dsi.lcm_esd_check_table[0].para_list[2] = 11;
-    params->dsi.lcm_esd_check_table[1].count = 0;
+
+  params->dsi.packet_size = 256;
+  params->dsi.word_count = 1440;
+  params->dsi.vertical_sync_active = 6;
+  params->dsi.vertical_backporch = 14;
+  params->dsi.vertical_frontporch = 20;
+  params->dsi.PLL_CLOCK = 210;
+  params->width = 480;
+  params->type = 2;
+  params->dsi.LANE_NUM = 2;
+  params->dsi.data_format.format = 2;
+  params->dsi.PS = 2;
+  params->dsi.horizontal_active_pixel = 480;
+  params->height = 854;
+  params->dsi.vertical_active_line = 854;
+  params->dbi.te_mode = 1;
+  params->dsi.mode = 1;
+  params->dbi.te_edge_polarity = 0;
+  params->dsi.data_format.color_order = 0;
+  params->dsi.data_format.trans_seq = 0;
+  params->dsi.data_format.padding = 0;
+  params->dsi.intermediat_buffer_num = 0;
+
+  params->dsi.horizontal_sync_active = 10;
+  params->dsi.horizontal_backporch = 80;
+  params->dsi.horizontal_frontporch = 80;
+  
     params->dsi.esd_check_enable = 1;
+    params->dsi.customization_esd_check_enable = 1;
+    params->dsi.lcm_esd_check_table[1].para_list[0] = 0;
+    params->dsi.lcm_esd_check_table[1].cmd = 11;
+    params->dsi.lcm_esd_check_table[1].count = 1;
+    params->dsi.lcm_esd_check_table[0].count = 1;
     params->dsi.lcm_esd_check_table[0].cmd = 10;
-#endif
+    params->dsi.lcm_esd_check_table[0].para_list[0] = -100;
 }
 
 
