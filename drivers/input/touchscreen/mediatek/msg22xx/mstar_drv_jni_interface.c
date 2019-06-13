@@ -40,8 +40,8 @@
 ////////////////////////////////////////////////////////////
 /// EXTERN VARIABLE DECLARATION
 ////////////////////////////////////////////////////////////
-extern u32 SLAVE_I2C_ID_DBBUS;
-extern u32 SLAVE_I2C_ID_DWI2C;
+extern U32 SLAVE_I2C_ID_DBBUS;
+extern U32 SLAVE_I2C_ID_DWI2C;
 extern u8 g_IsHotknotEnabled;
 extern u8 g_IsBypassHotknot;
 extern struct i2c_client *g_I2cClient;
@@ -62,13 +62,13 @@ void _DebugJniShowArray(u8 *pBuf, u16 nLen)
 
     for(i=0; i < nLen; i++)
     {
-        DBG("%02X ", pBuf[i]);       
+        DBG(&g_I2cClient->dev, "%02X ", pBuf[i]);       
 
         if(i%16==15){  
-            DBG("\n");
+            DBG(&g_I2cClient->dev, "\n");
         }
     }
-    DBG("\n");    
+    DBG(&g_I2cClient->dev, "\n");    
 }
 
 
@@ -93,8 +93,8 @@ ssize_t MsgToolRead(struct file *pFile, char __user *pBuffer, size_t nCount, lof
     u8 szCmdData[20] = {0};
 
     
-    DBG("*** %s() ***\n", __func__);
-    //DBG("*** nCount = %d ***\n", (int)nCount);       
+    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
+    //DBG(&g_I2cClient->dev, "*** nCount = %d ***\n", (int)nCount);       
     nBusType = nCount&0xFF;
     nReadLen = (nCount >> 8)&0xFFFF;
     if(nBusType == SLAVE_I2C_ID_DBBUS || nBusType == SLAVE_I2C_ID_DWI2C)
@@ -115,12 +115,11 @@ ssize_t MsgToolWrite(struct file *pFile, const char __user *pBuffer, size_t nCou
     u16 nWriteLen = 0;    
     u8 szCmdData[20] = {0};    
 
-
-    DBG("*** %s() ***\n", __func__);
-    //DBG("*** nCount = %d ***\n", (int)nCount);        
+    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
+    //DBG(&g_I2cClient->dev, "*** nCount = %d ***\n", (int)nCount);        
     nBusType = nCount&0xFF;
     nWriteLen = (nCount >> 8)&0xFFFF;    
-	nRet = copy_from_user(szCmdData, &pBuffer[0], nWriteLen);         
+    nRet = copy_from_user(szCmdData, &pBuffer[0], nWriteLen);         
     if(nBusType == SLAVE_I2C_ID_DBBUS || nBusType == SLAVE_I2C_ID_DWI2C)
     {
         IicWriteData(nBusType, &szCmdData[0], nWriteLen);    
@@ -134,7 +133,7 @@ void _RegGetXByteData(MsgToolDrvCmd_t * pCmd)
 {    
     u16 nAddr = 0;
 
-    DBG("*** %s() ***\n", __func__);    
+    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);    
     nAddr = (_gSndCmdData[1]<<8)|_gSndCmdData[0];    
     RegGetXBitValue(nAddr, _gRtnCmdData, pCmd->nRtnCmdLen, MAX_I2C_TRANSACTION_LENGTH_LIMIT);
     //_DebugJniShowArray(_gRtnCmdData, pCmd->nRtnCmdLen);
@@ -143,7 +142,7 @@ void _RegGetXByteData(MsgToolDrvCmd_t * pCmd)
 
 void _ClearMsgToolMem(void)
 {
-    DBG("*** %s() ***\n", __func__);
+    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
   
     memset(_gMsgToolCmdIn, 0, sizeof( MsgToolDrvCmd_t ));
     memset(_gSndCmdData, 0, 1024);
@@ -157,7 +156,7 @@ static MsgToolDrvCmd_t* _TransJniCmdFromUser( unsigned long nArg )
     MsgToolDrvCmd_t tCmdIn;    
     MsgToolDrvCmd_t *pTransCmd;
 
-    DBG("*** %s() ***\n", __func__);  
+    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);  
     _ClearMsgToolMem();
     pTransCmd = (MsgToolDrvCmd_t *)_gMsgToolCmdIn;    
     nRet = copy_from_user( &tCmdIn, (void*)nArg, sizeof( MsgToolDrvCmd_t ) );
@@ -185,7 +184,7 @@ static void _TransJniCmdToUser( MsgToolDrvCmd_t *pTransCmd, unsigned long nArg )
     MsgToolDrvCmd_t tCmdOut;
     long nRet;
 
-    DBG("*** %s() ***\n", __func__);      
+    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);      
     nRet = copy_from_user( &tCmdOut, (void*)nArg, sizeof( MsgToolDrvCmd_t ) );   
 
     //_DebugJniShowArray(&tCmdOut, sizeof( MsgToolDrvCmd_t));    
@@ -197,7 +196,7 @@ long MsgToolIoctl( struct file *pFile, unsigned int nCmd, unsigned long nArg )
 {
     long nRet = 0;
 
-    DBG("*** %s() ***\n", __func__);    
+    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);    
     switch ( nCmd )
     {
         case MSGTOOL_IOCTL_RUN_CMD:
@@ -220,24 +219,24 @@ long MsgToolIoctl( struct file *pFile, unsigned int nCmd, unsigned long nArg )
                     case MSGTOOL_FINGERTOUCH:
                         if(pTransCmd->nSndCmdLen == 1)
                         {
-                            DBG("*** JNI enable touch ***\n");                        
+                            DBG(&g_I2cClient->dev, "*** JNI enable touch ***\n");                        
                             DrvPlatformLyrEnableFingerTouchReport();
                         }
                         else if(pTransCmd->nSndCmdLen == 0)
                         {
-                            DBG("*** JNI disable touch ***\n");                                                
+                            DBG(&g_I2cClient->dev, "*** JNI disable touch ***\n");                                                
                             DrvPlatformLyrDisableFingerTouchReport();
                         }
                         break;
                     case MSGTOOL_BYPASSHOTKNOT:
                         if(pTransCmd->nSndCmdLen == 1)
                         {
-                            DBG("*** JNI enable bypass hotknot ***\n");                                                
+                            DBG(&g_I2cClient->dev, "*** JNI enable bypass hotknot ***\n");                                                
                             g_IsBypassHotknot = 1;                                                      
                         }
                         else if(pTransCmd->nSndCmdLen == 0)
                         {
-                            DBG("*** JNI disable bypass hotknot ***\n");                                                
+                            DBG(&g_I2cClient->dev, "*** JNI disable bypass hotknot ***\n");                                                
                             g_IsBypassHotknot = 0;
                         }
                         break;
@@ -245,13 +244,13 @@ long MsgToolIoctl( struct file *pFile, unsigned int nCmd, unsigned long nArg )
                         DrvPlatformLyrTouchDevicePowerOff();
                         break;                        
                     case MSGTOOL_GETSMDBBUS:
-                        DBG("*** MSGTOOL_GETSMDBBUS ***\n");
+                        DBG(&g_I2cClient->dev, "*** MSGTOOL_GETSMDBBUS ***\n");
                         _gRtnCmdData[0] = SLAVE_I2C_ID_DBBUS&0xFF;                       
                         _gRtnCmdData[1] = SLAVE_I2C_ID_DWI2C&0xFF;                                               
                         _TransJniCmdToUser(pTransCmd, nArg);                                                 
                         break;
                     case MSGTOOL_SETIICDATARATE:
-                        DBG("*** MSGTOOL_SETIICDATARATE ***\n");                        
+                        DBG(&g_I2cClient->dev, "*** MSGTOOL_SETIICDATARATE ***\n");                        
                         DrvPlatformLyrSetIicDataRate(g_I2cClient, ((_gSndCmdData[1]<<8)|_gSndCmdData[0])*1000);
                         break;                        
                     default:  
@@ -271,17 +270,17 @@ long MsgToolIoctl( struct file *pFile, unsigned int nCmd, unsigned long nArg )
 
 void CreateMsgToolMem(void)
 {
-    DBG("*** %s() ***\n", __func__);
+    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     _gMsgToolCmdIn = (MsgToolDrvCmd_t*)kmalloc( sizeof( MsgToolDrvCmd_t ), GFP_KERNEL );
-	_gSndCmdData = (u8*)kmalloc(1024, GFP_KERNEL );	
-	_gRtnCmdData = (u8*)kmalloc(1024, GFP_KERNEL );           
+    _gSndCmdData = (u8*)kmalloc(1024, GFP_KERNEL );	
+    _gRtnCmdData = (u8*)kmalloc(1024, GFP_KERNEL );           
 }
 
 
 void DeleteMsgToolMem(void)
 {
-    DBG("*** %s() ***\n", __func__);
+    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
  
     if (_gMsgToolCmdIn)
     {

@@ -80,11 +80,11 @@ static int /*__devinit*/ touch_driver_probe(struct i2c_client *client,
     const char *vcc_i2c_name = "vcc_i2c";
 #endif //CONFIG_ENABLE_REGULATOR_POWER_ON
 
-    DBG("*** %s ***\n", __func__);
+    printk("*** %s ***\n", __func__);
     
     if (client == NULL)
     {
-        DBG("i2c client is NULL\n");
+        printk("i2c client is NULL\n");
         return -1;
     }
     g_I2cClient = client;
@@ -95,7 +95,7 @@ static int /*__devinit*/ touch_driver_probe(struct i2c_client *client,
     ret = regulator_set_voltage(g_ReguVdd, 2800000, 2800000); 
     if (ret)
     {
-        DBG("Could not set to 2800mv.\n");
+        printk("Could not set to 2800mv.\n");
     }
 
     g_ReguVcc_i2c = regulator_get(&g_I2cClient->dev, vcc_i2c_name);
@@ -103,7 +103,7 @@ static int /*__devinit*/ touch_driver_probe(struct i2c_client *client,
     ret = regulator_set_voltage(g_ReguVcc_i2c, 1800000, 1800000);  
     if (ret)
     {
-        DBG("Could not set to 1800mv.\n");
+        printk("Could not set to 1800mv.\n");
     }
 #endif //CONFIG_ENABLE_REGULATOR_POWER_ON
 
@@ -113,7 +113,7 @@ static int /*__devinit*/ touch_driver_probe(struct i2c_client *client,
 /* remove function is triggered when the input device is removed from input sub-system */
 static int touch_driver_remove(struct i2c_client *client)
 {
-    DBG("*** %s ***\n", __func__);
+    printk("*** %s ***\n", __func__);
 
     return MsDrvInterfaceTouchDeviceRemove(client);
 }
@@ -152,17 +152,17 @@ static int __init touch_driver_init(void)
     ret = i2c_add_driver(&touch_device_driver);
     if (ret < 0)
     {
-        DBG("add MStar touch device driver i2c driver failed.\n");
+        printk("add MStar touch device driver i2c driver failed.\n");
         return -ENODEV;
     }
-    DBG("add MStar touch device driver i2c driver.\n");
+    printk("add MStar touch device driver i2c driver.\n");
 
     return ret;
 }
 
 static void __exit touch_driver_exit(void)
 {
-    DBG("remove MStar touch device driver i2c driver.\n");
+    printk("remove MStar touch device driver i2c driver.\n");
 
     i2c_del_driver(&touch_device_driver);
 }

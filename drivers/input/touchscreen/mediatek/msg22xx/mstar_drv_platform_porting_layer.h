@@ -83,7 +83,7 @@
 
 #include <linux/sched.h>
 #include <linux/kthread.h>
-//#include <linux/rtpm_prio.h>
+#include <linux/rtpm_prio.h>
 #include <linux/wait.h>
 #include <linux/time.h>
 
@@ -91,10 +91,10 @@
 #include <linux/vmalloc.h>
 
 #ifdef CONFIG_ENABLE_PROXIMITY_DETECTION
-#include <hwmsensor.h>
-#include <hwmsen_dev.h>
-#include <sensors_io.h>
-#include <hwmsen_helper.h>
+#include "hwmsensor.h"
+#include "hwmsen_dev.h"
+#include "sensors_io.h"
+#include "hwmsen_helper.h"
 #endif //CONFIG_ENABLE_PROXIMITY_DETECTION
 /*
 #ifdef CONFIG_ENABLE_TOUCH_PIN_CONTROL
@@ -237,7 +237,7 @@ extern void DrvPlatformLyrEnableFingerTouchReport(void);
 extern void DrvPlatformLyrFingerTouchPressed(s32 nX, s32 nY, s32 nPressure, s32 nId);
 extern void DrvPlatformLyrFingerTouchReleased(s32 nX, s32 nY, s32 nId);
 extern s32 DrvPlatformLyrInputDeviceInitialize(struct i2c_client *pClient);
-extern void DrvPlatformLyrSetIicDataRate(struct i2c_client *pClient, u32 nIicDataRate);
+extern void DrvPlatformLyrSetIicDataRate(struct i2c_client *pClient, U32 nIicDataRate);
 extern void DrvPlatformLyrTouchDevicePowerOff(void);
 extern void DrvPlatformLyrTouchDevicePowerOn(void);
 #ifdef CONFIG_ENABLE_REGULATOR_POWER_ON

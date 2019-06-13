@@ -32,17 +32,10 @@
 /*--------------------------------------------------------------------------*/
 
 #include "mstar_drv_common.h"
-#if defined(CONFIG_ENABLE_TOUCH_DRIVER_FOR_MUTUAL_IC)
-#include "mstar_drv_mutual_fw_control.h"
+#include "mstar_drv_fw_control.h"
 #ifdef CONFIG_ENABLE_ITO_MP_TEST
-#include "mstar_drv_mutual_mp_test.h"
+#include "mstar_drv_mp_test.h"
 #endif //CONFIG_ENABLE_ITO_MP_TEST
-#elif defined(CONFIG_ENABLE_TOUCH_DRIVER_FOR_SELF_IC)
-#include "mstar_drv_self_fw_control.h"
-#ifdef CONFIG_ENABLE_ITO_MP_TEST
-#include "mstar_drv_self_mp_test.h"
-#endif //CONFIG_ENABLE_ITO_MP_TEST
-#endif
 
 /*--------------------------------------------------------------------------*/
 /* PREPROCESSOR CONSTANT DEFINITION                                         */
@@ -54,7 +47,7 @@
 /*--------------------------------------------------------------------------*/
 
 #ifdef CONFIG_ENABLE_GESTURE_WAKEUP
-extern void DrvIcFwLyrOpenGestureWakeup(u32 *pWakeupMode);
+extern void DrvIcFwLyrOpenGestureWakeup(U32 *pWakeupMode);
 extern void DrvIcFwLyrCloseGestureWakeup(void);
 
 #ifdef CONFIG_ENABLE_GESTURE_DEBUG_MODE
@@ -64,14 +57,13 @@ extern void DrvIcFwLyrCloseGestureDebugMode(void);
 
 #endif //CONFIG_ENABLE_GESTURE_WAKEUP
 
-extern u32 DrvIcFwLyrReadDQMemValue(u16 nAddr);
-extern void DrvIcFwLyrWriteDQMemValue(u16 nAddr, u32 nData);
+extern U32 DrvIcFwLyrReadDQMemValue(u16 nAddr);
+extern void DrvIcFwLyrWriteDQMemValue(u16 nAddr, U32 nData);
 
 extern u16 DrvIcFwLyrChangeFirmwareMode(u16 nMode);
-extern void DrvIcFwLyrGetFirmwareInfo(FirmwareInfo_t *pInfo);
-#if defined(CONFIG_ENABLE_TOUCH_DRIVER_FOR_MUTUAL_IC) // use for MSG26XXM only
-extern u16 DrvIcFwLyrGetFirmwareMode(void);
-#endif //CONFIG_ENABLE_TOUCH_DRIVER_FOR_MUTUAL_IC
+extern void DrvIcFwLyrSelfGetFirmwareInfo(SelfFirmwareInfo_t *pInfo);
+extern void DrvIcFwLyrMutualGetFirmwareInfo(MutualFirmwareInfo_t *pInfo);
+extern u16 DrvIcFwLyrGetFirmwareMode(void); // used for MSG26xxM only
 extern void DrvIcFwLyrRestoreFirmwareModeToLogDataMode(void);
 
 #ifdef CONFIG_UPDATE_FIRMWARE_BY_SW_ID
@@ -84,25 +76,21 @@ extern u8 DrvIcFwLyrGetChipType(void);
 extern void DrvIcFwLyrGetCustomerFirmwareVersion(u16 *pMajor, u16 *pMinor, u8 **ppVersion);
 extern void DrvIcFwLyrGetPlatformFirmwareVersion(u8 **ppVersion);
 extern void DrvIcFwLyrHandleFingerTouch(u8 *pPacket, u16 nLength);
-extern u32 DrvIcFwLyrIsRegisterFingerTouchInterruptHandler(void);
+extern U32 DrvIcFwLyrIsRegisterFingerTouchInterruptHandler(void);
 extern s32 DrvIcFwLyrUpdateFirmware(u8 szFwData[][1024], EmemType_e eEmemType);
 extern s32 DrvIcFwLyrUpdateFirmwareBySdCard(const char *pFilePath);
 
 #ifdef CONFIG_ENABLE_ITO_MP_TEST
 extern void DrvIcFwLyrCreateMpTestWorkQueue(void);
 extern void DrvIcFwLyrScheduleMpTestWork(ItoTestMode_e eItoTestMode);
-extern void DrvIcFwLyrGetMpTestDataLog(ItoTestMode_e eItoTestMode, u8 *pDataLog, u32 *pLength);
-extern void DrvIcFwLyrGetMpTestFailChannel(ItoTestMode_e eItoTestMode, u8 *pFailChannel, u32 *pFailChannelCount);
+extern void DrvIcFwLyrGetMpTestDataLog(ItoTestMode_e eItoTestMode, u8 *pDataLog, U32 *pLength);
+extern void DrvIcFwLyrGetMpTestFailChannel(ItoTestMode_e eItoTestMode, u8 *pFailChannel, U32 *pFailChannelCount);
 extern s32 DrvIcFwLyrGetMpTestResult(void);
-#if defined(CONFIG_ENABLE_TOUCH_DRIVER_FOR_MUTUAL_IC)
-extern void DrvIcFwLyrGetMpTestScope(TestScopeInfo_t *pInfo);
-#endif //CONFIG_ENABLE_TOUCH_DRIVER_FOR_MUTUAL_IC
+extern void DrvIcFwLyrGetMpTestScope(TestScopeInfo_t *pInfo); // for MSG26xxM/MSG28xx
 #endif //CONFIG_ENABLE_ITO_MP_TEST
         
 #ifdef CONFIG_ENABLE_SEGMENT_READ_FINGER_TOUCH_DATA
-#if defined(CONFIG_ENABLE_TOUCH_DRIVER_FOR_MUTUAL_IC)
-extern void DrvIcFwLyrGetTouchPacketAddress(u16 *pDataAddress, u16 *pFlagAddress);
-#endif //CONFIG_ENABLE_TOUCH_DRIVER_FOR_MUTUAL_IC
+extern void DrvIcFwLyrGetTouchPacketAddress(u16 *pDataAddress, u16 *pFlagAddress); // for MSG26xxM/MSG28xx
 #endif //CONFIG_ENABLE_SEGMENT_READ_FINGER_TOUCH_DATA
 
 #ifdef CONFIG_ENABLE_PROXIMITY_DETECTION

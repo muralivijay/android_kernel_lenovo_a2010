@@ -35,8 +35,10 @@
 // EXTERN VARIABLE DECLARATION
 /*=============================================================*/
 
+extern struct i2c_client *g_I2cClient;
+
 #ifdef CONFIG_ENABLE_GESTURE_WAKEUP
-extern u32 g_GestureWakeupMode[2];
+extern U32 g_GestureWakeupMode[2];
 extern u8 g_GestureWakeupFlag;
 #endif //CONFIG_ENABLE_GESTURE_WAKEUP
 
@@ -46,63 +48,63 @@ extern u8 g_GestureWakeupFlag;
 
 void DrvIcFwLyrVariableInitialize(void)
 {
-//    DBG("*** %s() ***\n", __func__);
+//    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     DrvFwCtrlVariableInitialize();
 }
 
 void DrvIcFwLyrOptimizeCurrentConsumption(void)
 {
-//    DBG("*** %s() ***\n", __func__);
+//    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     DrvFwCtrlOptimizeCurrentConsumption();
 }
 
 u8 DrvIcFwLyrGetChipType(void)
 {
-//    DBG("*** %s() ***\n", __func__);
+//    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     return DrvFwCtrlGetChipType();
 }
 
 void DrvIcFwLyrGetCustomerFirmwareVersion(u16 *pMajor, u16 *pMinor, u8 **ppVersion)
 {
-//    DBG("*** %s() ***\n", __func__);
+//    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     DrvFwCtrlGetCustomerFirmwareVersion(pMajor, pMinor, ppVersion);
 }
 
 void DrvIcFwLyrGetPlatformFirmwareVersion(u8 **ppVersion)
 {
-//    DBG("*** %s() ***\n", __func__);
+//    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     DrvFwCtrlGetPlatformFirmwareVersion(ppVersion);
 }
 
 s32 DrvIcFwLyrUpdateFirmware(u8 szFwData[][1024], EmemType_e eEmemType)
 {
-//    DBG("*** %s() ***\n", __func__);
+//    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     return DrvFwCtrlUpdateFirmware(szFwData, eEmemType);
 }	
 
 s32 DrvIcFwLyrUpdateFirmwareBySdCard(const char *pFilePath)
 {
-//    DBG("*** %s() ***\n", __func__);
+//    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     return DrvFwCtrlUpdateFirmwareBySdCard(pFilePath);
 }
 
-u32 DrvIcFwLyrIsRegisterFingerTouchInterruptHandler(void)
+U32 DrvIcFwLyrIsRegisterFingerTouchInterruptHandler(void)
 {
-    DBG("*** %s() ***\n", __func__);
+    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     return 1; // Indicate that it is necessary to register interrupt handler with GPIO INT pin when firmware is running on IC
 }
 
 void DrvIcFwLyrHandleFingerTouch(u8 *pPacket, u16 nLength)
 {
-//    DBG("*** %s() ***\n", __func__);
+//    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     DrvFwCtrlHandleFingerTouch();
 }
@@ -111,16 +113,16 @@ void DrvIcFwLyrHandleFingerTouch(u8 *pPacket, u16 nLength)
 
 #ifdef CONFIG_ENABLE_GESTURE_WAKEUP
 
-void DrvIcFwLyrOpenGestureWakeup(u32 *pWakeupMode)
+void DrvIcFwLyrOpenGestureWakeup(U32 *pWakeupMode)
 {
-//    DBG("*** %s() ***\n", __func__);
+//    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     DrvFwCtrlOpenGestureWakeup(pWakeupMode);
 }	
 
 void DrvIcFwLyrCloseGestureWakeup(void)
 {
-//    DBG("*** %s() ***\n", __func__);
+//    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     DrvFwCtrlCloseGestureWakeup();
 }	
@@ -128,14 +130,14 @@ void DrvIcFwLyrCloseGestureWakeup(void)
 #ifdef CONFIG_ENABLE_GESTURE_DEBUG_MODE
 void DrvIcFwLyrOpenGestureDebugMode(u8 nGestureFlag)
 {
-//    DBG("*** %s() ***\n", __func__);
+//    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     DrvFwCtrlOpenGestureDebugMode(nGestureFlag);
 }
 
 void DrvIcFwLyrCloseGestureDebugMode(void)
 {
-//	  DBG("*** %s() ***\n", __func__);
+//	  DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     DrvFwCtrlCloseGestureDebugMode();
 }
@@ -143,48 +145,53 @@ void DrvIcFwLyrCloseGestureDebugMode(void)
 
 #endif //CONFIG_ENABLE_GESTURE_WAKEUP
 
-u32 DrvIcFwLyrReadDQMemValue(u16 nAddr)
+U32 DrvIcFwLyrReadDQMemValue(u16 nAddr)
 {
-//	  DBG("*** %s() ***\n", __func__);
+//	  DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     return DrvFwCtrlReadDQMemValue(nAddr);
 }
 
-void DrvIcFwLyrWriteDQMemValue(u16 nAddr, u32 nData)
+void DrvIcFwLyrWriteDQMemValue(u16 nAddr, U32 nData)
 {
-//	  DBG("*** %s() ***\n", __func__);
+//	  DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     DrvFwCtrlWriteDQMemValue(nAddr, nData);
 }
 
 //------------------------------------------------------------------------------//
 
-#if defined(CONFIG_ENABLE_TOUCH_DRIVER_FOR_MUTUAL_IC) // use for MSG26XXM only
-u16 DrvIcFwLyrGetFirmwareMode(void)
+u16 DrvIcFwLyrGetFirmwareMode(void) // used for MSG26xxM only
 {
-//    DBG("*** %s() ***\n", __func__);
+//    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     return DrvFwCtrlGetFirmwareMode();
 }
-#endif //CONFIG_ENABLE_TOUCH_DRIVER_FOR_MUTUAL_IC
 
 u16 DrvIcFwLyrChangeFirmwareMode(u16 nMode)
 {
-//    DBG("*** %s() ***\n", __func__);
+//    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     return DrvFwCtrlChangeFirmwareMode(nMode); 
 }
 
-void DrvIcFwLyrGetFirmwareInfo(FirmwareInfo_t *pInfo)
+void DrvIcFwLyrSelfGetFirmwareInfo(SelfFirmwareInfo_t *pInfo)
 {
-//    DBG("*** %s() ***\n", __func__);
+//    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
-    DrvFwCtrlGetFirmwareInfo(pInfo);
+    DrvFwCtrlSelfGetFirmwareInfo(pInfo);
+}
+
+void DrvIcFwLyrMutualGetFirmwareInfo(MutualFirmwareInfo_t *pInfo)
+{
+//    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
+
+    DrvFwCtrlMutualGetFirmwareInfo(pInfo);
 }
 
 void DrvIcFwLyrRestoreFirmwareModeToLogDataMode(void)
 {
-//    DBG("*** %s() ***\n", __func__);
+//    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     DrvFwCtrlRestoreFirmwareModeToLogDataMode();
 }	
@@ -194,7 +201,7 @@ void DrvIcFwLyrRestoreFirmwareModeToLogDataMode(void)
 #ifdef CONFIG_UPDATE_FIRMWARE_BY_SW_ID
 void DrvIcFwLyrCheckFirmwareUpdateBySwId(void)
 {
-//    DBG("*** %s() ***\n", __func__);
+//    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     DrvFwCtrlCheckFirmwareUpdateBySwId();
 }
@@ -206,63 +213,57 @@ void DrvIcFwLyrCheckFirmwareUpdateBySwId(void)
 
 void DrvIcFwLyrCreateMpTestWorkQueue(void)
 {
-//    DBG("*** %s() ***\n", __func__);
+//    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 	
     DrvMpTestCreateMpTestWorkQueue();
 }
 
 void DrvIcFwLyrScheduleMpTestWork(ItoTestMode_e eItoTestMode)
 {
-//    DBG("*** %s() ***\n", __func__);
+//    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 	
     DrvMpTestScheduleMpTestWork(eItoTestMode);
 }
 
 s32 DrvIcFwLyrGetMpTestResult(void)
 {
-//    DBG("*** %s() ***\n", __func__);
+//    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 	
     return DrvMpTestGetTestResult();
 }
 
-void DrvIcFwLyrGetMpTestFailChannel(ItoTestMode_e eItoTestMode, u8 *pFailChannel, u32 *pFailChannelCount)
+void DrvIcFwLyrGetMpTestFailChannel(ItoTestMode_e eItoTestMode, u8 *pFailChannel, U32 *pFailChannelCount)
 {
-//    DBG("*** %s() ***\n", __func__);
+//    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 	
     return DrvMpTestGetTestFailChannel(eItoTestMode, pFailChannel, pFailChannelCount);
 }
 
-void DrvIcFwLyrGetMpTestDataLog(ItoTestMode_e eItoTestMode, u8 *pDataLog, u32 *pLength)
+void DrvIcFwLyrGetMpTestDataLog(ItoTestMode_e eItoTestMode, u8 *pDataLog, U32 *pLength)
 {
-//    DBG("*** %s() ***\n", __func__);
+//    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     return DrvMpTestGetTestDataLog(eItoTestMode, pDataLog, pLength);
 }
 
-#if defined(CONFIG_ENABLE_TOUCH_DRIVER_FOR_MUTUAL_IC)
-void DrvIcFwLyrGetMpTestScope(TestScopeInfo_t *pInfo)
+void DrvIcFwLyrGetMpTestScope(TestScopeInfo_t *pInfo) // for MSG26xxM/MSG28xx
 {
-//    DBG("*** %s() ***\n", __func__);
+//    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     return DrvMpTestGetTestScope(pInfo);
 }
-#endif //CONFIG_ENABLE_TOUCH_DRIVER_FOR_MUTUAL_IC
 
 #endif //CONFIG_ENABLE_ITO_MP_TEST		
 
 //------------------------------------------------------------------------------//
 
 #ifdef CONFIG_ENABLE_SEGMENT_READ_FINGER_TOUCH_DATA
-
-#if defined(CONFIG_ENABLE_TOUCH_DRIVER_FOR_MUTUAL_IC)
 void DrvIcFwLyrGetTouchPacketAddress(u16 *pDataAddress, u16 *pFlagAddress)
 {
-//    DBG("*** %s() ***\n", __func__);
+//    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     return DrvFwCtrlGetTouchPacketAddress(pDataAddress, pFlagAddress);
 }
-#endif //CONFIG_ENABLE_TOUCH_DRIVER_FOR_MUTUAL_IC
-
 #endif //CONFIG_ENABLE_SEGMENT_READ_FINGER_TOUCH_DATA
 
 //------------------------------------------------------------------------------//
@@ -271,14 +272,14 @@ void DrvIcFwLyrGetTouchPacketAddress(u16 *pDataAddress, u16 *pFlagAddress)
 
 s32 DrvIcFwLyrEnableProximity(void)
 {
-//    DBG("*** %s() ***\n", __func__);
+//    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     return DrvFwCtrlEnableProximity();
 }
 
 s32 DrvIcFwLyrDisableProximity(void)
 {
-//    DBG("*** %s() ***\n", __func__);
+//    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     return DrvFwCtrlDisableProximity();
 }
@@ -290,20 +291,20 @@ s32 DrvIcFwLyrDisableProximity(void)
 #ifdef CONFIG_ENABLE_GLOVE_MODE
 void DrvIcFwLyrOpenGloveMode(void)
 {
-//    DBG("*** %s() ***\n", __func__);
+//    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     DrvFwCtrlOpenGloveMode();
 }
 
 void DrvIcFwLyrCloseGloveMode(void)
 {
-//	  DBG("*** %s() ***\n", __func__);
+//	  DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
     DrvFwCtrlCloseGloveMode();
 }
 
 void DrvIcFwLyrGetGloveInfo(u8 *pGloveMode)
 {
-//    DBG("*** %s() ***\n", __func__);
+//    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     DrvFwCtrlGetGloveInfo(pGloveMode);
 }

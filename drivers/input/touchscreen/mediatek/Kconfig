@@ -155,6 +155,16 @@ config TOUCHSCREEN_MTK_MSG2238A
 
 	  To compile this dirver as a module, choose M here: the
 	  module will be called.
+	  
+config TOUCHSCREEN_MTK_MSG22XX
+	bool "MSG22XX for Mediatek package"
+	default n
+	help
+	  Say Y here if you have MSG22XX touch panel.
+	  If unsure, say N.
+
+	  To compile this dirver as a module, choose M here: the
+	  module will be called.
 
 config TOUCHSCREEN_MTK_SYNAPTICS_3320_50
 	bool "Synaptics 5.0inch for Mediatek package"

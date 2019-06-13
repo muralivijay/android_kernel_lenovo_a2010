@@ -62,7 +62,7 @@
 /* TOUCH DEVICE DRIVER RELEASE VERSION                                      */
 /*--------------------------------------------------------------------------*/
 
-#define DEVICE_DRIVER_RELEASE_VERSION   ("3.6.1.0")
+#define DEVICE_DRIVER_RELEASE_VERSION   ("3.8.1.0")
 
 
 /*--------------------------------------------------------------------------*/
@@ -89,24 +89,14 @@
  */
 #define CONFIG_PLATFORM_USE_ANDROID_SDK_6_UPWARD
 
-/*
- * Note.
- * The below compile option is used to enable the specific device driver code handling for mutual-capacitive ic or self-capacitive ic.
- * For a mutual-capacitive ic project(MSG26xxM/MSG28xx), please define the compile option CONFIG_ENABLE_TOUCH_DRIVER_FOR_MUTUAL_IC.
- * For a self-capacitive ic project(MSG21xxA/MSG22xx), please define the compile option CONFIG_ENABLE_TOUCH_DRIVER_FOR_SELF_IC.
- */
-//#define CONFIG_ENABLE_TOUCH_DRIVER_FOR_MUTUAL_IC
-#define CONFIG_ENABLE_TOUCH_DRIVER_FOR_SELF_IC
-
 
 /*
  * Note.
  * The below compile option is used to enable the specific device driver code handling to make sure main board can supply power to touch ic for some specific BB chip of MTK(EX. MT6582)/SPRD(EX. SC7715)/QCOM(EX. MSM8610).
  * By default, this compile option is disabled.
  */
-#ifdef CONFIG_TPD_POWER_SOURCE_VIA_VGP
-#define CONFIG_ENABLE_REGULATOR_POWER_ON
-#endif
+//#define CONFIG_ENABLE_REGULATOR_POWER_ON
+
 /*
  * Note.
  * The below compile option is used to enable touch pin control for specific SPRD/QCOM platform.
@@ -123,8 +113,7 @@
  * This compile option is used for MTK platform only.
  * By default, this compile option is disabled.
  */
-
-#define CONFIG_USE_IRQ_INTERRUPT_FOR_MTK_PLATFORM
+//#define CONFIG_USE_IRQ_INTERRUPT_FOR_MTK_PLATFORM
 
 /*
  * Note.
@@ -166,7 +155,7 @@
  * So we need to retrieve the complete finger touch data by segment read.
  * By default, this compile option is enabled.
  */
-#define CONFIG_ENABLE_SEGMENT_READ_FINGER_TOUCH_DATA
+//#define CONFIG_ENABLE_SEGMENT_READ_FINGER_TOUCH_DATA
 
 /*
  * Note.
@@ -235,7 +224,7 @@
  * If this compile option is not defined, the SW ID mechanism for updating firmware will be disabled.
  * By default, this compile option is disabled.
  */
-//#define CONFIG_UPDATE_FIRMWARE_BY_SW_ID
+#define CONFIG_UPDATE_FIRMWARE_BY_SW_ID
 
 // ------------------- #ifdef CONFIG_UPDATE_FIRMWARE_BY_SW_ID ------------------- //
 #ifdef CONFIG_UPDATE_FIRMWARE_BY_SW_ID
@@ -265,11 +254,11 @@
  * The below compile option is used to enable proximity detection.
  * By default, this compile option is disabled.
  */
-//#define CONFIG_ENABLE_PROXIMITY_DETECTION
+#define CONFIG_ENABLE_PROXIMITY_DETECTION
 
 /*
  * Note.
- * The below compile option is used to enable notifier feedback handling for QCOM platform.
+ * The below compile option is used to enable notifier feedback handling for SPRD/QCOM platform.
  * By default, this compile option is disabled.
  */
 //#define CONFIG_ENABLE_NOTIFIER_FB
@@ -359,7 +348,7 @@
 
 #define u8   unsigned char
 #define u16  unsigned short
-#define u32  unsigned int
+#define U32  unsigned int
 #define s8   signed char
 #define s16  signed short
 #define s32  signed int
@@ -384,8 +373,8 @@
  * Note.
  * Please change the below touch screen resolution according to the touch panel that you are using.
  */
-#define TOUCH_SCREEN_X_MAX   CFG_TPD_WIDTH//(480)
-#define TOUCH_SCREEN_Y_MAX   CFG_TPD_HEIGHT//(854)
+#define TOUCH_SCREEN_X_MAX   (480)  //LCD_WIDTH
+#define TOUCH_SCREEN_Y_MAX   (854) //LCD_HEIGHT
 /*
  * Note.
  * Please do not change the below setting.
@@ -423,9 +412,6 @@
 
 #define PROCFS_AUTHORITY (0666)
 
-#ifdef VANZO_TOUCHPANEL_GESTURES_SUPPORT
-#define CONFIG_ENABLE_GESTURE_WAKEUP
-#endif
 
 #ifdef CONFIG_ENABLE_GESTURE_WAKEUP
 #define GESTURE_WAKEUP_MODE_DOUBLE_CLICK_FLAG     0x00000001    //0000 0000 0000 0000   0000 0000 0000 0001
@@ -534,7 +520,7 @@
  * If the debug log level is set as 0, the function for output log will be disabled.
  * By default, the debug log level is set as 1.
  */
-#define CONFIG_TOUCH_DRIVER_DEBUG_LOG_LEVEL (0)   // 1 : Default, 0 : No log. The bigger value, the more detailed log is output.
+#define CONFIG_TOUCH_DRIVER_DEBUG_LOG_LEVEL (1)   // 1 : Default, 0 : No log. The bigger value, the more detailed log is output.
 
 /*=============================================================*/
 // EXTERN VARIABLE DECLARATION
@@ -547,13 +533,20 @@ extern u8 TOUCH_DRIVER_DEBUG_LOG_LEVEL;
 /*--------------------------------------------------------------------------*/
 
 
-#define DEBUG_LEVEL(level, fmt, arg...) do {\
+#define DEBUG_LEVEL(level, dev, fmt, arg...) do {\
 	                                           if (level <= TOUCH_DRIVER_DEBUG_LOG_LEVEL)\
 	                                               printk(fmt, ##arg);\
                                         } while (0)
 
-#define DBG(fmt, arg...) DEBUG_LEVEL(1, fmt, ##arg) 
+#define DBG(dev, fmt, arg...) DEBUG_LEVEL(1, dev, fmt, ##arg) 
+/*
+#define DEBUG_LEVEL(level, dev, fmt, arg...) do {\
+	                                           if (level <= TOUCH_DRIVER_DEBUG_LOG_LEVEL)\
+	                                               dev_info(dev, fmt, ##arg);\
+                                        } while (0)
 
+#define DBG(dev, fmt, arg...) DEBUG_LEVEL(1, dev, fmt, ##arg)
+*/
 
 /*--------------------------------------------------------------------------*/
 /* DATA TYPE DEFINITION                                                     */
@@ -606,10 +599,10 @@ typedef enum
 /* GLOBAL FUNCTION DECLARATION                                              */
 /*--------------------------------------------------------------------------*/
 
-extern u8 DrvCommonCalculateCheckSum(u8 *pMsg, u32 nLength);
-extern u32 DrvCommonConvertCharToHexDigit(char *pCh, u32 nLength);
-extern u32 DrvCommonCrcDoReflect(u32 nRef, s8 nCh);
-extern u32 DrvCommonCrcGetValue(u32 nText, u32 nPrevCRC);
+extern u8 DrvCommonCalculateCheckSum(u8 *pMsg, U32 nLength);
+extern U32 DrvCommonConvertCharToHexDigit(char *pCh, U32 nLength);
+extern U32 DrvCommonCrcDoReflect(U32 nRef, s8 nCh);
+extern U32 DrvCommonCrcGetValue(U32 nText, U32 nPrevCRC);
 extern void DrvCommonCrcInitTable(void);
 extern void DrvCommonReadFile(char *pFilePath, u8 *pBuf, u16 nLength);
 

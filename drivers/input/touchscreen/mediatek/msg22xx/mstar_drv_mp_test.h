@@ -17,15 +17,15 @@
 
 /**
  *
- * @file    mstar_drv_mutual_mp_test.h
+ * @file    mstar_drv_mp_test.h
  *
  * @brief   This file defines the interface of touch screen
  *
  *
  */
 
-#ifndef __MSTAR_DRV_MUTUAL_MP_TEST_H__
-#define __MSTAR_DRV_MUTUAL_MP_TEST_H__
+#ifndef __MSTAR_DRV_MP_TEST_H__
+#define __MSTAR_DRV_MP_TEST_H__
 
 /*--------------------------------------------------------------------------*/
 /* INCLUDE FILE                                                             */
@@ -33,36 +33,59 @@
 
 #include "mstar_drv_common.h"
 
-#if defined(CONFIG_ENABLE_TOUCH_DRIVER_FOR_MUTUAL_IC)
 #ifdef CONFIG_ENABLE_ITO_MP_TEST
 
 /*--------------------------------------------------------------------------*/
 /* PREPROCESSOR CONSTANT DEFINITION                                         */
 /*--------------------------------------------------------------------------*/
 
-#define MAX_CHANNEL_NUM  38
-#define MAX_CHANNEL_DRV  30
-#define MAX_CHANNEL_SEN  20
-#define MAX_MUTUAL_NUM  (MAX_CHANNEL_DRV * MAX_CHANNEL_SEN)
-#define ANA3_MUTUAL_CSUB_NUMBER (192) //192 = 14 * 13 + 10
-#define ANA4_MUTUAL_CSUB_NUMBER (MAX_MUTUAL_NUM - ANA3_MUTUAL_CSUB_NUMBER) //200 = 392 - 192
-#define FILTER1_MUTUAL_DELTA_C_NUMBER (190) //190 = (6 * 14 + 11) * 2
-#define FILTER2_MUTUAL_DELTA_C_NUMBER (594) //594 = (MAX_MUTUAL_NUM - (6 * 14 + 11)) * 2
-
-#define FIR_THRESHOLD    6553
-#define FIR_RATIO    50 //25
-
-#define IIR_MAX		32600
-#define SHORT_VALUE	2000
-#define PIN_GUARD_RING    (38)
-
 #define CTP_MP_TEST_RETRY_COUNT (3)
 
-//Msg28xx Threshold
-#define SHORTVALUE  3000
-#define WATERVALUE 20000
-#define DC_RANGE  30
-#define DC_RATIO  10
+/*--------- Constant defined for MSG21xxA/MSG22xx ---------*/
+#define SELF_IC_OPEN_TEST_NON_BORDER_AREA_THRESHOLD (35) // range : 25~60
+#define SELF_IC_OPEN_TEST_BORDER_AREA_THRESHOLD     (40) // range : 25~60
+
+#define	SELF_IC_SHORT_TEST_THRESHOLD                (3500)
+#define SELF_IC_MAX_CHANNEL_NUM   (48)
+#define SELF_IC_FIQ_E_FRAME_READY_MASK      (1 << 8)
+
+// Constant defined for MSG21xxA
+#define MSG21XXA_PIN_GUARD_RING    (46) 
+#define MSG21XXA_GPO_SETTING_SIZE  (3)  
+#define MSG21XXA_REG_INTR_FIQ_MASK (0x04)          
+
+// Constant defined for MSG22xx
+#define MSG22XX_RIU_BASE_ADDR       (0)   
+#define MSG22XX_RIU_WRITE_LENGTH    (144)  
+#define MSG22XX_CSUB_REF            (0) //(18)   
+#define MSG22XX_CSUB_REF_MAX        (0x3F) 
+
+#define MSG22XX_MAX_SUBFRAME_NUM    (24)
+#define MSG22XX_MAX_AFE_NUM         (4)
+
+/*--------- Constant defined for MSG26xxM/MSG28xx ---------*/
+#define MUTUAL_IC_MAX_CHANNEL_NUM  38
+#define MUTUAL_IC_MAX_CHANNEL_DRV  30
+#define MUTUAL_IC_MAX_CHANNEL_SEN  20
+#define MUTUAL_IC_MAX_MUTUAL_NUM  (MUTUAL_IC_MAX_CHANNEL_DRV * MUTUAL_IC_MAX_CHANNEL_SEN)
+
+#define MUTUAL_IC_FIR_RATIO    50 //25
+#define MUTUAL_IC_IIR_MAX		32600
+
+// Constant defined for MSG26xxM
+#define MSG26XXM_ANA3_MUTUAL_CSUB_NUMBER (192) //192 = 14 * 13 + 10
+#define MSG26XXM_ANA4_MUTUAL_CSUB_NUMBER (MUTUAL_IC_MAX_MUTUAL_NUM - MSG26XXM_ANA3_MUTUAL_CSUB_NUMBER) //200 = 392 - 192
+#define MSG26XXM_FILTER1_MUTUAL_DELTA_C_NUMBER (190) //190 = (6 * 14 + 11) * 2
+#define MSG26XXM_FILTER2_MUTUAL_DELTA_C_NUMBER (594) //594 = (MUTUAL_IC_MAX_MUTUAL_NUM - (6 * 14 + 11)) * 2
+#define MSG26XXM_FIR_THRESHOLD    6553
+#define MSG26XXM_SHORT_VALUE	2000
+#define MSG26XXM_PIN_GUARD_RING    (38)
+
+// Constant defined for MSG28xx
+#define MSG28XX_SHORT_VALUE  3000
+#define MSG28XX_WATER_VALUE  20000
+#define MSG28XX_DC_RANGE  30
+#define MSG28XX_DC_RATIO  10
 
 
 /*--------------------------------------------------------------------------*/
@@ -97,6 +120,5 @@ extern void DrvMpTestGetTestScope(TestScopeInfo_t *pInfo);
 extern void DrvMpTestScheduleMpTestWork(ItoTestMode_e eItoTestMode);
 
 #endif //CONFIG_ENABLE_ITO_MP_TEST
-#endif //CONFIG_ENABLE_TOUCH_DRIVER_FOR_MUTUAL_IC
 
-#endif  /* __MSTAR_DRV_MUTUAL_MP_TEST_H__ */
+#endif  /* __MSTAR_DRV_MP_TEST_H__ */

@@ -34,9 +34,7 @@
 #include "mstar_drv_hotknot.h"
 #include "mstar_drv_utility_adaption.h"
 #include "mstar_drv_hotknot_queue.h"
-#if defined(CONFIG_ENABLE_TOUCH_DRIVER_FOR_MUTUAL_IC)
-#include "mstar_drv_mutual_fw_control.h"
-#endif //CONFIG_ENABLE_TOUCH_DRIVER_FOR_MUTUAL_IC
+#include "mstar_drv_fw_control.h"
 
 #ifdef CONFIG_ENABLE_HOTKNOT
 ////////////////////////////////////////////////////////////
@@ -58,8 +56,8 @@ struct mutex g_QMutex;    //queue mutex
 extern struct mutex g_Mutex;
 extern struct i2c_client *g_I2cClient;
 
-extern u32 SLAVE_I2C_ID_DBBUS;
-extern u32 SLAVE_I2C_ID_DWI2C;
+extern U32 SLAVE_I2C_ID_DBBUS;
+extern U32 SLAVE_I2C_ID_DWI2C;
 
 extern u16 FIRMWARE_MODE_UNKNOWN_MODE;
 extern u16 FIRMWARE_MODE_DEMO_MODE;
@@ -130,13 +128,13 @@ void _DebugShowArray(u8 *pBuf, u16 nLen)
 
     for(i=0; i < nLen; i++)
     {
-        DBG("%02X ", pBuf[i]);       
+        DBG(&g_I2cClient->dev, "%02X ", pBuf[i]);       
 
         if(i%16==15){  
-            DBG("\n");
+            DBG(&g_I2cClient->dev, "\n");
         }
     }
-    DBG("\n");    
+    DBG(&g_I2cClient->dev, "\n");    
 }
 
 
@@ -178,7 +176,7 @@ void _HotKnotRcvInterruptHandler(u8 *pPacket, u16 nLength)    //receive hotknot 
     u16 nPacketDataLen = 0;
     u16 nQPushLen = 0;
 
-    DBG("*** %s() ***\n", __func__);
+    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     if(g_FirmwareMode == FIRMWARE_MODE_DEMO_MODE)
     { 
@@ -188,7 +186,7 @@ void _HotKnotRcvInterruptHandler(u8 *pPacket, u16 nLength)    //receive hotknot 
         {
             if(PushHotKnotData(((DemoHotKnotRcvRet_t*)pPacket)->szData, nQPushLen)<0)
             {
-                DBG("Error: HotKnot# Over push data into queue.");
+                DBG(&g_I2cClient->dev, "Error: HotKnot# Over push data into queue.");
             }
 #ifdef CONFIG_ENABLE_HOTKNOT_RCV_BLOCKING
             else
@@ -196,7 +194,7 @@ void _HotKnotRcvInterruptHandler(u8 *pPacket, u16 nLength)    //receive hotknot 
                 if(_gHKRcvWaitEnable == 1)
                 {
                     _gHKRcvFlag = 1;    
-                    DBG("*** wait up receive_wait. ***\n");                                        
+                    DBG(&g_I2cClient->dev, "*** wait up receive_wait. ***\n");                                        
                     wake_up_interruptible(&_gHKRcvWaiter);
                 }
             }
@@ -204,7 +202,7 @@ void _HotKnotRcvInterruptHandler(u8 *pPacket, u16 nLength)    //receive hotknot 
         }
         else
         {
-            DBG("Error: HotKnot# Receive data error.");
+            DBG(&g_I2cClient->dev, "Error: HotKnot# Receive data error.");
         }        
     }
     else if(IS_FIRMWARE_DATA_LOG_ENABLED && (g_FirmwareMode == FIRMWARE_MODE_DEBUG_MODE))
@@ -216,7 +214,7 @@ void _HotKnotRcvInterruptHandler(u8 *pPacket, u16 nLength)    //receive hotknot 
         {        
             if(PushHotKnotData(((DebugHotKnotRcvRet_t*)pPacket)->szData, nQPushLen)<0)
             {
-                DBG("Error: HotKnot# Over push data into queue.");
+                DBG(&g_I2cClient->dev, "Error: HotKnot# Over push data into queue.");
             }  
 #ifdef CONFIG_ENABLE_HOTKNOT_RCV_BLOCKING
             else
@@ -224,7 +222,7 @@ void _HotKnotRcvInterruptHandler(u8 *pPacket, u16 nLength)    //receive hotknot 
                 if(_gHKRcvWaitEnable == 1)
                 {
                     _gHKRcvFlag = 1;    
-                    DBG("*** wait up receive_wait. ***\n");                                        
+                    DBG(&g_I2cClient->dev, "*** wait up receive_wait. ***\n");                                        
                     wake_up_interruptible(&_gHKRcvWaiter);
                 }
             }
@@ -232,7 +230,7 @@ void _HotKnotRcvInterruptHandler(u8 *pPacket, u16 nLength)    //receive hotknot 
         }
         else
         {
-            DBG("Error: HotKnot# Receive data error.");
+            DBG(&g_I2cClient->dev, "Error: HotKnot# Receive data error.");
         }        
     }
 }
@@ -240,7 +238,7 @@ void _HotKnotRcvInterruptHandler(u8 *pPacket, u16 nLength)    //receive hotknot 
 
 void ReportHotKnotCmd(u8 *pPacket, u16 nLength)
 {
-    //DBG("*** %s() ***\n", __func__);
+    //DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     if(g_HotKnotState == HOTKNOT_TRANS_STATE && pPacket[0] == HOTKNOT_PACKET_ID && pPacket[3] == HOTKNOT_RECEIVE_PACKET_TYPE)
     { 
@@ -259,7 +257,7 @@ void ReportHotKnotCmd(u8 *pPacket, u16 nLength)
 
 void _HotKnotCmdInterruptHandler(u8 *pPacket, u16 nLength)
 { 
-    //DBG("*** %s() ***\n", __func__);
+    //DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     if(_gDrvCmdStack->nCmdId == HOTKNOT_CMD)
     {        
@@ -292,12 +290,12 @@ void _HotKnotCmdInterruptHandler(u8 *pPacket, u16 nLength)
                     if(pRcv->nInstruction == ENABLE_HOTKNOT || pRcv->nInstruction == ENTER_MASTER_MODE || pRcv->nInstruction == ENTER_SLAVE_MODE)
                     {
                         g_IsHotknotEnabled = 1;
-                        DBG("*** g_IsHotknotEnabled = %d ***\n", g_IsHotknotEnabled);
+                        DBG(&g_I2cClient->dev, "*** g_IsHotknotEnabled = %d ***\n", g_IsHotknotEnabled);
                     }                       
                     else if(pRcv->nInstruction == DISABLE_HOTKNOT)
                     {
                         g_IsHotknotEnabled = 0;
-                        DBG("*** g_IsHotknotEnabled = %d ***\n", g_IsHotknotEnabled);                        
+                        DBG(&g_I2cClient->dev, "*** g_IsHotknotEnabled = %d ***\n", g_IsHotknotEnabled);                        
                     }                    
                 }
                                         
@@ -335,12 +333,12 @@ void _HotKnotCmdInterruptHandler(u8 *pPacket, u16 nLength)
                     if(pRcv->nInstruction == ENABLE_HOTKNOT || pRcv->nInstruction == ENTER_MASTER_MODE || pRcv->nInstruction == ENTER_SLAVE_MODE)
                     {
                         g_IsHotknotEnabled = 1;
-                        DBG("*** g_IsHotknotEnabled = %d ***\n", g_IsHotknotEnabled);
+                        DBG(&g_I2cClient->dev, "*** g_IsHotknotEnabled = %d ***\n", g_IsHotknotEnabled);
                     }                       
                     else if(pRcv->nInstruction == DISABLE_HOTKNOT)
                     {
                         g_IsHotknotEnabled = 0;
-                        DBG("*** g_IsHotknotEnabled = %d ***\n", g_IsHotknotEnabled);                        
+                        DBG(&g_I2cClient->dev, "*** g_IsHotknotEnabled = %d ***\n", g_IsHotknotEnabled);                        
                     }                     
                 }
                                        
@@ -382,7 +380,7 @@ void _HotKnotCmdInterruptHandler(u8 *pPacket, u16 nLength)
 
 void _HotKnotTimeOutHandler(void)
 {
-    DBG("*** %s() ***\n", __func__);
+    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     //handle timeout case              
     if(_gDrvCmdStack->nCmdId == HOTKNOT_CMD)
@@ -456,7 +454,7 @@ int _DrvHandleHotKnotCmd(DrvCmd_t *pCmd, unsigned long nArg)
 {
     long nRet;
 
-    DBG("*** %s() ***\n", __func__);
+    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     mutex_lock(&g_Mutex);
 #ifdef CONFIG_TOUCH_DRIVER_RUN_ON_MTK_PLATFORM
@@ -495,7 +493,7 @@ int _DrvHandleHotKnotCmd(DrvCmd_t *pCmd, unsigned long nArg)
 
 void _DrvHandleHotKnotAuth(DrvCmd_t *pCmd)
 {    
-    DBG("*** %s() ***\n", __func__);
+    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     mutex_lock(&g_Mutex);
 #ifdef CONFIG_TOUCH_DRIVER_RUN_ON_MTK_PLATFORM
@@ -509,7 +507,7 @@ void _DrvHandleHotKnotAuth(DrvCmd_t *pCmd)
 
     //for(i=0; i < pCmd->nSndLen; i++)
     //{
-    //    DBG("%02X ", pCmd->pSndData[i]); 
+    //    DBG(&g_I2cClient->dev, "%02X ", pCmd->pSndData[i]); 
     //}
     
     IicWriteData(SLAVE_I2C_ID_DWI2C, pCmd->pSndData, pCmd->nSndLen);
@@ -518,7 +516,7 @@ void _DrvHandleHotKnotAuth(DrvCmd_t *pCmd)
 
     //for(i=0; i < pCmd->nRcvLen; i++)
     //{
-    //    DBG("%02X ", pCmd->pRcvData[i]); 
+    //    DBG(&g_I2cClient->dev, "%02X ", pCmd->pRcvData[i]); 
     //}    
 
     mutex_unlock(&g_Mutex);
@@ -533,7 +531,7 @@ void _DrvHandleHotKnotRcv(DrvCmd_t *pCmd)
     long nRet;    
     DemoHotKnotLibRcvRet_t *pRcv = NULL;  
 
-    DBG("*** %s() ***\n", __func__);
+    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
     
     pCmd->nRcvLen = DEMO_HOTKNOT_RECEIVE_RET_LEN;
     pRcv = (DemoHotKnotLibRcvRet_t*)pCmd->pRcvData;  
@@ -542,7 +540,7 @@ void _DrvHandleHotKnotRcv(DrvCmd_t *pCmd)
 
     if(ShowHotKnotData(&nQueueData, 1) <= 0)    //check how many bytes to fetch
     {
-        DBG("ShowHotKnotData: No hotknot data in first check.\n");
+        DBG(&g_I2cClient->dev, "ShowHotKnotData: No hotknot data in first check.\n");
     }
     else
     {
@@ -558,28 +556,28 @@ void _DrvHandleHotKnotRcv(DrvCmd_t *pCmd)
     }
 
     _gHKRcvWaitEnable = 1;    //in wait status
-    DBG("*** _gHKRcvWaitEnable = 1, receive_timeout = %d***\n", pCmd->nTimeOut * HZ/1000);    
+    DBG(&g_I2cClient->dev, "*** _gHKRcvWaitEnable = 1, receive_timeout = %d***\n", pCmd->nTimeOut * HZ/1000);    
     set_current_state(TASK_INTERRUPTIBLE);  
     nRet = wait_event_interruptible_timeout(_gHKRcvWaiter, _gHKRcvFlag != 0, pCmd->nTimeOut * HZ/1000);
     _gHKRcvWaitEnable = 0;    //no wait
-    DBG("*** _gHKRcvWaitEnable = 0 ***\n");        
+    DBG(&g_I2cClient->dev, "*** _gHKRcvWaitEnable = 0 ***\n");        
     _gHKRcvFlag = 0;
 
 
     if(nRet == 0)    //timeout
     {
-        DBG("*** receive_timeout ***\n");     
+        DBG(&g_I2cClient->dev, "*** receive_timeout ***\n");     
         pRcv->nActualHotKnotLen_H = 0;  
         pRcv->nActualHotKnotLen_L = 0;          
         pRcv->nCheckSum = _GetCheckSum((u8*)pRcv, DEMO_HOTKNOT_RECEIVE_RET_LEN-1);
     }
     else
     {
-        DBG("*** receive_get_data ***\n");     
+        DBG(&g_I2cClient->dev, "*** receive_get_data ***\n");     
         int nDataLen = -1;    
         if(ShowHotKnotData(&nQueueData, 1) <= 0)    //check how many bytes to fetch
         {
-            DBG("ShowHotKnotData: No hotknot data\n");
+            DBG(&g_I2cClient->dev, "ShowHotKnotData: No hotknot data\n");
         }
         else
         {
@@ -606,7 +604,7 @@ void _DrvHandleHotKnotRcv(DrvCmd_t *pCmd)
     int nDataLen = -1;
     DemoHotKnotLibRcvRet_t *pRcv = NULL;  
 
-    DBG("*** %s() ***\n", __func__);
+    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
     
     pCmd->nRcvLen = DEMO_HOTKNOT_RECEIVE_RET_LEN;
     pRcv = (DemoHotKnotLibRcvRet_t*)pCmd->pRcvData;  
@@ -615,7 +613,7 @@ void _DrvHandleHotKnotRcv(DrvCmd_t *pCmd)
 
     if(ShowHotKnotData(&nQueueData, 1) <= 0)    //check how many bytes to fetch
     {
-        DBG("ShowHotKnotData: No hotknot data\n");
+        DBG(&g_I2cClient->dev, "ShowHotKnotData: No hotknot data\n");
     }
     else
     {
@@ -641,7 +639,7 @@ void _DrvHandleHotKnotGetQueue(DrvCmd_t *pCmd)
 {
     DemoHotKnotGetQRet_t *pRcv = NULL;  
 
-    DBG("*** %s() ***\n", __func__);
+    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     pCmd->nRcvLen = HOTKNOT_QUEUE_SIZE+6;
     pRcv = (DemoHotKnotGetQRet_t*)pCmd->pRcvData;  
@@ -657,15 +655,15 @@ void _DrvHandleHotKnotSndTest(DrvCmd_t *pCmd)
     u16 nQPushLen = 0;
     HotKnotSnd_t *pSnd = NULL;
 
-    DBG("*** %s() ***\n", __func__);
+    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
   
     pSnd = (HotKnotSnd_t*)pCmd->pSndData;
     nQPushLen = (pSnd->nDataLen_H << 8) | (pSnd->nDataLen_L & 0xFF);
 
-    DBG("nQPushLen = %d\n", nQPushLen);
+    DBG(&g_I2cClient->dev, "nQPushLen = %d\n", nQPushLen);
     if(PushHotKnotData(pSnd->szData, nQPushLen)<0)
     {
-        DBG("Error: HotKnot# Over push data into queue.");
+        DBG(&g_I2cClient->dev, "Error: HotKnot# Over push data into queue.");
     }  
 
     //u8 * pShowArray = (u8*)kmalloc(sizeof(u8)* 256, GFP_KERNEL );
@@ -721,7 +719,7 @@ static void _TransCmdToUser( DrvCmd_t *pTransCmd, unsigned long nArg )
 
 void _ClearHotKnotMem(void)
 {
-    DBG("*** %s() ***\n", __func__);
+    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
   
     memset(_gCmdIn, 0, sizeof( DrvCmd_t ));
     memset(_gSndData, 0, DEBUG_HOTKNOT_SEND_RET_LEN);
@@ -776,7 +774,7 @@ long HotKnotIoctl( struct file *pFile, unsigned int nCmd, unsigned long nArg )
             {      
                 DrvCmd_t *pTransCmd;			
 
-                DBG("*** %s() ***\n", __func__);
+                DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
                 
                 pTransCmd = _TransCmdFromUser( nArg );
 
@@ -815,11 +813,11 @@ long HotKnotIoctl( struct file *pFile, unsigned int nCmd, unsigned long nArg )
             {
                  char szVendorName[30] = "msg28xx";
 
-                 DBG("*** Query vendor name! ***\n"); 
+                 DBG(&g_I2cClient->dev, "*** Query vendor name! ***\n"); 
                  //_DebugShowArray(szVendorName,30);
                  if(copy_to_user((void*)nArg, szVendorName, 30))
                  {
-                     DBG("*** Query vendor name failed! ***\n");                      
+                     DBG(&g_I2cClient->dev, "*** Query vendor name failed! ***\n");                      
                  }
             }
             break;
@@ -835,7 +833,7 @@ long HotKnotIoctl( struct file *pFile, unsigned int nCmd, unsigned long nArg )
 
 void CreateHotKnotMem()
 {
-    DBG("*** %s() ***\n", __func__);
+    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     _gCmdIn = (DrvCmd_t*)kmalloc( sizeof( DrvCmd_t ), GFP_KERNEL );
 	_gSndData = (u8*)kmalloc(DEBUG_HOTKNOT_SEND_RET_LEN, GFP_KERNEL );	
@@ -846,7 +844,7 @@ void CreateHotKnotMem()
 
 void DeleteHotKnotMem()
 {
-    DBG("*** %s() ***\n", __func__);
+    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
   
     if (_gCmdIn)
     {
