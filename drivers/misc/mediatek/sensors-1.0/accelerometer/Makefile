@@ -29,6 +29,7 @@ obj-$(CONFIG_MTK_MC3410_I2C) += mc3410-i2c/
 obj-$(CONFIG_MTK_MPU6515A)		+= mpu6515/
 obj-$(CONFIG_MTK_BMA222E)		+= bma222e/
 obj-$(CONFIG_MTK_MPU6050G)   +=  mpu6050g/
+obj-$(CONFIG_MTK_KXTJ2_1009_NEW)   +=  kxtj2_1009-new/
 obj-$(CONFIG_MTK_STK8BAXX) += stk8baxx/
 # Vanzo:yucheng on: Tue, 06 Jan 2015 10:34:15 +0800
 # added for new structure config alsps
