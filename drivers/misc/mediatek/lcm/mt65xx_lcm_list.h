@@ -16,7 +16,11 @@
 
 #include <lcm_drv.h>
 
+/* Lenovo A2010 LCM */
 extern LCM_DRIVER ili9806e_hlt_hd720_dsi_lcm_drv;
+extern LCM_DRIVER ili9806e_yaxin_dsi_lcm_drv;
+
+/* Others */
 extern LCM_DRIVER otm1282a_hd720_dsi_vdo_60hz_lcm_drv;
 extern LCM_DRIVER otm1282a_hd720_dsi_vdo_lcm_drv;
 extern LCM_DRIVER nt35595_fhd_dsi_cmd_truly_8163_lcm_drv;
