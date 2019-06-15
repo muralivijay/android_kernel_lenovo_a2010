@@ -38,10 +38,7 @@ obj-$(CONFIG_MTK_ICM20645G)   +=  icm20645g/
 obj-$(CONFIG_MTK_KX023_NEW)   +=  kx023-new/
 obj-$(CONFIG_AEON_KX023_NEW)   +=  aeon_kx023-new/
 obj-$(CONFIG_AEON_MC3410_NEW)   +=  aeon_mc3410-new/
-
-
-
-
-
+obj-$(CONFIG_MTK_KXTJ2_1009_NEW)   +=  kxtj2_1009-new/
 endif
+
 #sanford.lin 20150205 end

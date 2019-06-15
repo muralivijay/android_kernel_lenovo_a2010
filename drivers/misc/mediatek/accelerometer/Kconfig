@@ -24,3 +24,4 @@ config CUSTOM_KERNEL_ACCELEROMETER
 source "drivers/misc/mediatek/accelerometer/kx023-new/Kconfig"
 source "drivers/misc/mediatek/accelerometer/aeon_kx023-new/Kconfig"
 source "drivers/misc/mediatek/accelerometer/aeon_mc3410-new/Kconfig"
+source "drivers/misc/mediatek/accelerometer/kxtj2_1009-new/Kconfig"
