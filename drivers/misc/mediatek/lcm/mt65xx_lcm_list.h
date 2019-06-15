@@ -3,8 +3,11 @@
 
 #include <lcm_drv.h>
 
+/* Lenovo A2010 LCM */
 extern LCM_DRIVER ili9806e_hlt_hd720_dsi_lcm_drv;
+extern LCM_DRIVER ili9806e_yaxin_dsi_lcm_drv;
 
+/* Others */
 #if defined(MTK_LCM_DEVICE_TREE_SUPPORT)
 extern LCM_DRIVER lcm_common_drv;
 #else

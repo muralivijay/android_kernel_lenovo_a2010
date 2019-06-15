@@ -23,6 +23,9 @@ LCM_DRIVER *lcm_driver_list[] = {
 #if defined(ILI9806E_HLT_HD720_DSI)
     &ili9806e_hlt_hd720_dsi_lcm_drv,
 #endif
+#if defined(ILI9806E_YAXIN_DSI)
+    &ili9806e_yaxin_dsi_lcm_drv,
+#endif
 #if defined(MTK_LCM_DEVICE_TREE_SUPPORT)
 	&lcm_common_drv,
 #else
