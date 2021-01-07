@@ -19,7 +19,7 @@
 #include "disp_recorder.h"
 #include "cmdq_record.h"
 #include "cmdq_core.h"
-#include "ddp_hal.h"
+#include "../ddp_hal.h"
 
 /* MIPITX and DSI */
 #define ENABLE_CLK_MGR
