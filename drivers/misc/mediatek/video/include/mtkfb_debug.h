@@ -14,8 +14,8 @@
 #ifndef __MTKFB_DEBUG_H__
 #define __MTKFB_DEBUG_H__
 #include <linux/kernel.h>
-#include "ddp_mmp.h"
-#include "ddp_dump.h"
+#include "../mt6735/ddp_mmp.h"
+#include "../mt6735/ddp_dump.h"
 #include "disp_log.h"
 #include "mmprofile.h"
 

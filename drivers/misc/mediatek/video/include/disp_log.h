@@ -17,7 +17,7 @@
 #include <linux/printk.h>
 
 #include "disp_recorder.h"
-#include "disp_debug.h"
+#include "../mt6735/disp_debug.h"
 #include "disp_drv_platform.h"
 
 #if defined(COMMON_DISP_LOG)

@@ -16,7 +16,7 @@
 
 #include "ddp_reg.h"
 #include "ddp_aal.h"
-#include "ddp_drv.h"
+#include "../../mt6735/ddp_drv.h"
 enum {
 	ENUM_Y_SLOPE = 0 * 28,
 
