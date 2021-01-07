@@ -3,11 +3,11 @@
 #include <mt-plat/sync_write.h>
 /* #include <mach/mt_reg_base.h> */
 #include <linux/types.h>
-#include "display_recorder.h"
+#include "../display_recorder.h"
 #include "cmdq_record.h"
 #include "cmdq_core.h"
-#include "ddp_hal.h"
-#include "ddp_log.h"
+#include "../ddp_hal.h"
+#include "../ddp_log.h"
 
 /* MIPITX and DSI */
 #define ENABLE_CLK_MGR

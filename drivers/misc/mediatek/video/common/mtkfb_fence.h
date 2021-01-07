@@ -5,7 +5,7 @@
 #include <linux/list.h>
 #include "disp_session.h"
 #include "disp_drv_platform.h"
-#include "display_recorder.h"
+#include "../mt6735/dispsys/display_recorder.h"
 
 #ifdef __cplusplus
 extern "C" {
