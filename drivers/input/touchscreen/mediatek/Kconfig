@@ -165,8 +165,21 @@ config TOUCHSCREEN_AEON_FACTORY_CTP
 	  To compile this dirver as a module, choose M here: the
 	  module will be called.
 
+config TOUCHSCREEN_MTK_MSG22XX
+	bool "MSG22XX for Mediatek package"
+	default n
+	help
+	  Say Y here if you have MSG22XX touch panel.
+
+	  If unsure, say N.
+
+	  To compile this dirver as a module, choose M here: the
+	  module will be called.
+
+source "drivers/input/touchscreen/mediatek/msg22XX/Kconfig"
+
 config TOUCHSCREEN_AEON_FT5X0X
-	bool "aeon_ft5x0x for Eastaeon package"
+        bool "aeon_ft5x0x for Eastaeon package"
 	default n
 	help
 	  Say Y here if you have aeon_ft5x0x touch panel.
