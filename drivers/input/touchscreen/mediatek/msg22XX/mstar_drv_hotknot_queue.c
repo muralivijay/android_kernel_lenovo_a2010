@@ -40,11 +40,15 @@
 ////////////////////////////////////////////////////////////
 /// LOCAL VARIABLE DEFINITION
 ////////////////////////////////////////////////////////////
-static u8 * _gQueue;
-static u16  _gQFront=0;
+static u8 * _gQueue = NULL;
+static u16  _gQFront = 0;
 static u16  _gQRear;
 static u16  _gQSize = HOTKNOT_QUEUE_SIZE;
 
+////////////////////////////////////////////////////////////
+/// EXTERN VARIABLE DECLARATION
+////////////////////////////////////////////////////////////
+extern struct i2c_client *g_I2cClient;
 
 ////////////////////////////////////////////////////////////
 /// Macro
@@ -69,28 +73,28 @@ void _DebugShowQueueArray(u8 *pBuf, u16 nLen)
 
     for(i=0; i < nLen; i++)
     {
-        DBG("%02X ", pBuf[i]);       
+        DBG(&g_I2cClient->dev, "%02X ", pBuf[i]);       
 
         if(i%16==15){  
-            DBG("\n");
+            DBG(&g_I2cClient->dev, "\n");
         }
     }
-    DBG("\n");    
+    DBG(&g_I2cClient->dev, "\n");    
 }
 
 
 void CreateQueue()
 {
-    DBG("*** %s() ***\n", __func__);
+    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
-	_gQueue = (u8*)kmalloc(sizeof(u8)*_gQSize, GFP_KERNEL );
+    _gQueue = (u8*)kmalloc(sizeof(u8)*_gQSize, GFP_KERNEL );
     _gQFront = _gQRear = 0;
 }
 
 
 void ClearQueue()
 {
-    DBG("*** %s() ***\n", __func__);
+    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     _gQFront = _gQRear = 0;
 }
@@ -100,26 +104,26 @@ int PushQueue(u8 * pBuf, u16 nLength)
 {
     u16 nPushLen = nLength;   
 
-    DBG("*** %s() ***\n", __func__);
+    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
-    //DBG("*** Show data to PushQueue() ***\n", __func__);
+    //DBG(&g_I2cClient->dev, "*** Show data to PushQueue() ***\n", __func__);
     //_DebugShowQueueArray(pBuf, nLength);
-    //DBG("*** Show Queue data before PushQueue() ***\n", __func__);
+    //DBG(&g_I2cClient->dev, "*** Show Queue data before PushQueue() ***\n", __func__);
     //_DebugShowQueueArray(_gQueue, _gQSize);
     
-    DBG("*** Before PushQueue: _gQFront = %d, _gQRear = %d ***\n", _gQFront, _gQRear);
+    DBG(&g_I2cClient->dev, "*** Before PushQueue: _gQFront = %d, _gQRear = %d ***\n", _gQFront, _gQRear);
 
     if(_gQRear >= _gQFront)
     {
         if(nPushLen > 0 && _gQFront == 0 && _gQRear == _gQSize-1)    //full
         {
-            DBG("*** PushQueue: RESULT_OVERPUSH ***\n");
+            DBG(&g_I2cClient->dev, "*** PushQueue: RESULT_OVERPUSH ***\n");
             return RESULT_OVERPUSH;
         }
     
         if(nPushLen > _gQSize-1 - (_gQRear - _gQFront))    //over push
         {
-            DBG("*** PushQueue: RESULT_OVERPUSH ***\n");        
+            DBG(&g_I2cClient->dev, "*** PushQueue: RESULT_OVERPUSH ***\n");        
             return RESULT_OVERPUSH;
         }
     
@@ -140,13 +144,13 @@ int PushQueue(u8 * pBuf, u16 nLength)
     {
         if(nPushLen > 0 && _gQFront == _gQRear+1)    //full
         {
-            DBG("*** PushQueue: RESULT_OVERPUSH ***\n");        
+            DBG(&g_I2cClient->dev, "*** PushQueue: RESULT_OVERPUSH ***\n");        
             return RESULT_OVERPUSH;
         }
     
         if(nPushLen > (_gQFront - _gQRear) - 1)    //over push
         {
-            DBG("*** PushQueue: RESULT_OVERPUSH ***\n");        
+            DBG(&g_I2cClient->dev, "*** PushQueue: RESULT_OVERPUSH ***\n");        
             return RESULT_OVERPUSH;
         }
         
@@ -154,10 +158,11 @@ int PushQueue(u8 * pBuf, u16 nLength)
         _gQRear = _gQRear + nPushLen;       
     }
 
-    //DBG("*** Show Queue data after PushQueue() ***\n", __func__);
+    //DBG(&g_I2cClient->dev, "*** Show Queue data after PushQueue() ***\n", __func__);
     //_DebugShowQueueArray(_gQueue, _gQSize);
 
-    DBG("*** After PushQueue: _gQFront = %d, _gQRear = %d ***\n", _gQFront, _gQRear); 
+    DBG(&g_I2cClient->dev, "*** After PushQueue: _gQFront = %d, _gQRear = %d ***\n", _gQFront, _gQRear); 
+
     return nPushLen;     
 }
 
@@ -166,21 +171,21 @@ int PopQueue(u8 * pBuf, u16 nLength)
 {
     u16 nPopLen = nLength; 
 
-    DBG("*** %s() ***\n", __func__);
+    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
-    DBG("*** Before PopQueue: _gQFront = %d, _gQRear = %d ***\n", _gQFront, _gQRear);  
+    DBG(&g_I2cClient->dev, "*** Before PopQueue: _gQFront = %d, _gQRear = %d ***\n", _gQFront, _gQRear);  
 
     if(_gQRear >= _gQFront)
     {
         if(nPopLen > 0 && _gQRear == _gQFront)    //empty
         {
-            DBG("*** PushQueue: RESULT_OVERPOP ***\n");        
+            DBG(&g_I2cClient->dev, "*** PushQueue: RESULT_OVERPOP ***\n");        
             return RESULT_OVERPOP;
         }
     
         if(nPopLen > _gQRear - _gQFront)    //over pop
         {
-            DBG("*** PushQueue: RESULT_OVERPOP ***\n");        
+            DBG(&g_I2cClient->dev, "*** PushQueue: RESULT_OVERPOP ***\n");        
             return RESULT_OVERPOP;
         }
         
@@ -191,7 +196,7 @@ int PopQueue(u8 * pBuf, u16 nLength)
     {
         if(nPopLen > _gQSize - (_gQFront - _gQRear))    //over pop
         {
-            DBG("*** PushQueue: RESULT_OVERPOP ***\n");        
+            DBG(&g_I2cClient->dev, "*** PushQueue: RESULT_OVERPOP ***\n");        
             return RESULT_OVERPOP;
         }
     
@@ -209,7 +214,8 @@ int PopQueue(u8 * pBuf, u16 nLength)
         }
     }
 
-    DBG("*** After PopQueue: _gQFront = %d, _gQRear = %d ***\n", _gQFront, _gQRear);   
+    DBG(&g_I2cClient->dev, "*** After PopQueue: _gQFront = %d, _gQRear = %d ***\n", _gQFront, _gQRear);   
+
     return nPopLen;    
 }
 
@@ -218,7 +224,7 @@ int ShowQueue(u8 * pBuf, u16 nLength)    //just show data, not fetch data
 {
     u16 nShowLen = nLength; 
 
-    DBG("*** %s() ***\n", __func__);
+    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     if(_gQRear >= _gQFront)
     {
@@ -262,7 +268,7 @@ int ShowQueue(u8 * pBuf, u16 nLength)    //just show data, not fetch data
 
 void ShowAllQueue(u8 * pBuf, u16 * pFront, u16 * pRear)    //just show data, not fetch data
 {
-    DBG("*** %s() ***\n", __func__);
+    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     memcpy(pBuf, _gQueue, HOTKNOT_QUEUE_SIZE);        //pop data from rear to end
     *pFront = _gQFront;
@@ -272,10 +278,15 @@ void ShowAllQueue(u8 * pBuf, u16 * pFront, u16 * pRear)    //just show data, not
 
 void DeleteQueue()
 {
-    DBG("*** %s() ***\n", __func__);
+    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     _gQFront = _gQRear = 0;   
-    kfree(_gQueue);
+    
+    if (_gQueue)
+    {
+        kfree(_gQueue);
+        _gQueue = NULL;
+    }
 }
 
 #endif //CONFIG_ENABLE_HOTKNOT

@@ -73,6 +73,8 @@ typedef struct
 #define MSGTOOL_FINGERTOUCH       0x04
 #define MSGTOOL_BYPASSHOTKNOT     0x05
 #define MSGTOOL_DEVICEPOWEROFF    0x06
+#define MSGTOOL_GETSMDBBUS        0x07
+#define MSGTOOL_SETIICDATARATE    0x08
 
 
 

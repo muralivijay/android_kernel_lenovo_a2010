@@ -41,7 +41,9 @@
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 #include <linux/gpio.h>
-//#include <linux/earlysuspend.h>
+#ifdef CONFIG_HAS_EARLYSUSPEND
+#include <linux/earlysuspend.h>
+#endif //CONFIG_HAS_EARLYSUSPEND
 #include <linux/i2c.h>
 #include <linux/proc_fs.h>
 #include <linux/file.h>
@@ -52,18 +54,15 @@
 #include <linux/input/mt.h>
 #include <asm/unistd.h>
 #include <asm/uaccess.h>
+//#include <linux/uaccess.h> // TODO : For use Android 6.0 on MTK platform
 #include <asm/irq.h>
 #include <asm/io.h>
-#include <linux/of.h>
-#include <linux/of_address.h>
-#include <linux/of_device.h>
-#include <linux/of_gpio.h>
-#include <linux/of_irq.h>
+
 /*--------------------------------------------------------------------------*/
 /* TOUCH DEVICE DRIVER RELEASE VERSION                                      */
 /*--------------------------------------------------------------------------*/
 
-#define DEVICE_DRIVER_RELEASE_VERSION   ("3.3.0.0")
+#define DEVICE_DRIVER_RELEASE_VERSION   ("3.8.1.0")
 
 
 /*--------------------------------------------------------------------------*/
@@ -81,14 +80,14 @@
 //#define CONFIG_TOUCH_DRIVER_RUN_ON_QCOM_PLATFORM
 #define CONFIG_TOUCH_DRIVER_RUN_ON_MTK_PLATFORM
 
+
 /*
  * Note.
- * The below compile option is used to enable the specific device driver code handling for mutual-capacitive ic or self-capacitive ic.
- * For a mutual-capacitive ic project(MSG26xxM/MSG28xx), please define the compile option CONFIG_ENABLE_TOUCH_DRIVER_FOR_MUTUAL_IC.
- * For a self-capacitive ic project(MSG21xxA/MSG22xx), please define the compile option CONFIG_ENABLE_TOUCH_DRIVER_FOR_SELF_IC.
+ * The below compile option is used to enable code handling for specific MTK platform which use Android 6.0 upward.
+ * This compile option is used for MTK platform only.
+ * By default, this compile option is disabled.
  */
-//#define CONFIG_ENABLE_TOUCH_DRIVER_FOR_MUTUAL_IC
-#define CONFIG_ENABLE_TOUCH_DRIVER_FOR_SELF_IC
+#define CONFIG_PLATFORM_USE_ANDROID_SDK_6_UPWARD
 
 
 /*
@@ -96,7 +95,15 @@
  * The below compile option is used to enable the specific device driver code handling to make sure main board can supply power to touch ic for some specific BB chip of MTK(EX. MT6582)/SPRD(EX. SC7715)/QCOM(EX. MSM8610).
  * By default, this compile option is disabled.
  */
-#define CONFIG_ENABLE_REGULATOR_POWER_ON
+//#define CONFIG_ENABLE_REGULATOR_POWER_ON
+
+/*
+ * Note.
+ * The below compile option is used to enable touch pin control for specific SPRD/QCOM platform.
+ * This compile option is used for specific SPRD/QCOM platform only.
+ * By default, this compile option is disabled.
+ */
+//#define CONFIG_ENABLE_TOUCH_PIN_CONTROL
 
 /*
  * Note.
@@ -106,7 +113,6 @@
  * This compile option is used for MTK platform only.
  * By default, this compile option is disabled.
  */
-
 //#define CONFIG_USE_IRQ_INTERRUPT_FOR_MTK_PLATFORM
 
 /*
@@ -130,7 +136,6 @@
 /*
  * Note.
  * Since specific MTK BB chip report virtual key touch by using coordinate instead of key code, the below compile option is used to enable the code handling for reporting key with coordinate.
- * This compile option is used for MTK platform only.
  * By default, this compile option is disabled.
  */
 #define CONFIG_ENABLE_REPORT_KEY_WITH_COORDINATE
@@ -141,7 +146,7 @@
  * Please make sure firmware support debug mode data log firstly, then you can enable this flag.
  * By default, this flag is enabled.
  */
-#define CONFIG_ENABLE_FIRMWARE_DATA_LOG (0)   // 1 : Enable, 0 : Disable
+#define CONFIG_ENABLE_FIRMWARE_DATA_LOG (1)   // 1 : Enable, 0 : Disable
 
 /*
  * Note.
@@ -150,7 +155,7 @@
  * So we need to retrieve the complete finger touch data by segment read.
  * By default, this compile option is enabled.
  */
-#define CONFIG_ENABLE_SEGMENT_READ_FINGER_TOUCH_DATA
+//#define CONFIG_ENABLE_SEGMENT_READ_FINGER_TOUCH_DATA
 
 /*
  * Note.
@@ -193,11 +198,9 @@
 /*
  * Note.
  * The below compile option is used to enable phone level MP test handling.
- * By the way, phone level MP test is ready for MSG21XXA/MSG22XX/MSG26XXM.
- * But, phone level MP test for MSG28XX is not ready yet.
  * By default, this compile option is disabled.
  */
-#define CONFIG_ENABLE_ITO_MP_TEST
+//#define CONFIG_ENABLE_ITO_MP_TEST
 
 // ------------------- #ifdef CONFIG_ENABLE_ITO_MP_TEST ------------------- //
 #ifdef CONFIG_ENABLE_ITO_MP_TEST
@@ -255,7 +258,7 @@
 
 /*
  * Note.
- * The below compile option is used to enable notifier feedback handling for QCOM platform.
+ * The below compile option is used to enable notifier feedback handling for SPRD/QCOM platform.
  * By default, this compile option is disabled.
  */
 //#define CONFIG_ENABLE_NOTIFIER_FB
@@ -282,7 +285,7 @@
  * The below compile option is used to enable jni interface.
  * By default, this compile option is enabled.
  */
-//#define CONFIG_ENABLE_JNI_INTERFACE
+#define CONFIG_ENABLE_JNI_INTERFACE
 
 
 /*
@@ -307,10 +310,36 @@
  * The below compile option is used to enable/disable Type A/Type B multi-touch protocol for reporting touch point/key to Linux input sub-system.
  * If this compile option is defined, Type B protocol is enabled.
  * Else, Type A protocol is enabled.
- * By the way, Type B protocol is supported for MSG26XXM/MSG28XX only, but is not supported for MSG21XXA/MSG22XX yet.
  * By default, this compile option is disabled.
  */
 //#define CONFIG_ENABLE_TYPE_B_PROTOCOL
+
+
+/*
+ * Note.
+ * The below compile option is used to enable force touch for reporting touch point to Linux input sub-system.
+ * By the way, force touch is supported for MSG28XX only, but is not supported for MSG26XXM/MSG21XXA/MSG22XX yet.
+ * By default, this compile option is disabled.
+ */
+//#define CONFIG_ENABLE_FORCE_TOUCH
+
+
+/*
+ * Note. 
+ * The below two compile option is used to enable update firmware with 8 byte or 32 byte each time for MSG28XX.
+ * If the below two compile option is disabled, then update firmware with 128 byte each time for MSG28XX.
+ * By default, the below two compile option is disabled.
+ */
+//#define CONFIG_ENABLE_UPDATE_FIRMWARE_WITH_8_BYTE_EACH_TIME 
+//#define CONFIG_ENABLE_UPDATE_FIRMWARE_WITH_32_BYTE_EACH_TIME
+
+/*
+ * Note. 
+ * The below compile option is used to enable update firmware with I2C data rate 400KHz for MSG22XX.
+ * If this compile option is disabled, then update firmware with I2C data rate less than 400KHz for MSG22XX
+ * By default, this compile option is disabled.
+ */
+//#define CONFIG_ENABLE_UPDATE_FIRMWARE_WITH_SUPPORT_I2C_SPEED_400K 
 
 
 /*--------------------------------------------------------------------------*/
@@ -319,7 +348,7 @@
 
 #define u8   unsigned char
 #define u16  unsigned short
-#define u32  unsigned int
+#define U32  unsigned int
 #define s8   signed char
 #define s16  signed short
 #define s32  signed int
@@ -344,8 +373,8 @@
  * Note.
  * Please change the below touch screen resolution according to the touch panel that you are using.
  */
-#define TOUCH_SCREEN_X_MAX   (720)  //LCD_WIDTH
-#define TOUCH_SCREEN_Y_MAX   (1280) //LCD_HEIGHT
+#define TOUCH_SCREEN_X_MAX   (480)  //LCD_WIDTH
+#define TOUCH_SCREEN_Y_MAX   (854) //LCD_HEIGHT
 /*
  * Note.
  * Please do not change the below setting.
@@ -477,32 +506,47 @@
 
 #define I2C_WRITE_COMMAND_DELAY_FOR_FIRMWARE   (20) // delay 20ms
 
+#define I2C_SMBUS_WRITE_COMMAND_DELAY_FOR_QCOM_PLATFORM   (5) // delay 5ms
+
 #define FIRMWARE_FILE_PATH_ON_SD_CARD      "/mnt/sdcard/msctp_update.bin"
+
+
+#define POWER_SUPPLY_BATTERY_STATUS_PATCH  "/sys/class/power_supply/battery/status"
 
 
 /*
  * Note.
  * The below flag is used to enable the output log mechanism while touch device driver is running.
- * If this flag is not defined, the function for output log will be disabled.
- * By default, this flag is enabled.
+ * If the debug log level is set as 0, the function for output log will be disabled.
+ * By default, the debug log level is set as 1.
  */
-#define CONFIG_ENABLE_TOUCH_DRIVER_DEBUG_LOG (1)   // 1 : Enable, 0 : Disable
+#define CONFIG_TOUCH_DRIVER_DEBUG_LOG_LEVEL (1)   // 1 : Default, 0 : No log. The bigger value, the more detailed log is output.
 
 /*=============================================================*/
 // EXTERN VARIABLE DECLARATION
 /*=============================================================*/
 
-extern u8 IS_TOUCH_DRIVER_DEBUG_LOG_ENABLED;
+extern u8 TOUCH_DRIVER_DEBUG_LOG_LEVEL;
 
 /*--------------------------------------------------------------------------*/
 /* PREPROCESSOR MACRO DEFINITION                                            */
 /*--------------------------------------------------------------------------*/
 
-#define DBG(fmt, arg...) do {\
-	                           if (IS_TOUCH_DRIVER_DEBUG_LOG_ENABLED == 1)\
-	                               printk(fmt, ##arg);\
-                         } while (0)
 
+#define DEBUG_LEVEL(level, dev, fmt, arg...) do {\
+	                                           if (level <= TOUCH_DRIVER_DEBUG_LOG_LEVEL)\
+	                                               printk(fmt, ##arg);\
+                                        } while (0)
+
+#define DBG(dev, fmt, arg...) DEBUG_LEVEL(1, dev, fmt, ##arg) 
+/*
+#define DEBUG_LEVEL(level, dev, fmt, arg...) do {\
+	                                           if (level <= TOUCH_DRIVER_DEBUG_LOG_LEVEL)\
+	                                               dev_info(dev, fmt, ##arg);\
+                                        } while (0)
+
+#define DBG(dev, fmt, arg...) DEBUG_LEVEL(1, dev, fmt, ##arg)
+*/
 
 /*--------------------------------------------------------------------------*/
 /* DATA TYPE DEFINITION                                                     */
@@ -555,10 +599,10 @@ typedef enum
 /* GLOBAL FUNCTION DECLARATION                                              */
 /*--------------------------------------------------------------------------*/
 
-extern u8 DrvCommonCalculateCheckSum(u8 *pMsg, u32 nLength);
-extern u32 DrvCommonConvertCharToHexDigit(char *pCh, u32 nLength);
-extern u32 DrvCommonCrcDoReflect(u32 nRef, s8 nCh);
-extern u32 DrvCommonCrcGetValue(u32 nText, u32 nPrevCRC);
+extern u8 DrvCommonCalculateCheckSum(u8 *pMsg, U32 nLength);
+extern U32 DrvCommonConvertCharToHexDigit(char *pCh, U32 nLength);
+extern U32 DrvCommonCrcDoReflect(U32 nRef, s8 nCh);
+extern U32 DrvCommonCrcGetValue(U32 nText, U32 nPrevCRC);
 extern void DrvCommonCrcInitTable(void);
 extern void DrvCommonReadFile(char *pFilePath, u8 *pBuf, u16 nLength);
 

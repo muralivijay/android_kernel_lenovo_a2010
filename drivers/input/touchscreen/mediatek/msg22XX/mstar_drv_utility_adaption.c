@@ -42,8 +42,8 @@
 ////////////////////////////////////////////////////////////
 /// Variables
 ////////////////////////////////////////////////////////////
-extern u32 SLAVE_I2C_ID_DBBUS;
-extern u32 SLAVE_I2C_ID_DWI2C;
+extern U32 SLAVE_I2C_ID_DBBUS;
+extern U32 SLAVE_I2C_ID_DWI2C;
 
 extern struct i2c_client *g_I2cClient;
 extern struct input_dev *g_InputDevice;
@@ -89,17 +89,17 @@ void DmaAlloc(void)
     
     if (NULL == I2CDMABuf_va)
     {
-        DBG("DmaAlloc FAILED!\n");
+        DBG(&g_I2cClient->dev, "DmaAlloc FAILED!\n");
     }
     else
     {
-        DBG("DmaAlloc SUCCESS!\n");
+        DBG(&g_I2cClient->dev, "DmaAlloc SUCCESS!\n");
     }
 }
 
 void DmaReset(void)
 {
-    DBG("Dma memory reset!\n");
+    DBG(&g_I2cClient->dev, "Dma memory reset!\n");
 
     memset(I2CDMABuf_va, 0, MAX_I2C_TRANSACTION_LENGTH_LIMIT);
 }
@@ -112,7 +112,7 @@ void DmaFree(void)
 	      I2CDMABuf_va = NULL;
 	      I2CDMABuf_pa = 0;
 
-        DBG("DmaFree SUCCESS!\n");
+        DBG(&g_I2cClient->dev, "DmaFree SUCCESS!\n");
     }
 }
 #endif //CONFIG_ENABLE_DMA_IIC
@@ -163,6 +163,12 @@ void RegGetXBitValue(u16 nAddr, u8 * pRxData, u16 nLength, u16 nMaxI2cLengthLimi
     tx_data[0] = 0x10;
 
     mutex_lock(&g_Mutex);
+
+#ifdef CONFIG_TOUCH_DRIVER_RUN_ON_MTK_PLATFORM
+#ifdef CONFIG_ENABLE_DMA_IIC
+    DmaReset();
+#endif //CONFIG_ENABLE_DMA_IIC
+#endif //CONFIG_TOUCH_DRIVER_RUN_ON_MTK_PLATFORM
 
     while(nLeft > 0)
     {
@@ -711,7 +717,7 @@ s32 IicSegmentReadDataByDbBus(u8 nRegBank, u8 nRegAddr, u8* pBuf, u16 nSize, u16
     {
 #ifndef CONFIG_ENABLE_DMA_IIC
         u8 *pReadBuf = NULL;
-#endif
+#endif //CONFIG_ENABLE_DMA_IIC
         u16 nLength = 0;
         u8 nAddrBefore = g_I2cClient->addr;
         
@@ -1022,6 +1028,10 @@ s32 IicSegmentReadDataBySmBus(u16 nAddr, u8* pBuf, u16 nSize, u16 nMaxI2cLengthL
 //                nOffset += msgs[1].len;
             }
 
+#ifdef CONFIG_TOUCH_DRIVER_RUN_ON_QCOM_PLATFORM
+            mdelay(I2C_SMBUS_WRITE_COMMAND_DELAY_FOR_QCOM_PLATFORM); // TODO : add for testing
+#endif //CONFIG_TOUCH_DRIVER_RUN_ON_QCOM_PLATFORM
+
             rc = i2c_transfer(g_I2cClient->adapter, &msgs[0], 2);
             if (rc == 2)
             {
@@ -1044,7 +1054,7 @@ s32 IicSegmentReadDataBySmBus(u16 nAddr, u8* pBuf, u16 nSize, u16 nMaxI2cLengthL
     {
 #ifndef CONFIG_ENABLE_DMA_IIC
         u8 *pReadBuf = NULL;
-#endif
+#endif //CONFIG_ENABLE_DMA_IIC
         u16 nLength = 0;
         u8 nAddrBefore = g_I2cClient->addr;
         
@@ -1152,17 +1162,17 @@ s32 IicSegmentReadDataBySmBus(u16 nAddr, u8* pBuf, u16 nSize, u16 nMaxI2cLengthL
    return nReadSize;
 }
 
-void mstpMemSet(void *pDst, s8 nVal, u32 nSize)
+void mstpMemSet(void *pDst, s8 nVal, U32 nSize)
 {
     memset(pDst, nVal, nSize);
 }
 
-void mstpMemCopy(void *pDst, void *pSource, u32 nSize)
+void mstpMemCopy(void *pDst, void *pSource, U32 nSize)
 {
     memcpy(pDst, pSource, nSize);
 }
 
-void mstpDelay(u32 nTime)
+void mstpDelay(U32 nTime)
 {
     mdelay(nTime);
 }

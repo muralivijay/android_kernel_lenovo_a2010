@@ -76,8 +76,6 @@ config TOUCHSCREEN_MTK_MSG22XX
 	  To compile this dirver as a module, choose M here: the
 	  module will be called.
 
-source "drivers/input/touchscreen/mediatek/msg22XX/Kconfig"
-
 config TOUCHSCREEN_AEON_FT5X0X
         bool "aeon_ft5x0x for Eastaeon package"
 	default n

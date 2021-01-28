@@ -102,8 +102,8 @@ extern s32 IicWriteData(u8 nSlaveId, u8* pBuf, u16 nSize);
 extern s32 IicReadData(u8 nSlaveId, u8* pBuf, u16 nSize);
 extern s32 IicSegmentReadDataByDbBus(u8 nRegBank, u8 nRegAddr, u8* pBuf, u16 nSize, u16 nMaxI2cLengthLimit);
 extern s32 IicSegmentReadDataBySmBus(u16 nAddr, u8* pBuf, u16 nSize, u16 nMaxI2cLengthLimit);
-extern void mstpMemSet(void *pDst, s8 nVal, u32 nSize);
-extern void mstpMemCopy(void *pDst, void *pSource, u32 nSize);
-extern void mstpDelay(u32 nTime);
+extern void mstpMemSet(void *pDst, s8 nVal, U32 nSize);
+extern void mstpMemCopy(void *pDst, void *pSource, U32 nSize);
+extern void mstpDelay(U32 nTime);
 
 #endif // __MSTAR_DRV_UTILITY_ADAPTION_H__

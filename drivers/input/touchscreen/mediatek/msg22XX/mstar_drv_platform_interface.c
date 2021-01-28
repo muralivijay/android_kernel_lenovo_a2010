@@ -43,7 +43,7 @@
 /*=============================================================*/
 
 #ifdef CONFIG_ENABLE_GESTURE_WAKEUP
-extern u32 g_GestureWakeupMode[2];
+extern U32 g_GestureWakeupMode[2];
 extern u8 g_GestureWakeupFlag;
 
 #ifdef CONFIG_ENABLE_GESTURE_DEBUG_MODE
@@ -55,7 +55,6 @@ extern u8 g_GestureDebugMode;
 
 #ifdef CONFIG_ENABLE_PROXIMITY_DETECTION
 extern u8 g_EnableTpProximity;
-extern u8 needEnableTpProximity;//20151125-add-by-jiangjingjing-defect1171281
 #endif //CONFIG_ENABLE_PROXIMITY_DETECTION
 
 #ifdef CONFIG_ENABLE_GLOVE_MODE
@@ -64,15 +63,12 @@ extern u8 g_IsEnableGloveMode;
 
 extern u8 g_IsUpdateFirmware;
 
-/*=============================================================*/
-// GLOBAL VARIABLE DEFINITION
-/*=============================================================*/
-
 extern struct input_dev *g_InputDevice;
+extern struct i2c_client *g_I2cClient;
 
 #ifdef CONFIG_ENABLE_HOTKNOT
 extern u8 g_HotKnotState;
-extern u32 SLAVE_I2C_ID_DWI2C;
+extern U32 SLAVE_I2C_ID_DWI2C;
 #endif //CONFIG_ENABLE_HOTKNOT
 
 #ifdef CONFIG_ENABLE_CHARGER_DETECTION
@@ -80,6 +76,12 @@ extern u8 g_ForceUpdate;
 #endif //CONFIG_ENABLE_CHARGER_DETECTION
 
 extern u8 IS_FIRMWARE_DATA_LOG_ENABLED;
+
+
+/*=============================================================*/
+// GLOBAL VARIABLE DEFINITION
+/*=============================================================*/
+
 
 /*=============================================================*/
 // LOCAL VARIABLE DEFINITION
@@ -105,18 +107,18 @@ int MsDrvInterfaceTouchDeviceFbNotifierCallback(struct notifier_block *pSelf, un
 
         if (*pBlank == FB_BLANK_UNBLANK)
         {
-            DBG("*** %s() TP Resume ***\n", __func__);
+            DBG(&g_I2cClient->dev, "*** %s() TP Resume ***\n", __func__);
 
             if (g_IsUpdateFirmware != 0) // Check whether update frimware is finished
             {
-                DBG("Not allow to power on/off touch ic while update firmware.\n");
+                DBG(&g_I2cClient->dev, "Not allow to power on/off touch ic while update firmware.\n");
                 return 0;
             }
 
 #ifdef CONFIG_ENABLE_PROXIMITY_DETECTION
             if (g_EnableTpProximity == 1)
             {
-                DBG("g_EnableTpProximity = %d\n", g_EnableTpProximity);
+                DBG(&g_I2cClient->dev, "g_EnableTpProximity = %d\n", g_EnableTpProximity);
                 return 0;
             }
 #endif //CONFIG_ENABLE_PROXIMITY_DETECTION
@@ -154,6 +156,9 @@ int MsDrvInterfaceTouchDeviceFbNotifierCallback(struct notifier_block *pSelf, un
             if (g_HotKnotState != HOTKNOT_BEFORE_TRANS_STATE && g_HotKnotState != HOTKNOT_TRANS_STATE && g_HotKnotState != HOTKNOT_AFTER_TRANS_STATE)
 #endif //CONFIG_ENABLE_HOTKNOT        
             {
+#ifdef CONFIG_ENABLE_REGULATOR_POWER_ON
+            	DrvPlatformLyrTouchDeviceRegulatorPowerOn(true);
+#endif //CONFIG_ENABLE_REGULATOR_POWER_ON               
                 DrvPlatformLyrTouchDevicePowerOn(); 
             }   
     
@@ -163,11 +168,11 @@ int MsDrvInterfaceTouchDeviceFbNotifierCallback(struct notifier_block *pSelf, un
      
                 DrvCommonReadFile("/sys/class/power_supply/battery/status", szChargerStatus, 20);
             
-                DBG("*** Battery Status : %s ***\n", szChargerStatus);
+                DBG(&g_I2cClient->dev, "*** Battery Status : %s ***\n", szChargerStatus);
             
                 g_ForceUpdate = 1; // Set flag to force update charger status
                 
-                if (strstr(szChargerStatus, "Charging") != NULL || strstr(szChargerStatus, "Full") != NULL || strstr(szChargerStatus, "Fully charged") != NULL)
+                if (strstr(szChargerStatus, "Charging") != NULL || strstr(szChargerStatus, "Full") != NULL || strstr(szChargerStatus, "Fully charged") != NULL) // Charging
                 {
                     DrvFwCtrlChargerDetection(1); // charger plug-in
                 }
@@ -183,7 +188,7 @@ int MsDrvInterfaceTouchDeviceFbNotifierCallback(struct notifier_block *pSelf, un
 #ifdef CONFIG_ENABLE_GLOVE_MODE
             if (g_IsEnableGloveMode == 1)
             {
-                DrvIcFwCtrlOpenGloveMode();
+                DrvIcFwLyrOpenGloveMode();
             }
 #endif //CONFIG_ENABLE_GLOVE_MODE
 
@@ -198,18 +203,18 @@ int MsDrvInterfaceTouchDeviceFbNotifierCallback(struct notifier_block *pSelf, un
         }
         else if (*pBlank == FB_BLANK_POWERDOWN)
         {
-            DBG("*** %s() TP Suspend ***\n", __func__);
+            DBG(&g_I2cClient->dev, "*** %s() TP Suspend ***\n", __func__);
             
             if (g_IsUpdateFirmware != 0) // Check whether update frimware is finished
             {
-                DBG("Not allow to power on/off touch ic while update firmware.\n");
+                DBG(&g_I2cClient->dev, "Not allow to power on/off touch ic while update firmware.\n");
                 return 0;
             }
 
 #ifdef CONFIG_ENABLE_PROXIMITY_DETECTION
             if (g_EnableTpProximity == 1)
             {
-                DBG("g_EnableTpProximity = %d\n", g_EnableTpProximity);
+                DBG(&g_I2cClient->dev, "g_EnableTpProximity = %d\n", g_EnableTpProximity);
                 return 0;
             }
 #endif //CONFIG_ENABLE_PROXIMITY_DETECTION
@@ -234,7 +239,6 @@ int MsDrvInterfaceTouchDeviceFbNotifierCallback(struct notifier_block *pSelf, un
             }
 #endif //CONFIG_ENABLE_HOTKNOT 
 
-
             DrvPlatformLyrFingerTouchReleased(0, 0, 0); // Send touch end for clearing point touch
             input_sync(g_InputDevice);
 
@@ -245,6 +249,9 @@ int MsDrvInterfaceTouchDeviceFbNotifierCallback(struct notifier_block *pSelf, un
 #endif //CONFIG_ENABLE_HOTKNOT        
             {
                 DrvPlatformLyrTouchDevicePowerOff(); 
+#ifdef CONFIG_ENABLE_REGULATOR_POWER_ON
+				DrvPlatformLyrTouchDeviceRegulatorPowerOn(false);
+#endif //CONFIG_ENABLE_REGULATOR_POWER_ON
             }    
         }
     }
@@ -254,20 +261,24 @@ int MsDrvInterfaceTouchDeviceFbNotifierCallback(struct notifier_block *pSelf, un
 
 #else
 
-void MsDrvInterfaceTouchDeviceSuspend(struct device *pSuspend)
+#ifdef CONFIG_PLATFORM_USE_ANDROID_SDK_6_UPWARD
+void MsDrvInterfaceTouchDeviceSuspend(struct device *pDevice)
+#else
+void MsDrvInterfaceTouchDeviceSuspend(struct early_suspend *pSuspend)
+#endif //CONFIG_PLATFORM_USE_ANDROID_SDK_6_UPWARD
 {
-    DBG("*** %s() ***\n", __func__);
+    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     if (g_IsUpdateFirmware != 0) // Check whether update frimware is finished
     {
-        DBG("Not allow to power on/off touch ic while update firmware.\n");
+        DBG(&g_I2cClient->dev, "Not allow to power on/off touch ic while update firmware.\n");
         return;
     }
 
 #ifdef CONFIG_ENABLE_PROXIMITY_DETECTION
     if (g_EnableTpProximity == 1)
     {
-        DBG("g_EnableTpProximity = %d\n", g_EnableTpProximity);
+        DBG(&g_I2cClient->dev, "g_EnableTpProximity = %d\n", g_EnableTpProximity);
         return;
     }
 #endif //CONFIG_ENABLE_PROXIMITY_DETECTION
@@ -292,7 +303,6 @@ void MsDrvInterfaceTouchDeviceSuspend(struct device *pSuspend)
     }
 #endif //CONFIG_ENABLE_HOTKNOT  
 
-
     DrvPlatformLyrFingerTouchReleased(0, 0, 0); // Send touch end for clearing point touch
     input_sync(g_InputDevice);
 
@@ -303,23 +313,32 @@ void MsDrvInterfaceTouchDeviceSuspend(struct device *pSuspend)
 #endif //CONFIG_ENABLE_HOTKNOT        
     {
         DrvPlatformLyrTouchDevicePowerOff(); 
+#ifdef CONFIG_PLATFORM_USE_ANDROID_SDK_6_UPWARD
+#ifdef CONFIG_ENABLE_REGULATOR_POWER_ON
+        DrvPlatformLyrTouchDeviceRegulatorPowerOn(false);
+#endif //CONFIG_ENABLE_REGULATOR_POWER_ON               
+#endif //CONFIG_PLATFORM_USE_ANDROID_SDK_6_UPWARD
     }    
 }
 
-void MsDrvInterfaceTouchDeviceResume(struct device *pSuspend)
+#ifdef CONFIG_PLATFORM_USE_ANDROID_SDK_6_UPWARD
+void MsDrvInterfaceTouchDeviceResume(struct device *pDevice)
+#else
+void MsDrvInterfaceTouchDeviceResume(struct early_suspend *pSuspend)
+#endif //CONFIG_PLATFORM_USE_ANDROID_SDK_6_UPWARD
 {
-    DBG("*** %s() ***\n", __func__);
+    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     if (g_IsUpdateFirmware != 0) // Check whether update frimware is finished
     {
-        DBG("Not allow to power on/off touch ic while update firmware.\n");
+        DBG(&g_I2cClient->dev, "Not allow to power on/off touch ic while update firmware.\n");
         return;
     }
 
 #ifdef CONFIG_ENABLE_PROXIMITY_DETECTION
     if (g_EnableTpProximity == 1)
     {
-        DBG("g_EnableTpProximity = %d\n", g_EnableTpProximity);
+        DBG(&g_I2cClient->dev, "g_EnableTpProximity = %d\n", g_EnableTpProximity);
         return;
     }
 #endif //CONFIG_ENABLE_PROXIMITY_DETECTION
@@ -357,6 +376,11 @@ void MsDrvInterfaceTouchDeviceResume(struct device *pSuspend)
     if (g_HotKnotState != HOTKNOT_BEFORE_TRANS_STATE && g_HotKnotState != HOTKNOT_TRANS_STATE && g_HotKnotState != HOTKNOT_AFTER_TRANS_STATE)
 #endif //CONFIG_ENABLE_HOTKNOT        
     {
+#ifdef CONFIG_PLATFORM_USE_ANDROID_SDK_6_UPWARD
+#ifdef CONFIG_ENABLE_REGULATOR_POWER_ON
+        DrvPlatformLyrTouchDeviceRegulatorPowerOn(true);
+#endif //CONFIG_ENABLE_REGULATOR_POWER_ON               
+#endif //CONFIG_PLATFORM_USE_ANDROID_SDK_6_UPWARD
         DrvPlatformLyrTouchDevicePowerOn(); 
     }   
     
@@ -366,11 +390,11 @@ void MsDrvInterfaceTouchDeviceResume(struct device *pSuspend)
  
         DrvCommonReadFile("/sys/class/power_supply/battery/status", szChargerStatus, 20);
         
-        DBG("*** Battery Status : %s ***\n", szChargerStatus);
+        DBG(&g_I2cClient->dev, "*** Battery Status : %s ***\n", szChargerStatus);
         
         g_ForceUpdate = 1; // Set flag to force update charger status
 
-        if (strstr(szChargerStatus, "Charging") != NULL || strstr(szChargerStatus, "Full") != NULL || strstr(szChargerStatus, "Fully charged") != NULL)
+        if (strstr(szChargerStatus, "Charging") != NULL || strstr(szChargerStatus, "Full") != NULL || strstr(szChargerStatus, "Fully charged") != NULL) // Charging
         {
             DrvFwCtrlChargerDetection(1); // charger plug-in
         }
@@ -386,7 +410,7 @@ void MsDrvInterfaceTouchDeviceResume(struct device *pSuspend)
 #ifdef CONFIG_ENABLE_GLOVE_MODE
     if (g_IsEnableGloveMode == 1)
     {
-        DrvIcFwCtrlOpenGloveMode();
+        DrvIcFwLyrOpenGloveMode();
     }
 #endif //CONFIG_ENABLE_GLOVE_MODE
 
@@ -398,17 +422,6 @@ void MsDrvInterfaceTouchDeviceResume(struct device *pSuspend)
 #ifndef CONFIG_ENABLE_GESTURE_WAKEUP
     DrvPlatformLyrEnableFingerTouchReport(); 
 #endif //CONFIG_ENABLE_GESTURE_WAKEUP
-
-//Begin-20151125-add-by-jiangjingjing-defect1171281-P-sensor-is invalid-when-ms-is-sleep then-plug out headset-and wake up ms
-//to avoid-uplayer-want-enable-psensor-while-tp-is suspned,we can enable p-sensor again when tp wake up
-#ifdef CONFIG_ENABLE_PROXIMITY_DETECTION  
-     if(needEnableTpProximity&&!g_EnableTpProximity)
-     {
-          DrvIcFwLyrEnableProximity();
-     }
-#endif
-//End-20151125-add-by-jiangjingjing-defect1171281-P-sensor-is invalid-when-ms-is-sleep then-plug out headset-and wake up ms
-
 }
 
 #endif //CONFIG_ENABLE_NOTIFIER_FB
@@ -418,14 +431,14 @@ s32 /*__devinit*/ MsDrvInterfaceTouchDeviceProbe(struct i2c_client *pClient, con
 {
     s32 nRetVal = 0;
 
-    DBG("*** %s() ***\n", __func__);
+    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
   
     DrvPlatformLyrInputDeviceInitialize(pClient);
   
-    DrvPlatformLyrTouchDeviceRequestGPIO();
+    DrvPlatformLyrTouchDeviceRequestGPIO(pClient);
 
 #ifdef CONFIG_ENABLE_REGULATOR_POWER_ON
-    DrvPlatformLyrTouchDeviceRegulatorPowerOn();
+    DrvPlatformLyrTouchDeviceRegulatorPowerOn(true);
 #endif //CONFIG_ENABLE_REGULATOR_POWER_ON
 
     DrvPlatformLyrTouchDevicePowerOn();
@@ -439,19 +452,19 @@ s32 /*__devinit*/ MsDrvInterfaceTouchDeviceProbe(struct i2c_client *pClient, con
     nRetVal = DrvMainTouchDeviceInitialize();
     if (nRetVal == -ENODEV)
     {
-       // DrvPlatformLyrTouchDeviceRemove(pClient);
+        DrvPlatformLyrTouchDeviceRemove(pClient);
         return nRetVal;
     }
 
     DrvPlatformLyrTouchDeviceRegisterFingerTouchInterruptHandler();
 
-  // DrvPlatformLyrTouchDeviceRegisterEarlySuspend();
+    DrvPlatformLyrTouchDeviceRegisterEarlySuspend();
 
 #ifdef CONFIG_UPDATE_FIRMWARE_BY_SW_ID
     DrvIcFwLyrCheckFirmwareUpdateBySwId();
 #endif //CONFIG_UPDATE_FIRMWARE_BY_SW_ID
 
-    DBG("*** MStar touch driver registered ***\n");
+    DBG(&g_I2cClient->dev, "*** MStar touch driver registered ***\n");
     
     return nRetVal;
 }
@@ -459,14 +472,14 @@ s32 /*__devinit*/ MsDrvInterfaceTouchDeviceProbe(struct i2c_client *pClient, con
 /* remove function is triggered when the input device is removed from input sub-system */
 s32 /*__devexit*/ MsDrvInterfaceTouchDeviceRemove(struct i2c_client *pClient)
 {
-    DBG("*** %s() ***\n", __func__);
+    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     return DrvPlatformLyrTouchDeviceRemove(pClient);
 }
 
-void MsDrvInterfaceTouchDeviceSetIicDataRate(struct i2c_client *pClient, u32 nIicDataRate)
+void MsDrvInterfaceTouchDeviceSetIicDataRate(struct i2c_client *pClient, U32 nIicDataRate)
 {
-    DBG("*** %s() ***\n", __func__);
+    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     DrvPlatformLyrSetIicDataRate(pClient, nIicDataRate);
 }    

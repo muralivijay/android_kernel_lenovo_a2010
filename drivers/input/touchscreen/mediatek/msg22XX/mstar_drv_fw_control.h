@@ -17,15 +17,15 @@
 
 /**
  *
- * @file    mstar_drv_mutual_fw_control.h
+ * @file    mstar_drv_fw_control.h
  *
  * @brief   This file defines the interface of touch screen
  *
  *
  */
 
-#ifndef __MSTAR_DRV_MUTUAL_FW_CONTROL_H__
-#define __MSTAR_DRV_MUTUAL_FW_CONTROL_H__
+#ifndef __MSTAR_DRV_FW_CONTROL_H__
+#define __MSTAR_DRV_FW_CONTROL_H__
 
 /*--------------------------------------------------------------------------*/
 /* INCLUDE FILE                                                             */
@@ -36,14 +36,49 @@
 #include "mstar_drv_hotknot.h"
 #endif //CONFIG_ENABLE_HOTKNOT
 
-#if defined(CONFIG_ENABLE_TOUCH_DRIVER_FOR_MUTUAL_IC)
+/*--------------------------------------------------------------------------*/
+/* COMPILE OPTION DEFINITION                                                */
+/*--------------------------------------------------------------------------*/
+
+/* The below 3 define are used for MSG21xxA/MSG22xx */
+//#define CONFIG_SWAP_X_Y
+
+//#define CONFIG_REVERSE_X
+//#define CONFIG_REVERSE_Y
 
 /*--------------------------------------------------------------------------*/
 /* PREPROCESSOR CONSTANT DEFINITION                                         */
 /*--------------------------------------------------------------------------*/
 
-#define DEMO_MODE_PACKET_LENGTH    (43)
-#define MAX_TOUCH_NUM           (10)     
+#define MUTUAL_DEMO_MODE_PACKET_LENGTH    (43) // for MSG26xxM/MSG28xx
+#define SELF_DEMO_MODE_PACKET_LENGTH    (8) // for MSG21xxA/MSG22xx
+
+#define MUTUAL_MAX_TOUCH_NUM           (10) // for MSG26xxM/MSG28xx    
+#define SELF_MAX_TOUCH_NUM           (2) // for MSG21xxA/MSG22xx     
+
+#define MUTUAL_DEBUG_MODE_PACKET_LENGTH    (1280) // for MSG26xxM/MSG28xx. It is a predefined maximum packet length, not the actual packet length which queried from firmware.
+#define SELF_DEBUG_MODE_PACKET_LENGTH    (128) //  for MSG21xxA/MSG22xx
+
+
+#define MSG21XXA_FIRMWARE_MAIN_BLOCK_SIZE (32) //32K
+#define MSG21XXA_FIRMWARE_INFO_BLOCK_SIZE (1)  //1K
+#define MSG21XXA_FIRMWARE_WHOLE_SIZE (MSG21XXA_FIRMWARE_MAIN_BLOCK_SIZE+MSG21XXA_FIRMWARE_INFO_BLOCK_SIZE) //33K
+
+#define MSG22XX_FIRMWARE_MAIN_BLOCK_SIZE (48)  //48K
+#define MSG22XX_FIRMWARE_INFO_BLOCK_SIZE (512) //512Byte
+
+//#define MSG21XXA_FIRMWARE_MODE_UNKNOWN_MODE   (0xFF)
+#define MSG21XXA_FIRMWARE_MODE_DEMO_MODE      (0x00)
+#define MSG21XXA_FIRMWARE_MODE_DEBUG_MODE     (0x01)
+#define MSG21XXA_FIRMWARE_MODE_RAW_DATA_MODE  (0x02)
+
+//#define MSG22XX_FIRMWARE_MODE_UNKNOWN_MODE    (0xFF)
+#define MSG22XX_FIRMWARE_MODE_DEMO_MODE       (0x00)
+#define MSG22XX_FIRMWARE_MODE_DEBUG_MODE      (0x01)
+#define MSG22XX_FIRMWARE_MODE_RAW_DATA_MODE   (0x02)
+
+#define MSG22XX_MAX_ERASE_EFLASH_TIMES   (2) // for update firmware of MSG22xx 
+
 
 #define MSG26XXM_FIRMWARE_MAIN_BLOCK_SIZE (32) //32K
 #define MSG26XXM_FIRMWARE_INFO_BLOCK_SIZE (8) //8K
@@ -68,9 +103,6 @@
 #define MSG28XX_FIRMWARE_MODE_DEMO_MODE    (0x00)
 #define MSG28XX_FIRMWARE_MODE_DEBUG_MODE   (0x01)
 
-
-#define DEBUG_MODE_PACKET_LENGTH    (1280) //It is a predefined maximum packet length, not the actual packet length which queried from firmware.
-
 #ifdef CONFIG_UPDATE_FIRMWARE_BY_SW_ID
 #define UPDATE_FIRMWARE_RETRY_COUNT (2)
 #endif //CONFIG_UPDATE_FIRMWARE_BY_SW_ID
@@ -89,19 +121,41 @@
 
 typedef struct
 {
+    u16 nX;
+    u16 nY;
+} SelfTouchPoint_t;
+
+typedef struct
+{
+    u8 nTouchKeyMode;
+    u8 nTouchKeyCode;
+    u8 nFingerNum;
+    SelfTouchPoint_t tPoint[2];
+} SelfTouchInfo_t;
+
+typedef struct
+{
+    u8 nFirmwareMode;
+    u8 nLogModePacketHeader;
+    u16 nLogModePacketLength;
+    u8 nIsCanChangeFirmwareMode;
+} SelfFirmwareInfo_t;
+
+typedef struct
+{
     u16 nId;
     u16 nX;
     u16 nY;
     u16 nP;
-} TouchPoint_t;
+} MutualTouchPoint_t;
 
 /// max 80+1+1 = 82 bytes
 typedef struct
 {
     u8 nCount;
     u8 nKeyCode;
-    TouchPoint_t tPoint[MAX_TOUCH_NUM];
-} TouchInfo_t;
+    MutualTouchPoint_t tPoint[10];
+} MutualTouchInfo_t;
 
 typedef struct
 {
@@ -113,12 +167,39 @@ typedef struct
     u8 nSd;
     u8 nSs;
     u16 nLogModePacketLength;
-} FirmwareInfo_t;
+} MutualFirmwareInfo_t;
 
 
 #ifdef CONFIG_UPDATE_FIRMWARE_BY_SW_ID
 /*
  * Note.
+ * The following is sw id enum definition for MSG21XXA.
+ * SW_ID_UNDEFINED is a reserved enum value, do not delete it or modify it.
+ * Please modify the SW ID of the below enum value depends on the TP vendor that you are using.
+ */
+typedef enum {
+    MSG21XXA_SW_ID_XXXX = 0,  
+    MSG21XXA_SW_ID_YYYY,
+    MSG21XXA_SW_ID_UNDEFINED
+} Msg21xxaSwId_e;
+
+/*
+ * Note.
+ * The following is sw id enum definition for MSG22XX.
+ * 0x0000 and 0xFFFF are not allowed to be defined as SW ID.
+ * SW_ID_UNDEFINED is a reserved enum value, do not delete it or modify it.
+ * Please modify the SW ID of the below enum value depends on the TP vendor that you are using.
+ */
+typedef enum {
+    MSG22XX_SW_ID_SY = 0x0009,
+    MSG22XX_SW_ID_HLT = 0x0010, 
+    MSG22XX_SW_ID_JL = 0x0012, 
+    MSG22XX_SW_ID_UNDEFINED = 0xFFFF
+} Msg22xxSwId_e;
+
+/*
+ * Note.
+ * The following is sw id enum definition for MSG26XXM.
  * 0x0000 and 0xFFFF are not allowed to be defined as SW ID.
  * SW_ID_UNDEFINED is a reserved enum value, do not delete it or modify it.
  * Please modify the SW ID of the below enum value depends on the TP vendor that you are using.
@@ -126,11 +207,12 @@ typedef struct
 typedef enum {
     MSG26XXM_SW_ID_XXXX = 0x0001,
     MSG26XXM_SW_ID_YYYY = 0x0002,
-    MSG26XXM_SW_ID_UNDEFINED
+    MSG26XXM_SW_ID_UNDEFINED = 0xFFFF
 } Msg26xxmSwId_e;
 
 /*
  * Note.
+ * The following is sw id enum definition for MSG28XX.
  * 0x0000 and 0xFFFF are not allowed to be defined as SW ID.
  * SW_ID_UNDEFINED is a reserved enum value, do not delete it or modify it.
  * Please modify the SW ID of the below enum value depends on the TP vendor that you are using.
@@ -138,7 +220,7 @@ typedef enum {
 typedef enum {
     MSG28XX_SW_ID_XXXX = 0x0001,
     MSG28XX_SW_ID_YYYY = 0x0002,
-    MSG28XX_SW_ID_UNDEFINED
+    MSG28XX_SW_ID_UNDEFINED = 0xFFFF
 } Msg28xxSwId_e;
 #endif //CONFIG_UPDATE_FIRMWARE_BY_SW_ID
 
@@ -147,7 +229,7 @@ typedef enum {
 /*--------------------------------------------------------------------------*/
 
 #ifdef CONFIG_ENABLE_GESTURE_WAKEUP
-extern void DrvFwCtrlOpenGestureWakeup(u32 *pMode);
+extern void DrvFwCtrlOpenGestureWakeup(U32 *pMode);
 extern void DrvFwCtrlCloseGestureWakeup(void);
 
 #ifdef CONFIG_ENABLE_GESTURE_DEBUG_MODE
@@ -157,15 +239,16 @@ extern void DrvFwCtrlCloseGestureDebugMode(void);
 
 #endif //CONFIG_ENABLE_GESTURE_WAKEUP
 
-extern u32 DrvFwCtrlReadDQMemValue(u16 nAddr);
-extern void DrvFwCtrlWriteDQMemValue(u16 nAddr, u32 nData);
+extern U32 DrvFwCtrlReadDQMemValue(u16 nAddr);
+extern void DrvFwCtrlWriteDQMemValue(u16 nAddr, U32 nData);
 
 #ifdef CONFIG_UPDATE_FIRMWARE_BY_SW_ID
 extern void DrvFwCtrlCheckFirmwareUpdateBySwId(void);
 #endif //CONFIG_UPDATE_FIRMWARE_BY_SW_ID
 
 extern u16 DrvFwCtrlChangeFirmwareMode(u16 nMode);
-extern void DrvFwCtrlGetFirmwareInfo(FirmwareInfo_t *pInfo);
+extern void DrvFwCtrlSelfGetFirmwareInfo(SelfFirmwareInfo_t *pInfo);
+extern void DrvFwCtrlMutualGetFirmwareInfo(MutualFirmwareInfo_t *pInfo);
 extern u16 DrvFwCtrlGetFirmwareMode(void);
 extern void DrvFwCtrlRestoreFirmwareModeToLogDataMode(void);
 
@@ -193,15 +276,14 @@ extern void ReportHotKnotCmd(u8 *pPacket, u16 nLength);
 #endif //CONFIG_ENABLE_HOTKNOT
 
 #ifdef CONFIG_ENABLE_GLOVE_MODE
-extern void DrvIcFwCtrlOpenGloveMode(void);
-extern void DrvIcFwCtrlCloseGloveMode(void);
-extern void DrvIcFwCtrlGetGloveInfo(u8 *pGloveMode);
+extern void DrvFwCtrlOpenGloveMode(void);
+extern void DrvFwCtrlCloseGloveMode(void);
+extern void DrvFwCtrlGetGloveInfo(u8 *pGloveMode);
 #endif //CONFIG_ENABLE_GLOVE_MODE
 
 #ifdef CONFIG_ENABLE_CHARGER_DETECTION
 extern void DrvFwCtrlChargerDetection(u8 nChargerStatus);
 #endif //CONFIG_ENABLE_CHARGER_DETECTION
 
-#endif //CONFIG_ENABLE_TOUCH_DRIVER_FOR_MUTUAL_IC
         
-#endif  /* __MSTAR_DRV_MUTUAL_FW_CONTROL_H__ */
+#endif  /* __MSTAR_DRV_FW_CONTROL_H__ */

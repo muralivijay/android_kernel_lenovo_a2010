@@ -92,6 +92,7 @@
 #endif //CONFIG_ENABLE_JNI_INTERFACE
 
 #define PROC_NODE_SELINUX_LIMIT_FIRMWARE_UPDATE     "selinux_limit_update"
+#define PROC_NODE_FORCE_FIRMWARE_UPDATE             "force_fw_update"
 
 
 /*--------------------------------------------------------------------------*/
@@ -185,6 +186,7 @@ extern ssize_t DrvMainProcfsCloseGloveModeRead(struct file *pFile, char __user *
 #endif //CONFIG_ENABLE_GLOVE_MODE
 
 extern ssize_t DrvMainProcfsSeLinuxLimitFirmwareUpdateRead(struct file *pFile, char __user *pBuffer, size_t nCount, loff_t *pPos);
+extern ssize_t DrvMainProcfsForceFirmwareUpdateRead(struct file *pFile, char __user *pBuffer, size_t nCount, loff_t *pPos);
 
 extern s32 DrvMainTouchDeviceInitialize(void);
 extern void DrvMainRemoveProcfsDirEntry(void);

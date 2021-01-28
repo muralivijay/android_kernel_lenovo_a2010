@@ -43,18 +43,17 @@
 #include <asm/irq.h>
 #include <asm/io.h>
 
-
-#include "mstar_drv_platform_interface.h"
-
 #ifdef CONFIG_ENABLE_REGULATOR_POWER_ON
 #include <linux/regulator/consumer.h>
 #endif //CONFIG_ENABLE_REGULATOR_POWER_ON
+
+#include "mstar_drv_platform_interface.h"
 
 /*=============================================================*/
 // CONSTANT VALUE DEFINITION
 /*=============================================================*/
 
-#define MSG_TP_IC_NAME "msg2xxx" //"msg21xxA" or "msg22xx" or "msg26xxM" /* Please define the mstar touch ic name based on the mutual-capacitive ic or self capacitive ic that you are using */
+#define MSG_TP_IC_NAME "msg2xxx" //"msg21xxA" or "msg22xx" or "msg26xxM" or "msg28xx" /* Please define the mstar touch ic name based on the mutual-capacitive ic or self capacitive ic that you are using */
 
 /*=============================================================*/
 // VARIABLE DEFINITION
@@ -64,6 +63,7 @@ struct i2c_client *g_I2cClient = NULL;
 
 #ifdef CONFIG_ENABLE_REGULATOR_POWER_ON
 struct regulator *g_ReguVdd = NULL;
+struct regulator *g_ReguVcc_i2c = NULL;
 #endif //CONFIG_ENABLE_REGULATOR_POWER_ON
 
 /*=============================================================*/
@@ -71,24 +71,40 @@ struct regulator *g_ReguVdd = NULL;
 /*=============================================================*/
 
 /* probe function is used for matching and initializing input device */
-static int __devinit touch_driver_probe(struct i2c_client *client,
+static int /*__devinit*/ touch_driver_probe(struct i2c_client *client,
         const struct i2c_device_id *id)
 {
 #ifdef CONFIG_ENABLE_REGULATOR_POWER_ON
+    int ret = 0;
     const char *vdd_name = "vdd";
+    const char *vcc_i2c_name = "vcc_i2c";
 #endif //CONFIG_ENABLE_REGULATOR_POWER_ON
 
-    DBG("*** %s ***\n", __FUNCTION__);
+    printk("*** %s ***\n", __func__);
     
     if (client == NULL)
     {
-        DBG("i2c client is NULL\n");
+        printk("i2c client is NULL\n");
         return -1;
     }
     g_I2cClient = client;
 
 #ifdef CONFIG_ENABLE_REGULATOR_POWER_ON
     g_ReguVdd = regulator_get(&g_I2cClient->dev, vdd_name);
+
+    ret = regulator_set_voltage(g_ReguVdd, 2800000, 2800000); 
+    if (ret)
+    {
+        printk("Could not set to 2800mv.\n");
+    }
+
+    g_ReguVcc_i2c = regulator_get(&g_I2cClient->dev, vcc_i2c_name);
+
+    ret = regulator_set_voltage(g_ReguVcc_i2c, 1800000, 1800000);  
+    if (ret)
+    {
+        printk("Could not set to 1800mv.\n");
+    }
 #endif //CONFIG_ENABLE_REGULATOR_POWER_ON
 
     return MsDrvInterfaceTouchDeviceProbe(g_I2cClient, id);
@@ -97,7 +113,7 @@ static int __devinit touch_driver_probe(struct i2c_client *client,
 /* remove function is triggered when the input device is removed from input sub-system */
 static int touch_driver_remove(struct i2c_client *client)
 {
-    DBG("*** %s ***\n", __FUNCTION__);
+    printk("*** %s ***\n", __func__);
 
     return MsDrvInterfaceTouchDeviceRemove(client);
 }
@@ -136,17 +152,17 @@ static int __init touch_driver_init(void)
     ret = i2c_add_driver(&touch_device_driver);
     if (ret < 0)
     {
-        DBG("add touch device driver i2c driver failed.\n");
+        printk("add MStar touch device driver i2c driver failed.\n");
         return -ENODEV;
     }
-    DBG("add touch device driver i2c driver.\n");
+    printk("add MStar touch device driver i2c driver.\n");
 
     return ret;
 }
 
 static void __exit touch_driver_exit(void)
 {
-    DBG("remove touch device driver i2c driver.\n");
+    printk("remove MStar touch device driver i2c driver.\n");
 
     i2c_del_driver(&touch_device_driver);
 }
