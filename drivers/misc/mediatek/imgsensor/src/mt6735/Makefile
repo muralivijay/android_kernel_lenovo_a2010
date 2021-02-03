@@ -1,14 +1,21 @@
 #
+# Copyright (C) 2015 MediaTek Inc.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License version 2 as
+# published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+
+#
 # Makefile for misc devices that really don't fit anywhere else.
 #
 
-# sanford.lin add on 20160216 for aeon
--include $(srctree)/../$(MTK_TARGET_PROJECT_FOLDER)/eastaeon.mk
 
-ifeq ($(AEON_SUPPORT),yes)
-CONFIG_CUSTOM_KERNEL_IMGSENSOR := "$(CUSTOM_KERNEL_IMGSENSOR)"
-endif
-#sanford.lin 20150205 end
 
 define FILTER_PROJECT_DRV
 ifeq ($(wildcard $(srctree)/drivers/misc/mediatek/imgsensor/src/$(MTK_PLATFORM)/camera_project/$(ARCH_MTK_PROJECT)/$(1)),)
@@ -33,11 +40,8 @@ obj-y                           += camera_hw/
 endif
 
 $(foreach drv,$(subst $\",,$(CONFIG_CUSTOM_KERNEL_IMGSENSOR)),$(eval $(call FILTER_PROJECT_DRV,$(drv))))
-ifeq ($(CONFIG_MTK_EFUSE_DOWNGRADE),y)
-custom_kernel_imgsensor_by_platform := $(addsuffix /, $(shell echo $(subst imx135_mipi_raw_5mp,imx135_mipi_raw_5mp_cap24fps,$(platform_drv))))
-else
 custom_kernel_imgsensor_by_platform := $(addsuffix /, $(shell echo $(platform_drv)))
-endif
+
 custom_kernel_imgsensor_by_project := $(addsuffix /, $(shell echo $(project_drv)))
 
 obj-y += $(custom_kernel_imgsensor_by_platform)
