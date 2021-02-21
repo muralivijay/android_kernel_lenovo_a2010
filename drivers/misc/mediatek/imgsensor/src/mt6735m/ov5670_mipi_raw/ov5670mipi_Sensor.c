@@ -49,6 +49,10 @@
 
 #include "ov5670mipi_Sensor.h"
 
+//yinyapeng add  20160513 ==>
+extern UsedSubCameraType g_CurrUsedSubCameraName;
+//<==end
+
 #define PFX "ov5670_camera_sensor"
 #define LOG_INF(format, args...)	pr_debug(PFX "[%s] " format, __FUNCTION__, ##args)
 
@@ -1173,6 +1177,9 @@ static kal_uint32 get_imgsensor_id(UINT32 *sensor_id)
 			*sensor_id = ((read_cmos_sensor(0x300B) << 8) | read_cmos_sensor(0x300C));
 			if (*sensor_id == imgsensor_info.sensor_id) {
 				LOG_INF("i2c write id: 0x%x, sensor id: 0x%x\n", imgsensor.i2c_write_id,*sensor_id);
+//  yinyapeng add
+                                g_CurrUsedSubCameraName =MAIN_OV5670;
+//  yinyapeng add
 				return ERROR_NONE;
 			}
 			LOG_INF("Read sensor id fail, write id:0x%x id: 0x%x\n", imgsensor.i2c_write_id,*sensor_id);

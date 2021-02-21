@@ -96,6 +96,22 @@ typedef enum {
 	CAM1RST,
 	CAMLDO
 } CAMPowerType;
+
+//yinyapeng add ==>
+ typedef enum {
+ 		MAIN_NOCAMERA,
+		MAIN_S5K5E2,
+		MAIN_HI553,
+                MAIN_OV5670,
+} UsedMainCameraType;
+
+ typedef enum {
+ 		SUB_NOCAMERA,
+		SUB_GC2355,
+} UsedSubCameraType;
+
+//<===end
+
 extern bool _hwPowerDown(KD_REGULATOR_TYPE_T type);
 extern bool _hwPowerOn(KD_REGULATOR_TYPE_T type, int powerVolt);
 
