@@ -91,18 +91,17 @@ typedef enum {
 		MAIN_S5K5E2,
 		MAIN_GC5005,
 		MAIN_HI553,
-} UsedMainCameraType; 
+                MAIN_OV5670,
+} UsedMainCameraType;
 
  typedef enum {
  		SUB_NOCAMERA,
 		SUB_GC2355,
 		SUB_GC2365,
 		SUB_SP2509,
-} UsedSubCameraType; 
- 
+} UsedSubCameraType;
 
-
-//<===end 
+//<===end
 
 extern bool _hwPowerDown(KD_REGULATOR_TYPE_T type);
 extern bool _hwPowerOn(KD_REGULATOR_TYPE_T type, int powerVolt);

@@ -39,6 +39,11 @@
 #ifdef CONFIG_COMPAT
 #include <linux/compat.h>
 #endif
+
+//yinyapeng add  20160513 ==>
+extern UsedSubCameraType g_CurrUsedSubCameraName;
+//<==end
+
 #define PFX "ov5670_camera_sensor"
 //#define LOG_WRN(format, args...) xlog_printk(ANDROID_LOG_WARN ,PFX, "[%S] " format, __FUNCTION__, ##args)
 //#defineprintk(format, args...) xlog_printk(ANDROID_printkO ,PFX, "[%s] " format, __FUNCTION__, ##args)
@@ -1132,7 +1137,7 @@ static void slim_video_setting(void)
 * GLOBALS AFFECTED
 *
 *************************************************************************/
-static kal_uint32 get_imgsensor_id(UINT32 *sensor_id) 
+static kal_uint32 get_imgsensor_id(UINT32 *sensor_id)
 {
 	kal_uint8 i = 0;
 	kal_uint8 retry = 2;
@@ -1143,10 +1148,13 @@ static kal_uint32 get_imgsensor_id(UINT32 *sensor_id)
 		spin_unlock(&imgsensor_drv_lock);
 		do {
 			*sensor_id = ((read_cmos_sensor(0x300B) << 8) | read_cmos_sensor(0x300C));
-			if (*sensor_id == imgsensor_info.sensor_id) {				
-				printk("i2c write id: 0x%x, sensor id: 0x%x\n", imgsensor.i2c_write_id,*sensor_id);	  
+			if (*sensor_id == imgsensor_info.sensor_id) {
+				printk("i2c write id: 0x%x, sensor id: 0x%x\n", imgsensor.i2c_write_id,*sensor_id);
+//  yinyapeng add
+                                g_CurrUsedSubCameraName =MAIN_OV5670;
+//  yinyapeng add
 				return ERROR_NONE;
-			}	
+			}
 			//printk("Read sensor id fail, id: 0x%x\n", imgsensor.i2c_write_id,*sensor_id);
 			retry--;
 		} while(retry > 0);
