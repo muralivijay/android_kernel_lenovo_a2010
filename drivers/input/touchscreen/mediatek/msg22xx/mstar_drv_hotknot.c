@@ -56,8 +56,8 @@ struct mutex g_QMutex;    //queue mutex
 extern struct mutex g_Mutex;
 extern struct i2c_client *g_I2cClient;
 
-extern u32 SLAVE_I2C_ID_DBBUS;
-extern u32 SLAVE_I2C_ID_DWI2C;
+extern U32 SLAVE_I2C_ID_DBBUS;
+extern U32 SLAVE_I2C_ID_DWI2C;
 
 extern u16 FIRMWARE_MODE_UNKNOWN_MODE;
 extern u16 FIRMWARE_MODE_DEMO_MODE;

@@ -138,11 +138,11 @@ static int /*__devinit*/ tpd_probe(struct i2c_client *client, const struct i2c_d
 #endif //CONFIG_ENABLE_REGULATOR_POWER_ON
 #endif //CONFIG_PLATFORM_USE_ANDROID_SDK_6_UPWARD
 
-    TPD_DMESG("TPD probe\n");   
+    //TPD_DMESG("TPD probe\n");   
     
     if (client == NULL)
     {
-        TPD_DMESG("i2c client is NULL\n");
+        //TPD_DMESG("i2c client is NULL\n");
         return -1;
     }
     g_I2cClient = client;
@@ -157,7 +157,7 @@ static int /*__devinit*/ tpd_probe(struct i2c_client *client, const struct i2c_d
     ret = regulator_set_voltage(g_ReguVdd, 2800000, 2800000); 
     if (ret)
     {
-        TPD_DMESG("Could not set to 2800mv.\n");
+        //TPD_DMESG("Could not set to 2800mv.\n");
     }
 #endif //CONFIG_ENABLE_REGULATOR_POWER_ON
 #endif //CONFIG_PLATFORM_USE_ANDROID_SDK_6_UPWARD
@@ -168,7 +168,7 @@ static int /*__devinit*/ tpd_probe(struct i2c_client *client, const struct i2c_d
         tpd_load_status = 1;
     }    
 
-    TPD_DMESG("TPD probe done\n");
+    //TPD_DMESG("TPD probe done\n");
     
     return TPD_OK;   
 }
@@ -238,7 +238,7 @@ static struct i2c_driver tpd_i2c_driver = {
 
 static int tpd_local_init(void)
 {  
-    TPD_DMESG("TPD init device driver (Built %s @ %s)\n", __DATE__, __TIME__);
+    //TPD_DMESG("TPD init device driver (Built %s @ %s)\n", __DATE__, __TIME__);
 /*
     // Software reset mode will be treated as normal boot
     boot_mode = get_boot_mode();
@@ -249,14 +249,14 @@ static int tpd_local_init(void)
 */
     if (i2c_add_driver(&tpd_i2c_driver) != 0)
     {
-        TPD_DMESG("unable to add i2c driver.\n");
+        //TPD_DMESG("unable to add i2c driver.\n");
          
         return -1;
     }
     
     if (tpd_load_status == 0) 
     {
-        TPD_DMESG("add error touch panel driver.\n");
+        //TPD_DMESG("add error touch panel driver.\n");
 
         i2c_del_driver(&tpd_i2c_driver);
         return -1;
@@ -287,7 +287,7 @@ static int tpd_local_init(void)
     memcpy(tpd_def_calmat, tpd_def_calmat_local, 8*4);    
 #endif  
 */
-    TPD_DMESG("TPD init done %s, %d\n", __func__, __LINE__);  
+    //TPD_DMESG("TPD init done %s, %d\n", __func__, __LINE__);  
         
     return TPD_OK; 
 }
@@ -298,11 +298,11 @@ static void tpd_resume(struct device *h)
 static void tpd_resume(struct early_suspend *h)
 #endif //CONFIG_PLATFORM_USE_ANDROID_SDK_6_UPWARD
 {
-    TPD_DMESG("TPD wake up\n");
+    //TPD_DMESG("TPD wake up\n");
     
     MsDrvInterfaceTouchDeviceResume(h);
     
-    TPD_DMESG("TPD wake up done\n");
+    //TPD_DMESG("TPD wake up done\n");
 }
 
 #ifdef CONFIG_PLATFORM_USE_ANDROID_SDK_6_UPWARD
@@ -311,11 +311,11 @@ static void tpd_suspend(struct device *h)
 static void tpd_suspend(struct early_suspend *h)
 #endif //CONFIG_PLATFORM_USE_ANDROID_SDK_6_UPWARD
 {
-    TPD_DMESG("TPD enter sleep\n");
+    //TPD_DMESG("TPD enter sleep\n");
 
     MsDrvInterfaceTouchDeviceSuspend(h);
 
-    TPD_DMESG("TPD enter sleep done\n");
+    //TPD_DMESG("TPD enter sleep done\n");
 } 
 
 static struct tpd_driver_t tpd_device_driver = {
@@ -341,7 +341,7 @@ static struct tpd_driver_t tpd_device_driver = {
 
 static int __init tpd_driver_init(void) 
 {
-    TPD_DMESG("MStar touch panel driver init\n");
+    //TPD_DMESG("MStar touch panel driver init\n");
 
 #ifdef CONFIG_PLATFORM_USE_ANDROID_SDK_6_UPWARD
     tpd_get_dts_info();
@@ -350,7 +350,7 @@ static int __init tpd_driver_init(void)
 #endif //CONFIG_PLATFORM_USE_ANDROID_SDK_6_UPWARD
     if (tpd_driver_add(&tpd_device_driver) < 0)
     {
-        TPD_DMESG("TPD add MStar TP driver failed\n");
+        //TPD_DMESG("TPD add MStar TP driver failed\n");
     }
      
     return 0;
@@ -358,7 +358,7 @@ static int __init tpd_driver_init(void)
  
 static void __exit tpd_driver_exit(void) 
 {
-    TPD_DMESG("touch panel driver exit\n");
+    //TPD_DMESG("touch panel driver exit\n");
     
     tpd_driver_remove(&tpd_device_driver);
 }

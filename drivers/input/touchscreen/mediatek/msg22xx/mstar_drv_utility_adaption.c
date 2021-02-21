@@ -42,8 +42,8 @@
 ////////////////////////////////////////////////////////////
 /// Variables
 ////////////////////////////////////////////////////////////
-extern u32 SLAVE_I2C_ID_DBBUS;
-extern u32 SLAVE_I2C_ID_DWI2C;
+extern U32 SLAVE_I2C_ID_DBBUS;
+extern U32 SLAVE_I2C_ID_DWI2C;
 
 extern struct i2c_client *g_I2cClient;
 extern struct input_dev *g_InputDevice;
@@ -1162,17 +1162,17 @@ s32 IicSegmentReadDataBySmBus(u16 nAddr, u8* pBuf, u16 nSize, u16 nMaxI2cLengthL
    return nReadSize;
 }
 
-void mstpMemSet(void *pDst, s8 nVal, u32 nSize)
+void mstpMemSet(void *pDst, s8 nVal, U32 nSize)
 {
     memset(pDst, nVal, nSize);
 }
 
-void mstpMemCopy(void *pDst, void *pSource, u32 nSize)
+void mstpMemCopy(void *pDst, void *pSource, U32 nSize)
 {
     memcpy(pDst, pSource, nSize);
 }
 
-void mstpDelay(u32 nTime)
+void mstpDelay(U32 nTime)
 {
     mdelay(nTime);
 }

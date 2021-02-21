@@ -47,7 +47,7 @@
 /*--------------------------------------------------------------------------*/
 
 #ifdef CONFIG_ENABLE_GESTURE_WAKEUP
-extern void DrvIcFwLyrOpenGestureWakeup(u32 *pWakeupMode);
+extern void DrvIcFwLyrOpenGestureWakeup(U32 *pWakeupMode);
 extern void DrvIcFwLyrCloseGestureWakeup(void);
 
 #ifdef CONFIG_ENABLE_GESTURE_DEBUG_MODE
@@ -57,8 +57,8 @@ extern void DrvIcFwLyrCloseGestureDebugMode(void);
 
 #endif //CONFIG_ENABLE_GESTURE_WAKEUP
 
-extern u32 DrvIcFwLyrReadDQMemValue(u16 nAddr);
-extern void DrvIcFwLyrWriteDQMemValue(u16 nAddr, u32 nData);
+extern U32 DrvIcFwLyrReadDQMemValue(u16 nAddr);
+extern void DrvIcFwLyrWriteDQMemValue(u16 nAddr, U32 nData);
 
 extern u16 DrvIcFwLyrChangeFirmwareMode(u16 nMode);
 extern void DrvIcFwLyrSelfGetFirmwareInfo(SelfFirmwareInfo_t *pInfo);
@@ -76,15 +76,15 @@ extern u8 DrvIcFwLyrGetChipType(void);
 extern void DrvIcFwLyrGetCustomerFirmwareVersion(u16 *pMajor, u16 *pMinor, u8 **ppVersion);
 extern void DrvIcFwLyrGetPlatformFirmwareVersion(u8 **ppVersion);
 extern void DrvIcFwLyrHandleFingerTouch(u8 *pPacket, u16 nLength);
-extern u32 DrvIcFwLyrIsRegisterFingerTouchInterruptHandler(void);
+extern U32 DrvIcFwLyrIsRegisterFingerTouchInterruptHandler(void);
 extern s32 DrvIcFwLyrUpdateFirmware(u8 szFwData[][1024], EmemType_e eEmemType);
 extern s32 DrvIcFwLyrUpdateFirmwareBySdCard(const char *pFilePath);
 
 #ifdef CONFIG_ENABLE_ITO_MP_TEST
 extern void DrvIcFwLyrCreateMpTestWorkQueue(void);
 extern void DrvIcFwLyrScheduleMpTestWork(ItoTestMode_e eItoTestMode);
-extern void DrvIcFwLyrGetMpTestDataLog(ItoTestMode_e eItoTestMode, u8 *pDataLog, u32 *pLength);
-extern void DrvIcFwLyrGetMpTestFailChannel(ItoTestMode_e eItoTestMode, u8 *pFailChannel, u32 *pFailChannelCount);
+extern void DrvIcFwLyrGetMpTestDataLog(ItoTestMode_e eItoTestMode, u8 *pDataLog, U32 *pLength);
+extern void DrvIcFwLyrGetMpTestFailChannel(ItoTestMode_e eItoTestMode, u8 *pFailChannel, U32 *pFailChannelCount);
 extern s32 DrvIcFwLyrGetMpTestResult(void);
 extern void DrvIcFwLyrGetMpTestScope(TestScopeInfo_t *pInfo); // for MSG26xxM/MSG28xx
 #endif //CONFIG_ENABLE_ITO_MP_TEST

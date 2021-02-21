@@ -237,7 +237,7 @@ extern void DrvPlatformLyrEnableFingerTouchReport(void);
 extern void DrvPlatformLyrFingerTouchPressed(s32 nX, s32 nY, s32 nPressure, s32 nId);
 extern void DrvPlatformLyrFingerTouchReleased(s32 nX, s32 nY, s32 nId);
 extern s32 DrvPlatformLyrInputDeviceInitialize(struct i2c_client *pClient);
-extern void DrvPlatformLyrSetIicDataRate(struct i2c_client *pClient, u32 nIicDataRate);
+extern void DrvPlatformLyrSetIicDataRate(struct i2c_client *pClient, U32 nIicDataRate);
 extern void DrvPlatformLyrTouchDevicePowerOff(void);
 extern void DrvPlatformLyrTouchDevicePowerOn(void);
 #ifdef CONFIG_ENABLE_REGULATOR_POWER_ON
@@ -256,7 +256,8 @@ extern void DrvPlatformLyrTpPsEnable(int nEnable);
 #elif defined(CONFIG_TOUCH_DRIVER_RUN_ON_QCOM_PLATFORM)
 extern int DrvPlatformLyrTpPsEnable(struct sensors_classdev* pProximityCdev, unsigned int nEnable);
 #elif defined(CONFIG_TOUCH_DRIVER_RUN_ON_MTK_PLATFORM)
-extern int DrvPlatformLyrTpPsOperate(void* pSelf, u32 nCommand, void* pBuffIn, int nSizeIn, void* pBuffOut, int nSizeOut, int* pActualOut);
+//extern int DrvPlatformLyrTpPsOperate(void* pSelf, u32 nCommand, void* pBuffIn, int nSizeIn, void* pBuffOut, int nSizeOut, int* pActualOut);
+extern int DrvPlatformLyrTpPsEnable(int nEnable);
 #endif
 #endif //CONFIG_ENABLE_PROXIMITY_DETECTION
         

@@ -50,6 +50,6 @@ extern void MsDrvInterfaceTouchDeviceResume(struct early_suspend *pSuspend);
 extern void MsDrvInterfaceTouchDeviceSuspend(struct early_suspend *pSuspend);
 #endif //CONFIG_PLATFORM_USE_ANDROID_SDK_6_UPWARD
 #endif //CONFIG_ENABLE_NOTIFIER_FB
-extern void MsDrvInterfaceTouchDeviceSetIicDataRate(struct i2c_client *pClient, u32 nIicDataRate);
+extern void MsDrvInterfaceTouchDeviceSetIicDataRate(struct i2c_client *pClient, U32 nIicDataRate);
         
 #endif  /* __MSTAR_DRV_PLATFORM_INTERFACE_H__ */

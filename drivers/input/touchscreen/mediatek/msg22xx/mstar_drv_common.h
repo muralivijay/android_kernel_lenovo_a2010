@@ -95,7 +95,7 @@
  * The below compile option is used to enable the specific device driver code handling to make sure main board can supply power to touch ic for some specific BB chip of MTK(EX. MT6582)/SPRD(EX. SC7715)/QCOM(EX. MSM8610).
  * By default, this compile option is disabled.
  */
-#define CONFIG_ENABLE_REGULATOR_POWER_ON
+//#define CONFIG_ENABLE_REGULATOR_POWER_ON
 
 /*
  * Note.
@@ -348,7 +348,7 @@
 
 #define u8   unsigned char
 #define u16  unsigned short
-#define u32  unsigned int
+#define U32  unsigned int
 #define s8   signed char
 #define s16  signed short
 #define s32  signed int
@@ -599,10 +599,10 @@ typedef enum
 /* GLOBAL FUNCTION DECLARATION                                              */
 /*--------------------------------------------------------------------------*/
 
-extern u8 DrvCommonCalculateCheckSum(u8 *pMsg, u32 nLength);
-extern u32 DrvCommonConvertCharToHexDigit(char *pCh, u32 nLength);
-extern u32 DrvCommonCrcDoReflect(u32 nRef, s8 nCh);
-extern u32 DrvCommonCrcGetValue(u32 nText, u32 nPrevCRC);
+extern u8 DrvCommonCalculateCheckSum(u8 *pMsg, U32 nLength);
+extern U32 DrvCommonConvertCharToHexDigit(char *pCh, U32 nLength);
+extern U32 DrvCommonCrcDoReflect(U32 nRef, s8 nCh);
+extern U32 DrvCommonCrcGetValue(U32 nText, U32 nPrevCRC);
 extern void DrvCommonCrcInitTable(void);
 extern void DrvCommonReadFile(char *pFilePath, u8 *pBuf, u16 nLength);
 

@@ -229,7 +229,7 @@ typedef enum {
 /*--------------------------------------------------------------------------*/
 
 #ifdef CONFIG_ENABLE_GESTURE_WAKEUP
-extern void DrvFwCtrlOpenGestureWakeup(u32 *pMode);
+extern void DrvFwCtrlOpenGestureWakeup(U32 *pMode);
 extern void DrvFwCtrlCloseGestureWakeup(void);
 
 #ifdef CONFIG_ENABLE_GESTURE_DEBUG_MODE
@@ -239,8 +239,8 @@ extern void DrvFwCtrlCloseGestureDebugMode(void);
 
 #endif //CONFIG_ENABLE_GESTURE_WAKEUP
 
-extern u32 DrvFwCtrlReadDQMemValue(u16 nAddr);
-extern void DrvFwCtrlWriteDQMemValue(u16 nAddr, u32 nData);
+extern U32 DrvFwCtrlReadDQMemValue(u16 nAddr);
+extern void DrvFwCtrlWriteDQMemValue(u16 nAddr, U32 nData);
 
 #ifdef CONFIG_UPDATE_FIRMWARE_BY_SW_ID
 extern void DrvFwCtrlCheckFirmwareUpdateBySwId(void);

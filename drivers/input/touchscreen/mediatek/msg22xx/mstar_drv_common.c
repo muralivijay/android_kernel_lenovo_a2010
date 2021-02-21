@@ -43,7 +43,7 @@
 // LOCAL VARIABLE DEFINITION
 /*=============================================================*/
 
-static u32 _gCrc32Table[256]; 
+static U32 _gCrc32Table[256]; 
 
 
 /*=============================================================*/
@@ -61,10 +61,10 @@ extern struct i2c_client *g_I2cClient;
 /*=============================================================*/
 
 /// CRC
-u32 DrvCommonCrcDoReflect(u32 nRef, s8 nCh)
+U32 DrvCommonCrcDoReflect(U32 nRef, s8 nCh)
 {
-    u32 nValue = 0;
-    u32 i = 0;
+    U32 nValue = 0;
+    U32 i = 0;
 
     for (i = 1; i < (nCh + 1); i ++)
     {
@@ -78,9 +78,9 @@ u32 DrvCommonCrcDoReflect(u32 nRef, s8 nCh)
     return nValue;
 }
 
-u32 DrvCommonCrcGetValue(u32 nText, u32 nPrevCRC)
+U32 DrvCommonCrcGetValue(U32 nText, U32 nPrevCRC)
 {
-    u32 nCRC = nPrevCRC;
+    U32 nCRC = nPrevCRC;
 
     nCRC = (nCRC >> 8) ^ _gCrc32Table[(nCRC & 0xFF) ^ nText];
 
@@ -89,8 +89,8 @@ u32 DrvCommonCrcGetValue(u32 nText, u32 nPrevCRC)
 
 void DrvCommonCrcInitTable(void)
 {
-    u32 nMagicNumber = 0x04c11db7;
-    u32 i, j;
+    U32 nMagicNumber = 0x04c11db7;
+    U32 i, j;
 
     for (i = 0; i <= 0xFF; i ++)
     {
@@ -103,10 +103,10 @@ void DrvCommonCrcInitTable(void)
     }
 }
 
-u8 DrvCommonCalculateCheckSum(u8 *pMsg, u32 nLength)
+u8 DrvCommonCalculateCheckSum(u8 *pMsg, U32 nLength)
 {
     s32 nCheckSum = 0;
-    u32 i;
+    U32 i;
 
     for (i = 0; i < nLength; i ++)
     {
@@ -116,17 +116,17 @@ u8 DrvCommonCalculateCheckSum(u8 *pMsg, u32 nLength)
     return (u8)((-nCheckSum) & 0xFF);
 }
 
-u32 DrvCommonConvertCharToHexDigit(char *pCh, u32 nLength)
+U32 DrvCommonConvertCharToHexDigit(char *pCh, U32 nLength)
 {
-    u32 nRetVal = 0;
-    u32 i;
+    U32 nRetVal = 0;
+    U32 i;
     
     DBG(&g_I2cClient->dev, "nLength = %d\n", nLength);
 
     for (i = 0; i < nLength; i ++)
     {
         char ch = *pCh++;
-        u32 n = 0;
+        U32 n = 0;
         u8  nIsValidDigit = 0;
         
         if ((i == 0 && ch == '0') || (i == 1 && ch == 'x'))

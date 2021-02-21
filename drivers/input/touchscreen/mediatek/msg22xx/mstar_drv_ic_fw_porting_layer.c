@@ -38,7 +38,7 @@
 extern struct i2c_client *g_I2cClient;
 
 #ifdef CONFIG_ENABLE_GESTURE_WAKEUP
-extern u32 g_GestureWakeupMode[2];
+extern U32 g_GestureWakeupMode[2];
 extern u8 g_GestureWakeupFlag;
 #endif //CONFIG_ENABLE_GESTURE_WAKEUP
 
@@ -95,7 +95,7 @@ s32 DrvIcFwLyrUpdateFirmwareBySdCard(const char *pFilePath)
     return DrvFwCtrlUpdateFirmwareBySdCard(pFilePath);
 }
 
-u32 DrvIcFwLyrIsRegisterFingerTouchInterruptHandler(void)
+U32 DrvIcFwLyrIsRegisterFingerTouchInterruptHandler(void)
 {
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -113,7 +113,7 @@ void DrvIcFwLyrHandleFingerTouch(u8 *pPacket, u16 nLength)
 
 #ifdef CONFIG_ENABLE_GESTURE_WAKEUP
 
-void DrvIcFwLyrOpenGestureWakeup(u32 *pWakeupMode)
+void DrvIcFwLyrOpenGestureWakeup(U32 *pWakeupMode)
 {
 //    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -145,14 +145,14 @@ void DrvIcFwLyrCloseGestureDebugMode(void)
 
 #endif //CONFIG_ENABLE_GESTURE_WAKEUP
 
-u32 DrvIcFwLyrReadDQMemValue(u16 nAddr)
+U32 DrvIcFwLyrReadDQMemValue(u16 nAddr)
 {
 //	  DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     return DrvFwCtrlReadDQMemValue(nAddr);
 }
 
-void DrvIcFwLyrWriteDQMemValue(u16 nAddr, u32 nData)
+void DrvIcFwLyrWriteDQMemValue(u16 nAddr, U32 nData)
 {
 //	  DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -232,14 +232,14 @@ s32 DrvIcFwLyrGetMpTestResult(void)
     return DrvMpTestGetTestResult();
 }
 
-void DrvIcFwLyrGetMpTestFailChannel(ItoTestMode_e eItoTestMode, u8 *pFailChannel, u32 *pFailChannelCount)
+void DrvIcFwLyrGetMpTestFailChannel(ItoTestMode_e eItoTestMode, u8 *pFailChannel, U32 *pFailChannelCount)
 {
 //    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 	
     return DrvMpTestGetTestFailChannel(eItoTestMode, pFailChannel, pFailChannelCount);
 }
 
-void DrvIcFwLyrGetMpTestDataLog(ItoTestMode_e eItoTestMode, u8 *pDataLog, u32 *pLength)
+void DrvIcFwLyrGetMpTestDataLog(ItoTestMode_e eItoTestMode, u8 *pDataLog, U32 *pLength)
 {
 //    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 

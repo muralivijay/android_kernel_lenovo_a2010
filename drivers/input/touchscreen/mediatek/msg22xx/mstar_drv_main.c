@@ -58,7 +58,7 @@ extern u8 g_LogModePacket[MUTUAL_DEBUG_MODE_PACKET_LENGTH]; // for MSG21xxA/MSG2
 extern u16 g_FirmwareMode;
 
 #ifdef CONFIG_ENABLE_GESTURE_WAKEUP
-extern u32 g_GestureWakeupMode[2];
+extern U32 g_GestureWakeupMode[2];
 
 #ifdef CONFIG_ENABLE_GESTURE_DEBUG_MODE
 extern u8 g_LogGestureDebug[128];
@@ -69,7 +69,7 @@ extern struct input_dev *g_InputDevice;
 #endif //CONFIG_ENABLE_GESTURE_DEBUG_MODE
 
 #ifdef CONFIG_ENABLE_GESTURE_INFORMATION_MODE
-extern u32 g_LogGestureInfor[GESTURE_WAKEUP_INFORMATION_PACKET_LENGTH];
+extern U32 g_LogGestureInfor[GESTURE_WAKEUP_INFORMATION_PACKET_LENGTH];
 #endif //CONFIG_ENABLE_GESTURE_INFORMATION_MODE
 #endif //CONFIG_ENABLE_GESTURE_WAKEUP
 
@@ -81,17 +81,21 @@ extern u8 g_ChipType;
 extern TestScopeInfo_t g_TestScopeInfo;
 #endif //CONFIG_ENABLE_ITO_MP_TEST
 
+#ifdef CONFIG_ENABLE_PROXIMITY_DETECTION
+int (*touchpanel_enable_ps)(int enable);
+#endif
+
 /*=============================================================*/
 // LOCAL VARIABLE DEFINITION
 /*=============================================================*/
 
 static u16 _gDebugReg[MAX_DEBUG_REGISTER_NUM] = {0};
 static u16 _gDebugRegValue[MAX_DEBUG_REGISTER_NUM] = {0};
-static u32 _gDebugRegCount = 0;
+static U32 _gDebugRegCount = 0;
 
 static u8 _gDebugCmdArgu[MAX_DEBUG_COMMAND_ARGUMENT_NUM] = {0};
 static u16 _gDebugCmdArguCount = 0;
-static u32 _gDebugReadDataSize = 0;
+static U32 _gDebugReadDataSize = 0;
 
 static char _gDebugBuf[1024] = {0};
 
@@ -104,17 +108,17 @@ static ItoTestMode_e _gItoTestMode = 0;
 #ifdef CONFIG_ENABLE_GESTURE_WAKEUP
 
 #ifdef CONFIG_ENABLE_GESTURE_INFORMATION_MODE
-static u32 _gLogGestureCount = 0;
+static U32 _gLogGestureCount = 0;
 static u8 _gLogGestureInforType = 0;
 #endif //CONFIG_ENABLE_GESTURE_INFORMATION_MODE
 
 #endif //CONFIG_ENABLE_GESTURE_WAKEUP
 
-static u32 _gIsUpdateComplete = 0;
+static U32 _gIsUpdateComplete = 0;
 
 static u8 *_gFwVersion = NULL; // customer firmware version
 
-static u32 _gFeatureSupportStatus = 0;
+static U32 _gFeatureSupportStatus = 0;
 
 static struct proc_dir_entry *_gProcClassEntry = NULL;
 static struct proc_dir_entry *_gProcMsTouchScreenMsg20xxEntry = NULL;
@@ -337,9 +341,9 @@ extern struct mutex g_QMutex;
 // GLOBAL VARIABLE DEFINITION
 /*=============================================================*/
 
-u32 SLAVE_I2C_ID_DBBUS = (0xC4>>1); //0x62 // for MSG21XX/MSG21XXA/MSG26XXM/MSG28XX
-//u32 SLAVE_I2C_ID_DBBUS = (0xB2>>1); //0x59 // for MSG22XX
-u32 SLAVE_I2C_ID_DWI2C = (0x4C>>1); //0x26 
+U32 SLAVE_I2C_ID_DBBUS = (0xC4>>1); //0x62 // for MSG21XX/MSG21XXA/MSG26XXM/MSG28XX
+//U32 SLAVE_I2C_ID_DBBUS = (0xB2>>1); //0x59 // for MSG22XX
+U32 SLAVE_I2C_ID_DWI2C = (0x4C>>1); //0x26 
 
 
 u16 FIRMWARE_MODE_UNKNOWN_MODE = 0xFFFF;
@@ -381,11 +385,11 @@ u8 g_FwSupportSegment = 0;
 #endif //CONFIG_ENABLE_SEGMENT_READ_FINGER_TOUCH_DATA
 
 #ifdef CONFIG_ENABLE_COUNT_REPORT_RATE
-u32 g_IsEnableReportRate = 0;
-u32 g_InterruptCount = 0;
-u32 g_ValidTouchCount = 0;
-u32 g_InterruptReportRate = 0;
-u32 g_ValidTouchReportRate = 0;
+U32 g_IsEnableReportRate = 0;
+U32 g_InterruptCount = 0;
+U32 g_ValidTouchCount = 0;
+U32 g_InterruptReportRate = 0;
+U32 g_ValidTouchReportRate = 0;
 
 struct timeval g_StartTime;
 #endif //CONFIG_ENABLE_COUNT_REPORT_RATE
@@ -395,7 +399,7 @@ u8 g_IsEnableGloveMode = 0;
 #endif //CONFIG_ENABLE_GLOVE_MODE
 
 u8 g_FwData[MAX_UPDATE_FIRMWARE_BUFFER_SIZE][1024];
-u32 g_FwDataCount = 0;
+U32 g_FwDataCount = 0;
 
 u8 g_IsHotknotEnabled = 0;
 u8 g_IsBypassHotknot = 0;
@@ -429,7 +433,7 @@ static s32 _DrvMainHotknotRegistry(void);
 
 ssize_t DrvMainProcfsChipTypeRead(struct file *pFile, char __user *pBuffer, size_t nCount, loff_t *pPos)
 {
-    u32 nLength = 0;
+    U32 nLength = 0;
     
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -472,9 +476,9 @@ ssize_t DrvMainProcfsFirmwareDataRead(struct file *pFile, char __user *pBuffer, 
 			  
 ssize_t DrvMainProcfsFirmwareDataWrite(struct file *pFile, const char __user *pBuffer, size_t nCount, loff_t *pPos)  
 {
-    u32 nNum = nCount / 1024;
-    u32 nRemainder = nCount % 1024;
-    u32 i;
+    U32 nNum = nCount / 1024;
+    U32 nRemainder = nCount % 1024;
+    U32 i;
 
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -518,7 +522,7 @@ ssize_t DrvMainProcfsFirmwareDataWrite(struct file *pFile, const char __user *pB
 
 ssize_t DrvMainProcfsFirmwareUpdateRead(struct file *pFile, char __user *pBuffer, size_t nCount, loff_t *pPos)
 {
-    u32 nLength = 0;
+    U32 nLength = 0;
     
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -561,10 +565,15 @@ ssize_t DrvMainProcfsFirmwareUpdateWrite(struct file *pFile, const char __user *
 
 ssize_t DrvMainProcfsCustomerFirmwareVersionRead(struct file *pFile, char __user *pBuffer, size_t nCount, loff_t *pPos)
 {
-    u32 nLength = 0;
+    U32 nLength = 0;
+    u16 nMajor = 0, nMinor = 0;
     
     DBG(&g_I2cClient->dev, "*** %s() _gFwVersion = %s ***\n", __func__, _gFwVersion);
 
+	
+
+    DrvIcFwLyrGetCustomerFirmwareVersion(&nMajor, &nMinor, &_gFwVersion);
+	
     // If file position is non-zero, then assume the string has been read and indicate there is no more data to be read.
     if (*pPos != 0)
     {
@@ -591,7 +600,7 @@ ssize_t DrvMainProcfsCustomerFirmwareVersionWrite(struct file *pFile, const char
 
 ssize_t DrvMainProcfsPlatformFirmwareVersionRead(struct file *pFile, char __user *pBuffer, size_t nCount, loff_t *pPos)
 {
-    u32 nLength = 0;
+    U32 nLength = 0;
     
     DBG(&g_I2cClient->dev, "*** %s() _gPlatformFwVersion = %s ***\n", __func__, _gPlatformFwVersion);
 
@@ -619,7 +628,7 @@ ssize_t DrvMainProcfsPlatformFirmwareVersionWrite(struct file *pFile, const char
 
 ssize_t DrvMainProcfsDeviceDriverVersionRead(struct file *pFile, char __user *pBuffer, size_t nCount, loff_t *pPos)
 {
-    u32 nLength = 0;
+    U32 nLength = 0;
     
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -646,7 +655,7 @@ ssize_t DrvMainProcfsDeviceDriverVersionWrite(struct file *pFile, const char __u
 ssize_t DrvMainProcfsSdCardFirmwareUpdateRead(struct file *pFile, char __user *pBuffer, size_t nCount, loff_t *pPos)
 {
     u16 nMajor = 0, nMinor = 0;
-    u32 nLength = 0;
+    U32 nLength = 0;
     
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -715,7 +724,7 @@ ssize_t DrvMainProcfsSdCardFirmwareUpdateWrite(struct file *pFile, const char __
 
 ssize_t DrvMainProcfsSeLinuxLimitFirmwareUpdateRead(struct file *pFile, char __user *pBuffer, size_t nCount, loff_t *pPos)
 {
-    u32 nLength = 0;
+    U32 nLength = 0;
     
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -749,7 +758,7 @@ ssize_t DrvMainProcfsSeLinuxLimitFirmwareUpdateRead(struct file *pFile, char __u
 
 ssize_t DrvMainProcfsForceFirmwareUpdateRead(struct file *pFile, char __user *pBuffer, size_t nCount, loff_t *pPos)
 {
-    u32 nLength = 0;
+    U32 nLength = 0;
     
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -775,7 +784,7 @@ ssize_t DrvMainProcfsForceFirmwareUpdateRead(struct file *pFile, char __user *pB
 
 ssize_t DrvMainProcfsFirmwareDebugRead(struct file *pFile, char __user *pBuffer, size_t nCount, loff_t *pPos)
 {
-    u32 i, nLength = 0;
+    U32 i, nLength = 0;
     u8 nBank, nAddr;
     u16 szRegData[MAX_DEBUG_REGISTER_NUM] = {0};
     u8 szOut[MAX_DEBUG_REGISTER_NUM*25] = {0}, szValue[10] = {0};
@@ -831,7 +840,7 @@ ssize_t DrvMainProcfsFirmwareDebugRead(struct file *pFile, char __user *pBuffer,
 
 ssize_t DrvMainProcfsFirmwareDebugWrite(struct file *pFile, const char __user *pBuffer, size_t nCount, loff_t *pPos)  
 {    
-    u32 i;
+    U32 i;
     char *pCh = NULL;
     char *pStr = NULL;
 
@@ -881,7 +890,7 @@ ssize_t DrvMainProcfsFirmwareDebugWrite(struct file *pFile, const char __user *p
 
 ssize_t DrvMainProcfsFirmwareSetDebugValueRead(struct file *pFile, char __user *pBuffer, size_t nCount, loff_t *pPos)
 {
-    u32 i, nLength = 0;
+    U32 i, nLength = 0;
     u8 nBank, nAddr;
     u16 szRegData[MAX_DEBUG_REGISTER_NUM] = {0};
     u8 szOut[MAX_DEBUG_REGISTER_NUM*25] = {0}, szValue[10] = {0};
@@ -937,7 +946,7 @@ ssize_t DrvMainProcfsFirmwareSetDebugValueRead(struct file *pFile, char __user *
 
 ssize_t DrvMainProcfsFirmwareSetDebugValueWrite(struct file *pFile, const char __user *pBuffer, size_t nCount, loff_t *pPos)  
 {    
-    u32 i, j, k;
+    U32 i, j, k;
     char *pCh = NULL;
     char *pStr = NULL;  
 
@@ -1011,7 +1020,7 @@ ssize_t DrvMainProcfsFirmwareSetDebugValueWrite(struct file *pFile, const char _
 
 ssize_t DrvMainProcfsFirmwareSmBusDebugRead(struct file *pFile, char __user *pBuffer, size_t nCount, loff_t *pPos)
 {
-    u32 i, nLength = 0;
+    U32 i, nLength = 0;
     u8 szSmBusRxData[MAX_I2C_TRANSACTION_LENGTH_LIMIT] = {0};
     u8 szOut[MAX_I2C_TRANSACTION_LENGTH_LIMIT*2] = {0};
     u8 szValue[10] = {0};
@@ -1062,7 +1071,7 @@ ssize_t DrvMainProcfsFirmwareSmBusDebugRead(struct file *pFile, char __user *pBu
 
 ssize_t DrvMainProcfsFirmwareSmBusDebugWrite(struct file *pFile, const char __user *pBuffer, size_t nCount, loff_t *pPos)  
 {    
-    u32 i, j;
+    U32 i, j;
     char szCmdType[5] = {0};
     char *pCh = NULL;
     char *pStr = NULL;  
@@ -1136,9 +1145,9 @@ ssize_t DrvMainProcfsFirmwareSmBusDebugWrite(struct file *pFile, const char __us
 
 ssize_t DrvMainProcfsFirmwareSetDQMemValueRead(struct file *pFile, char __user *pBuffer, size_t nCount, loff_t *pPos)
 {
-    u32 i, nLength = 0;
+    U32 i, nLength = 0;
     u8 nBank, nAddr;
-    u32 szRegData[MAX_DEBUG_REGISTER_NUM] = {0};
+    U32 szRegData[MAX_DEBUG_REGISTER_NUM] = {0};
     u8 szOut[MAX_DEBUG_REGISTER_NUM*25] = {0}, szValue[10] = {0};
 
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
@@ -1182,11 +1191,11 @@ ssize_t DrvMainProcfsFirmwareSetDQMemValueRead(struct file *pFile, char __user *
 
 ssize_t DrvMainProcfsFirmwareSetDQMemValueWrite(struct file *pFile, const char __user *pBuffer, size_t nCount, loff_t *pPos)
 {
-    u32 i, j, k;
+    U32 i, j, k;
     char *pCh = NULL;
     char *pStr = NULL;
     u16 nRealDQMemAddr = 0;
-    u32 nRealDQMemValue = 0;
+    U32 nRealDQMemValue = 0;
 
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -1270,7 +1279,7 @@ ssize_t DrvMainProcfsFirmwareSetDQMemValueWrite(struct file *pFile, const char _
 
 ssize_t DrvMainProcfsMpTestRead(struct file *pFile, char __user *pBuffer, size_t nCount, loff_t *pPos)
 {
-    u32 nLength = 0;
+    U32 nLength = 0;
     
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -1291,7 +1300,7 @@ ssize_t DrvMainProcfsMpTestRead(struct file *pFile, char __user *pBuffer, size_t
 
 ssize_t DrvMainProcfsMpTestWrite(struct file *pFile, const char __user *pBuffer, size_t nCount, loff_t *pPos)  
 {    
-    u32 nMode = 0;
+    U32 nMode = 0;
 
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
     
@@ -1327,7 +1336,7 @@ ssize_t DrvMainProcfsMpTestWrite(struct file *pFile, const char __user *pBuffer,
 
 ssize_t DrvMainProcfsMpTestLogRead(struct file *pFile, char __user *pBuffer, size_t nCount, loff_t *pPos)
 {
-    u32 nLength = 0;
+    U32 nLength = 0;
     
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
     
@@ -1353,7 +1362,7 @@ ssize_t DrvMainProcfsMpTestLogWrite(struct file *pFile, const char __user *pBuff
 
 ssize_t DrvMainProcfsMpTestFailChannelRead(struct file *pFile, char __user *pBuffer, size_t nCount, loff_t *pPos)
 {
-    u32 nLength = 0;
+    U32 nLength = 0;
     
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -1379,7 +1388,7 @@ ssize_t DrvMainProcfsMpTestFailChannelWrite(struct file *pFile, const char __use
 
 ssize_t DrvMainProcfsMpTestScopeRead(struct file *pFile, char __user *pBuffer, size_t nCount, loff_t *pPos)
 {
-    u32 nLength = 0;
+    U32 nLength = 0;
     
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -1414,7 +1423,7 @@ ssize_t DrvMainProcfsMpTestScopeWrite(struct file *pFile, const char __user *pBu
 
 ssize_t DrvMainProcfsFirmwareModeRead(struct file *pFile, char __user *pBuffer, size_t nCount, loff_t *pPos)
 {
-    u32 nLength = 0;
+    U32 nLength = 0;
     
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -1458,7 +1467,7 @@ ssize_t DrvMainProcfsFirmwareModeRead(struct file *pFile, char __user *pBuffer, 
 
 ssize_t DrvMainProcfsFirmwareModeWrite(struct file *pFile, const char __user *pBuffer, size_t nCount, loff_t *pPos)  
 {    
-    u32 nMode;
+    U32 nMode;
     
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
     
@@ -1499,7 +1508,7 @@ ssize_t DrvMainProcfsFirmwareModeWrite(struct file *pFile, const char __user *pB
 
 ssize_t DrvMainProcfsFirmwareSensorRead(struct file *pFile, char __user *pBuffer, size_t nCount, loff_t *pPos)
 {
-    u32 nLength = 0;
+    U32 nLength = 0;
     
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -1544,7 +1553,7 @@ ssize_t DrvMainProcfsFirmwareSensorWrite(struct file *pFile, const char __user *
 
 ssize_t DrvMainProcfsFirmwarePacketHeaderRead(struct file *pFile, char __user *pBuffer, size_t nCount, loff_t *pPos)
 {
-    u32 nLength = 0;
+    U32 nLength = 0;
     
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -1577,8 +1586,8 @@ ssize_t DrvMainProcfsFirmwarePacketHeaderWrite(struct file *pFile, const char __
 
 ssize_t DrvMainKObjectPacketShow(struct kobject *pKObj, struct kobj_attribute *pAttr, char *pBuf)
 {
-    u32 i = 0;
-    u32 nLength = 0;
+    U32 i = 0;
+    U32 nLength = 0;
 
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -1687,7 +1696,7 @@ static struct attribute_group attr_group = {
 
 ssize_t DrvMainProcfsQueryFeatureSupportStatusRead(struct file *pFile, char __user *pBuffer, size_t nCount, loff_t *pPos)
 {
-    u32 nLength = 0;
+    U32 nLength = 0;
     
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -1708,7 +1717,7 @@ ssize_t DrvMainProcfsQueryFeatureSupportStatusRead(struct file *pFile, char __us
 
 ssize_t DrvMainProcfsQueryFeatureSupportStatusWrite(struct file *pFile, const char __user *pBuffer, size_t nCount, loff_t *pPos)  
 {    
-    u32 nFeature;
+    U32 nFeature;
     
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
     
@@ -1764,7 +1773,7 @@ ssize_t DrvMainProcfsQueryFeatureSupportStatusWrite(struct file *pFile, const ch
 
 ssize_t DrvMainProcfsChangeFeatureSupportStatusRead(struct file *pFile, char __user *pBuffer, size_t nCount, loff_t *pPos)
 {
-    u32 nLength = 0;
+    U32 nLength = 0;
     
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -1785,8 +1794,8 @@ ssize_t DrvMainProcfsChangeFeatureSupportStatusRead(struct file *pFile, char __u
 
 ssize_t DrvMainProcfsChangeFeatureSupportStatusWrite(struct file *pFile, const char __user *pBuffer, size_t nCount, loff_t *pPos)  
 {    
-    u32 i;
-    u32 nFeature = 0, nNewValue = 0;
+    U32 i;
+    U32 nFeature = 0, nNewValue = 0;
     char *pCh = NULL;
     char *pStr = NULL;  
 
@@ -1879,7 +1888,7 @@ ssize_t DrvMainProcfsChangeFeatureSupportStatusWrite(struct file *pFile, const c
 
 ssize_t DrvMainProcfsGestureWakeupModeRead(struct file *pFile, char __user *pBuffer, size_t nCount, loff_t *pPos)
 {
-    u32 nLength = 0;
+    U32 nLength = 0;
     
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -1906,15 +1915,15 @@ ssize_t DrvMainProcfsGestureWakeupModeRead(struct file *pFile, char __user *pBuf
 
 ssize_t DrvMainProcfsGestureWakeupModeWrite(struct file *pFile, const char __user *pBuffer, size_t nCount, loff_t *pPos)  
 {    
-    u32 nLength;
-    u32 nWakeupMode[2] = {0};
+    U32 nLength;
+    U32 nWakeupMode[2] = {0};
 
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
     if (pBuffer != NULL)
     {
 #ifdef CONFIG_SUPPORT_64_TYPES_GESTURE_WAKEUP_MODE
-        u32 i;
+        U32 i;
         char *pCh;
 
         i = 0;
@@ -2523,7 +2532,7 @@ ssize_t DrvMainProcfsGestureWakeupModeWrite(struct file *pFile, const char __use
 
 ssize_t DrvMainProcfsGestureDebugModeRead(struct file *pFile, char __user *pBuffer, size_t nCount, loff_t *pPos)
 {
-    u32 nLength = 0;
+    U32 nLength = 0;
     
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -2592,8 +2601,8 @@ ssize_t DrvMainProcfsGestureDebugModeWrite(struct file *pFile, const char __user
 
 ssize_t DrvMainKObjectGestureDebugShow(struct kobject *pKObj, struct kobj_attribute *pAttr, char *pBuf)
 {
-    u32 i = 0;
-    u32 nLength = 0;
+    U32 i = 0;
+    U32 nLength = 0;
 
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -2670,9 +2679,9 @@ struct attribute_group gestureattr_group = {
 ssize_t DrvMainProcfsGestureInforModeRead(struct file *pFile, char __user *pBuffer, size_t nCount, loff_t *pPos)
 {
     u8 szOut[GESTURE_WAKEUP_INFORMATION_PACKET_LENGTH*5] = {0}, szValue[10] = {0};
-    u32 szLogGestureInfo[GESTURE_WAKEUP_INFORMATION_PACKET_LENGTH] = {0};
-    u32 i = 0;
-    u32 nLength = 0;
+    U32 szLogGestureInfo[GESTURE_WAKEUP_INFORMATION_PACKET_LENGTH] = {0};
+    U32 i = 0;
+    U32 nLength = 0;
 
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -2751,7 +2760,7 @@ ssize_t DrvMainProcfsGestureInforModeRead(struct file *pFile, char __user *pBuff
 
 ssize_t DrvMainProcfsGestureInforModeWrite(struct file *pFile, const char __user *pBuffer, size_t nCount, loff_t *pPos)  
 {    
-    u32 nMode;
+    U32 nMode;
 
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -2777,7 +2786,7 @@ ssize_t DrvMainProcfsReportRateRead(struct file *pFile, char __user *pBuffer, si
 {
     struct timeval tEndTime;
     suseconds_t nStartTime, nEndTime, nElapsedTime;
-    u32 nLength = 0;
+    U32 nLength = 0;
 
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -2849,7 +2858,7 @@ ssize_t DrvMainProcfsReportRateWrite(struct file *pFile, const char __user *pBuf
 #ifdef CONFIG_ENABLE_GLOVE_MODE
 ssize_t DrvMainProcfsGloveModeRead(struct file *pFile, char __user *pBuffer, size_t nCount, loff_t *pPos)
 {
-    u32 nLength = 0;
+    U32 nLength = 0;
     u8 ucGloveMode = 0;
 
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
@@ -2880,8 +2889,8 @@ ssize_t DrvMainProcfsGloveModeRead(struct file *pFile, char __user *pBuffer, siz
 
 ssize_t DrvMainProcfsGloveModeWrite(struct file *pFile, const char __user *pBuffer, size_t nCount, loff_t *pPos)
 {
-    u32 nGloveMode = 0;
-    u32 i = 0;
+    U32 nGloveMode = 0;
+    U32 i = 0;
     char *pCh = NULL;
 
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
@@ -2926,7 +2935,7 @@ ssize_t DrvMainProcfsGloveModeWrite(struct file *pFile, const char __user *pBuff
 
 ssize_t DrvMainProcfsOpenGloveModeRead(struct file *pFile, char __user *pBuffer, size_t nCount, loff_t *pPos)
 {
-    u32 nLength = 0;
+    U32 nLength = 0;
 
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -2954,7 +2963,7 @@ ssize_t DrvMainProcfsOpenGloveModeRead(struct file *pFile, char __user *pBuffer,
 
 ssize_t DrvMainProcfsCloseGloveModeRead(struct file *pFile, char __user *pBuffer, size_t nCount, loff_t *pPos)
 {
-    u32 nLength = 0;
+    U32 nLength = 0;
 
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -3044,8 +3053,8 @@ s32 DrvMainTouchDeviceInitialize(void)
     s32 nRetVal = 0;
 #ifdef CONFIG_ENABLE_PROXIMITY_DETECTION
 #ifdef CONFIG_TOUCH_DRIVER_RUN_ON_MTK_PLATFORM
-    int nErr;
-    struct hwmsen_object tObjPs;
+    //int nErr;
+    //struct hwmsen_object tObjPs;
 #endif //CONFIG_TOUCH_DRIVER_RUN_ON_MTK_PLATFORM
 #endif //CONFIG_ENABLE_PROXIMITY_DETECTION
 
@@ -3092,7 +3101,7 @@ s32 DrvMainTouchDeviceInitialize(void)
 #ifdef CONFIG_ENABLE_CHARGER_DETECTION 
         {
 #ifdef CONFIG_TOUCH_DRIVER_RUN_ON_MTK_PLATFORM
-            u32 nChargerStatus = 0; 
+            U32 nChargerStatus = 0; 
 
             nChargerStatus = upmu_is_chr_det();
 
@@ -3129,6 +3138,7 @@ s32 DrvMainTouchDeviceInitialize(void)
 #if defined(CONFIG_TOUCH_DRIVER_RUN_ON_SPRD_PLATFORM) || defined(CONFIG_TOUCH_DRIVER_RUN_ON_QCOM_PLATFORM)
 //        tsps_assist_register_callback("msg2xxx", &DrvPlatformLyrTpPsEnable, &DrvPlatformLyrGetTpPsData);
 #elif defined(CONFIG_TOUCH_DRIVER_RUN_ON_MTK_PLATFORM)
+        /*
         tObjPs.polling = 0; //interrupt mode
         tObjPs.sensor_operate = DrvPlatformLyrTpPsOperate;
     
@@ -3136,6 +3146,8 @@ s32 DrvMainTouchDeviceInitialize(void)
         {
             DBG(&g_I2cClient->dev, "call hwmsen_attach() failed = %d\n", nErr);
         }
+        */
+        touchpanel_enable_ps = &DrvPlatformLyrTpPsEnable;
 #endif
 #endif //CONFIG_ENABLE_PROXIMITY_DETECTION
     }

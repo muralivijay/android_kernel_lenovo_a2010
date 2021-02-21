@@ -43,7 +43,7 @@
 /*=============================================================*/
 
 #ifdef CONFIG_ENABLE_GESTURE_WAKEUP
-extern u32 g_GestureWakeupMode[2];
+extern U32 g_GestureWakeupMode[2];
 extern u8 g_GestureWakeupFlag;
 
 #ifdef CONFIG_ENABLE_GESTURE_DEBUG_MODE
@@ -68,7 +68,7 @@ extern struct i2c_client *g_I2cClient;
 
 #ifdef CONFIG_ENABLE_HOTKNOT
 extern u8 g_HotKnotState;
-extern u32 SLAVE_I2C_ID_DWI2C;
+extern U32 SLAVE_I2C_ID_DWI2C;
 #endif //CONFIG_ENABLE_HOTKNOT
 
 #ifdef CONFIG_ENABLE_CHARGER_DETECTION
@@ -477,7 +477,7 @@ s32 /*__devexit*/ MsDrvInterfaceTouchDeviceRemove(struct i2c_client *pClient)
     return DrvPlatformLyrTouchDeviceRemove(pClient);
 }
 
-void MsDrvInterfaceTouchDeviceSetIicDataRate(struct i2c_client *pClient, u32 nIicDataRate)
+void MsDrvInterfaceTouchDeviceSetIicDataRate(struct i2c_client *pClient, U32 nIicDataRate)
 {
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 

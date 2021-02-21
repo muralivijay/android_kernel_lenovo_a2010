@@ -40,8 +40,8 @@
 ////////////////////////////////////////////////////////////
 /// EXTERN VARIABLE DECLARATION
 ////////////////////////////////////////////////////////////
-extern u32 SLAVE_I2C_ID_DBBUS;
-extern u32 SLAVE_I2C_ID_DWI2C;
+extern U32 SLAVE_I2C_ID_DBBUS;
+extern U32 SLAVE_I2C_ID_DWI2C;
 extern u8 g_IsHotknotEnabled;
 extern u8 g_IsBypassHotknot;
 extern struct i2c_client *g_I2cClient;

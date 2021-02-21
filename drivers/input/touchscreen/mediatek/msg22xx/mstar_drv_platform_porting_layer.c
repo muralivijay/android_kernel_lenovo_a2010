@@ -88,7 +88,7 @@ extern u8 g_HotKnotState;
 #endif //CONFIG_ENABLE_HOTKNOT
 
 #ifdef CONFIG_ENABLE_ITO_MP_TEST
-extern u32 g_IsInMpTest;
+extern U32 g_IsInMpTest;
 #endif //CONFIG_ENABLE_ITO_MP_TEST
 
 extern u8 IS_FIRMWARE_DATA_LOG_ENABLED;
@@ -208,7 +208,6 @@ struct mutex g_Mutex;
 /*=============================================================*/
 // GLOBAL FUNCTION DECLARATION
 /*=============================================================*/
-
 #ifdef CONFIG_ENABLE_PROXIMITY_DETECTION
 #if defined(CONFIG_TOUCH_DRIVER_RUN_ON_SPRD_PLATFORM)
 void DrvPlatformLyrTpPsEnable(int nEnable);
@@ -615,7 +614,7 @@ static void _DrvPlatformLyrVirtualKeysUnInit(void)
 static s32 _DrvPlatformLyrTouchPinCtrlInit(struct i2c_client *pClient)
 {
     s32 nRetVal = 0;
-    u32 nFlag = 0;
+    U32 nFlag = 0;
     struct device_node *pDeviceNode = pClient->dev.of_node;
 	
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__); 
@@ -1030,7 +1029,7 @@ void DrvPlatformLyrTouchDeviceRegulatorPowerOn(bool nFlag)
 
 void DrvPlatformLyrTouchDevicePowerOn(void)
 {
-    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__); 
+    DBG("*** %s() ***\n", __func__);
     
 #if defined(CONFIG_TOUCH_DRIVER_RUN_ON_SPRD_PLATFORM) || defined(CONFIG_TOUCH_DRIVER_RUN_ON_QCOM_PLATFORM)
     gpio_direction_output(MS_TS_MSG_IC_GPIO_RST, 1);
@@ -1042,14 +1041,27 @@ void DrvPlatformLyrTouchDevicePowerOn(void)
     mdelay(25); 
 #elif defined(CONFIG_TOUCH_DRIVER_RUN_ON_MTK_PLATFORM)
 #ifdef CONFIG_PLATFORM_USE_ANDROID_SDK_6_UPWARD
-    tpd_gpio_output(MS_TS_MSG_IC_GPIO_RST, 1);
-    udelay(100);
+/*
+    gpio_direction_output(MS_TS_MSG_IC_GPIO_RST, 1);
+//    gpio_set_value(MS_TS_MSG_IC_GPIO_RST, 1); 
+    udelay(100); 
+    gpio_set_value(MS_TS_MSG_IC_GPIO_RST, 0);
+    udelay(100); 
+    gpio_set_value(MS_TS_MSG_IC_GPIO_RST, 1);
+    mdelay(25); 
+*/
+    tpd_gpio_output(MS_TS_MSG_IC_GPIO_RST, 0);
+    tpd_gpio_output(MS_TS_MSG_IC_GPIO_INT, 0);
+    mdelay(20);
 
     tpd_gpio_output(MS_TS_MSG_IC_GPIO_RST, 0);
-    udelay(100);
-
+    mdelay(100);
     tpd_gpio_output(MS_TS_MSG_IC_GPIO_RST, 1);
-    mdelay(25); 
+	
+    tpd_gpio_output(MS_TS_MSG_IC_GPIO_INT, 1);
+    mdelay(20);
+    tpd_gpio_as_int(MS_TS_MSG_IC_GPIO_INT);
+    mdelay(100);
 #else
     mt_set_gpio_mode(MS_TS_MSG_IC_GPIO_RST, GPIO_CTP_RST_PIN_M_GPIO);
     mt_set_gpio_dir(MS_TS_MSG_IC_GPIO_RST, GPIO_DIR_OUT);
@@ -1078,7 +1090,7 @@ void DrvPlatformLyrTouchDevicePowerOn(void)
 
 void DrvPlatformLyrTouchDevicePowerOff(void)
 {
-    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__); 
+    DBG("*** %s() ***\n", __func__);
     
     DrvIcFwLyrOptimizeCurrentConsumption();
 
@@ -1087,7 +1099,12 @@ void DrvPlatformLyrTouchDevicePowerOff(void)
     gpio_set_value(MS_TS_MSG_IC_GPIO_RST, 0);
 #elif defined(CONFIG_TOUCH_DRIVER_RUN_ON_MTK_PLATFORM)
 #ifdef CONFIG_PLATFORM_USE_ANDROID_SDK_6_UPWARD
+/*
+//    gpio_direction_output(MS_TS_MSG_IC_GPIO_RST, 0);
+    gpio_set_value(MS_TS_MSG_IC_GPIO_RST, 0);
+*/
     tpd_gpio_output(MS_TS_MSG_IC_GPIO_RST, 0);
+    tpd_gpio_output(MS_TS_MSG_IC_GPIO_INT, 0);
 #else
     mt_set_gpio_mode(MS_TS_MSG_IC_GPIO_RST, GPIO_CTP_RST_PIN_M_GPIO);
     mt_set_gpio_dir(MS_TS_MSG_IC_GPIO_RST, GPIO_DIR_OUT);
@@ -1101,7 +1118,7 @@ void DrvPlatformLyrTouchDevicePowerOff(void)
 
 void DrvPlatformLyrTouchDeviceResetHw(void)
 {
-    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__); 
+    DBG("*** %s() ***\n", __func__);
     
 #if defined(CONFIG_TOUCH_DRIVER_RUN_ON_SPRD_PLATFORM) || defined(CONFIG_TOUCH_DRIVER_RUN_ON_QCOM_PLATFORM)
     gpio_direction_output(MS_TS_MSG_IC_GPIO_RST, 1);
@@ -1113,14 +1130,20 @@ void DrvPlatformLyrTouchDeviceResetHw(void)
     mdelay(25); 
 #elif defined(CONFIG_TOUCH_DRIVER_RUN_ON_MTK_PLATFORM)
 #ifdef CONFIG_PLATFORM_USE_ANDROID_SDK_6_UPWARD
-    tpd_gpio_output(MS_TS_MSG_IC_GPIO_RST, 1);
-    udelay(100);
-
-    tpd_gpio_output(MS_TS_MSG_IC_GPIO_RST, 0);
-    udelay(100);
-
-    tpd_gpio_output(MS_TS_MSG_IC_GPIO_RST, 1);
+/*
+    gpio_direction_output(MS_TS_MSG_IC_GPIO_RST, 1);
+//    gpio_set_value(MS_TS_MSG_IC_GPIO_RST, 1); 
+    udelay(100); 
+    gpio_set_value(MS_TS_MSG_IC_GPIO_RST, 0);
+    udelay(100); 
+    gpio_set_value(MS_TS_MSG_IC_GPIO_RST, 1);
     mdelay(25); 
+*/
+    tpd_gpio_output(MS_TS_MSG_IC_GPIO_RST, 0);
+    mdelay(50);
+    
+    tpd_gpio_output(MS_TS_MSG_IC_GPIO_RST, 1);
+    mdelay(50);
 #else
     mt_set_gpio_mode(MS_TS_MSG_IC_GPIO_RST, GPIO_CTP_RST_PIN_M_GPIO);
     mt_set_gpio_dir(MS_TS_MSG_IC_GPIO_RST, GPIO_DIR_OUT);
@@ -1140,13 +1163,13 @@ void DrvPlatformLyrTouchDeviceResetHw(void)
 
 void DrvPlatformLyrDisableFingerTouchReport(void)
 {
-    unsigned long nIrqFlag;
+    //unsigned long nIrqFlag;
 
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__); 
 
     DBG(&g_I2cClient->dev, "*** %s() _gInterruptFlag = %d ***\n", __func__, _gInterruptFlag); 
 
-    spin_lock_irqsave(&_gIrqLock, nIrqFlag);
+   // spin_lock_irqsave(&_gIrqLock, nIrqFlag);
 
 #if defined(CONFIG_TOUCH_DRIVER_RUN_ON_SPRD_PLATFORM) || defined(CONFIG_TOUCH_DRIVER_RUN_ON_QCOM_PLATFORM)
 
@@ -1180,7 +1203,7 @@ void DrvPlatformLyrDisableFingerTouchReport(void)
     }
 #endif
 
-    spin_unlock_irqrestore(&_gIrqLock, nIrqFlag);
+   // spin_unlock_irqrestore(&_gIrqLock, nIrqFlag);
 }
 
 void DrvPlatformLyrEnableFingerTouchReport(void)
@@ -1349,7 +1372,7 @@ s32 DrvPlatformLyrInputDeviceInitialize(struct i2c_client *pClient)
 #ifdef CONFIG_TP_HAVE_KEY
     // Method 1.
     { 
-        u32 i;
+        U32 i;
         for (i = 0; i < MAX_KEY_NUM; i ++)
         {
             input_set_capability(g_InputDevice, EV_KEY, g_TpVirtualKey[i]);
@@ -1433,7 +1456,7 @@ s32 DrvPlatformLyrInputDeviceInitialize(struct i2c_client *pClient)
 #ifdef CONFIG_PLATFORM_USE_ANDROID_SDK_6_UPWARD
     if (tpd_dts_data.use_tpd_button)
     {
-        u32 i;
+        U32 i;
 
         for (i = 0; i < tpd_dts_data.tpd_key_num; i ++)
         {
@@ -1443,7 +1466,7 @@ s32 DrvPlatformLyrInputDeviceInitialize(struct i2c_client *pClient)
 #else
 #ifdef CONFIG_TP_HAVE_KEY
     {
-        u32 i;
+        U32 i;
         
         for (i = 0; i < MAX_KEY_NUM; i ++)
         {
@@ -1550,7 +1573,7 @@ s32 DrvPlatformLyrTouchDeviceRegisterFingerTouchInterruptHandler(void)
 {
     s32 nRetVal = 0;
 
-    DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__); 
+    DBG("*** %s() ***\n", __func__);
 
     if (DrvIcFwLyrIsRegisterFingerTouchInterruptHandler())
     {    	
@@ -1573,52 +1596,54 @@ s32 DrvPlatformLyrTouchDeviceRegisterFingerTouchInterruptHandler(void)
         
         if (nRetVal != 0)
         {
-            DBG(&g_I2cClient->dev, "*** Unable to claim irq %d; error %d ***\n", _gIrq, nRetVal); 
+            DBG("*** Unable to claim irq %d; error %d ***\n", _gIrq, nRetVal);
         }
 #elif defined(CONFIG_TOUCH_DRIVER_RUN_ON_MTK_PLATFORM)
 
 #ifdef CONFIG_PLATFORM_USE_ANDROID_SDK_6_UPWARD
         {
             struct device_node *pDeviceNode = NULL;
-            u32 ints[2] = {0,0};
-
-            tpd_gpio_as_int(MS_TS_MSG_IC_GPIO_INT);
+            //u32 ints[2] = {0,0};
+            //DBG("*** %s() line %d ***\n", __func__,__LINE__);
+//            tpd_gpio_as_int(MS_TS_MSG_IC_GPIO_INT);
 
 //            pDeviceNode = of_find_compatible_node(NULL, NULL, "mediatek,touch_panel-eint"); //"mediatek,cap_touch"
-            pDeviceNode = of_find_matching_node(pDeviceNode, touch_of_match);
+            pDeviceNode = of_find_matching_node(NULL, touch_of_match);
             
             if (pDeviceNode)
             {
+                /*
                 of_property_read_u32_array(pDeviceNode, "debounce", ints, ARRAY_SIZE(ints));
                 gpio_set_debounce(ints[0], ints[1]);
-                
+                */
+                //DBG("*** %s() line %d ***\n", __func__,__LINE__);
                 _gIrq = irq_of_parse_and_map(pDeviceNode, 0);
                 if (_gIrq == 0)
                 {
-                    DBG(&g_I2cClient->dev, "*** Unable to irq_of_parse_and_map() ***\n");
+                    //DBG("*** Unable to irq_of_parse_and_map() ***\n");
                 }
-
+                //DBG("*** %s() line %d _gIrq %d ***\n", __func__,__LINE__,_gIrq);
                 /* request an irq and register the isr */
-                nRetVal = request_threaded_irq(_gIrq/*MS_TS_MSG_IC_GPIO_INT*/, NULL, _DrvPlatformLyrFingerTouchInterruptHandler,
+                #if 0
+                nRetVal = request_threaded_irq(_gIrq/*MS_TS_MSG_IC_GPIO_INT*/, NULL, (irq_handler_t)_DrvPlatformLyrFingerTouchInterruptHandler,
                       IRQF_TRIGGER_RISING /* IRQF_TRIGGER_FALLING *//*IRQF_TRIGGER_NONE */| IRQF_ONESHOT/* | IRQF_NO_SUSPEND */,
-                      "touch_panel-eint", NULL); 
-
-//                nRetVal = request_irq(_gIrq/*MS_TS_MSG_IC_GPIO_INT*/, _DrvPlatformLyrFingerTouchInterruptHandler,
-//                      IRQF_TRIGGER_RISING /* IRQF_TRIGGER_FALLING *//*IRQF_TRIGGER_NONE *//* | IRQF_NO_SUSPEND */,
-//                      "touch_panel-eint", NULL); 
-
+                      "TOUCH_PANEL-eint", NULL); 
+                #else
+                nRetVal = request_irq(_gIrq/*MS_TS_MSG_IC_GPIO_INT*/, (irq_handler_t)_DrvPlatformLyrFingerTouchInterruptHandler,
+                      IRQF_TRIGGER_RISING /* IRQF_TRIGGER_FALLING *//*IRQF_TRIGGER_NONE *//* | IRQF_NO_SUSPEND */,
+                      "TOUCH_PANEL-eint", NULL); 
+                #endif
                 if (nRetVal != 0)
                 {
-                    DBG(&g_I2cClient->dev, "*** Unable to claim irq %d; error %d ***\n", _gIrq, nRetVal);
-                    DBG(&g_I2cClient->dev, "*** gpio_pin=%d, debounce=%d ***\n", ints[0], ints[1]);
+                    //DBG("*** Unable to claim irq %d; error %d ***\n", _gIrq, nRetVal);
+                    //DBG("*** gpio_pin=%d, debounce=%d ***\n", ints[0], ints[1]);
                 }
+                //enable_irq(_gIrq);
             }
             else
             {
-                DBG(&g_I2cClient->dev, "*** request_irq() can not find touch eint device node! ***\n");
+                //DBG("*** request_irq() can not find touch eint device node! ***\n");
             }
-
-//            enable_irq(_gIrq);
         }
 #else
         mt_set_gpio_mode(MS_TS_MSG_IC_GPIO_INT, GPIO_CTP_EINT_PIN_M_EINT);
@@ -1633,7 +1658,6 @@ s32 DrvPlatformLyrTouchDeviceRegisterFingerTouchInterruptHandler(void)
 #endif //CONFIG_PLATFORM_USE_ANDROID_SDK_6_UPWARD
 
         _gInterruptFlag = 1;
-
 #ifdef CONFIG_USE_IRQ_INTERRUPT_FOR_MTK_PLATFORM
         /* initialize the finger touch work queue */ 
         INIT_WORK(&_gFingerTouchWork, _DrvPlatformLyrFingerTouchDoWork);
@@ -1642,7 +1666,7 @@ s32 DrvPlatformLyrTouchDeviceRegisterFingerTouchInterruptHandler(void)
         if (IS_ERR(_gThread))
         { 
             nRetVal = PTR_ERR(_gThread);
-            DBG(&g_I2cClient->dev, "Failed to create kernel thread: %d\n", nRetVal); 
+            //DBG("Failed to create kernel thread: %d\n", nRetVal);
         }
 #endif //CONFIG_USE_IRQ_INTERRUPT_FOR_MTK_PLATFORM
 #endif
@@ -1765,7 +1789,7 @@ s32 DrvPlatformLyrTouchDeviceRemove(struct i2c_client *pClient)
     return 0;
 }
 
-void DrvPlatformLyrSetIicDataRate(struct i2c_client *pClient, u32 nIicDataRate)
+void DrvPlatformLyrSetIicDataRate(struct i2c_client *pClient, U32 nIicDataRate)
 {
     DBG(&g_I2cClient->dev, "*** %s() nIicDataRate = %d ***\n", __func__, nIicDataRate); 
 
@@ -1822,7 +1846,8 @@ int DrvPlatformLyrTpPsEnable(struct sensors_classdev* pProximityCdev, unsigned i
     return 0;
 }
 #elif defined(CONFIG_TOUCH_DRIVER_RUN_ON_MTK_PLATFORM)
-int DrvPlatformLyrTpPsOperate(void* pSelf, u32 nCommand, void* pBuffIn, int nSizeIn,
+/*
+int DrvPlatformLyrTpPsOperate(void* pSelf, U32 nCommand, void* pBuffIn, int nSizeIn,
 				   void* pBuffOut, int nSizeOut, int* pActualOut)
 {
     int nErr = 0;
@@ -1890,6 +1915,23 @@ int DrvPlatformLyrTpPsOperate(void* pSelf, u32 nCommand, void* pBuffIn, int nSiz
     }
 
     return nErr;
+}
+*/
+
+int DrvPlatformLyrTpPsEnable(int nEnable)
+{
+    //DBG("*** %s() nEnable = %d ***\n", __func__, nEnable);
+
+    if (nEnable)
+    {
+        DrvIcFwLyrEnableProximity();
+    }
+    else
+    {
+        DrvIcFwLyrDisableProximity();
+    }
+    
+    return 0;
 }
 #endif
 

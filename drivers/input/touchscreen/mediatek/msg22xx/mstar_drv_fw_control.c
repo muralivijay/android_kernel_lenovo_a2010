@@ -37,8 +37,8 @@
 // EXTERN VARIABLE DECLARATION
 /*=============================================================*/
 
-extern u32 SLAVE_I2C_ID_DBBUS;
-extern u32 SLAVE_I2C_ID_DWI2C;
+extern U32 SLAVE_I2C_ID_DBBUS;
+extern U32 SLAVE_I2C_ID_DWI2C;
 
 #ifdef CONFIG_TP_HAVE_KEY
 extern int g_TpVirtualKey[];
@@ -60,7 +60,7 @@ extern struct input_dev *g_InputDevice;
 extern struct i2c_client *g_I2cClient;
 
 extern u8 g_FwData[MAX_UPDATE_FIRMWARE_BUFFER_SIZE][1024];
-extern u32 g_FwDataCount;
+extern U32 g_FwDataCount;
 
 extern struct mutex g_Mutex;
 
@@ -93,9 +93,9 @@ extern struct kobject *g_GestureKObj;
 #endif //CONFIG_ENABLE_GESTURE_WAKEUP
 
 #ifdef CONFIG_ENABLE_COUNT_REPORT_RATE
-extern u32 g_IsEnableReportRate;
-extern u32 g_InterruptCount;
-extern u32 g_ValidTouchCount;
+extern U32 g_IsEnableReportRate;
+extern U32 g_InterruptCount;
+extern U32 g_ValidTouchCount;
 
 extern struct timeval g_StartTime;
 #endif //CONFIG_ENABLE_COUNT_REPORT_RATE
@@ -119,7 +119,11 @@ static u8 _gFwDataBuf[MSG28XX_FIRMWARE_WHOLE_SIZE*1024] = {0}; // for update fir
  * Note.
  * Please modify the name of the below .h depends on the vendor TP that you are using.
  */
-#include "msg22xx_jl_update_bin_1.h"
+#include "msg22xx_hlt_update_bin_0630.h"
+//#include "msg22xx_jl_update_bin.h"
+//#include "msg22xx_sy_update_bin.h"
+
+
 /*#include "msg21xxa_xxxx_update_bin.h" // for MSG21xxA
 #include "msg21xxa_yyyy_update_bin.h"
 
@@ -132,8 +136,8 @@ static u8 _gFwDataBuf[MSG28XX_FIRMWARE_WHOLE_SIZE*1024] = {0}; // for update fir
 #include "msg28xx_xxxx_update_bin.h" // for MSG28xx
 #include "msg28xx_yyyy_update_bin.h"*/
 
-static u32 _gUpdateRetryCount = UPDATE_FIRMWARE_RETRY_COUNT;
-static u32 _gIsUpdateInfoBlockFirst = 0;
+static U32 _gUpdateRetryCount = UPDATE_FIRMWARE_RETRY_COUNT;
+static U32 _gIsUpdateInfoBlockFirst = 0;
 static struct work_struct _gUpdateFirmwareBySwIdWork;
 static struct workqueue_struct *_gUpdateFirmwareBySwIdWorkQueue = NULL;
 #if 0
@@ -144,7 +148,7 @@ static u8 _gDwIicInfoData[1024]; // for MSG21xxA
 #endif //CONFIG_UPDATE_FIRMWARE_BY_SW_ID
 
 #ifdef CONFIG_ENABLE_GESTURE_WAKEUP
-static u32 _gGestureWakeupValue[2] = {0};
+static U32 _gGestureWakeupValue[2] = {0};
 #endif //CONFIG_ENABLE_GESTURE_WAKEUP
 
 #ifdef CONFIG_ENABLE_SEGMENT_READ_FINGER_TOUCH_DATA // for MSG26xxM/MSG28xx
@@ -203,13 +207,13 @@ u8 g_LogGestureDebug[GESTURE_DEBUG_MODE_PACKET_LENGTH] = {0};
 #endif //CONFIG_ENABLE_GESTURE_DEBUG_MODE
 
 #ifdef CONFIG_ENABLE_GESTURE_INFORMATION_MODE
-u32 g_LogGestureInfor[GESTURE_WAKEUP_INFORMATION_PACKET_LENGTH] = {0};
+U32 g_LogGestureInfor[GESTURE_WAKEUP_INFORMATION_PACKET_LENGTH] = {0};
 #endif //CONFIG_ENABLE_GESTURE_INFORMATION_MODE
 
 #ifdef CONFIG_SUPPORT_64_TYPES_GESTURE_WAKEUP_MODE // support at most 64 types of gesture wakeup mode
-u32 g_GestureWakeupMode[2] = {0xFFFFFFFF, 0xFFFFFFFF};
+U32 g_GestureWakeupMode[2] = {0xFFFFFFFF, 0xFFFFFFFF};
 #else                                              // support at most 16 types of gesture wakeup mode
-u32 g_GestureWakeupMode[2] = {0x0000FFFF, 0x00000000};
+U32 g_GestureWakeupMode[2] = {0x0000FFFF, 0x00000000};
 #endif //CONFIG_SUPPORT_64_TYPES_GESTURE_WAKEUP_MODE
 
 u8 g_GestureWakeupFlag = 0;
@@ -241,7 +245,7 @@ static s32 _DrvFwCtrlMsg21xxaUpdateFirmwareBySwId(u8 szFwData[][1024], EmemType_
 
 #ifdef CONFIG_ENABLE_GESTURE_WAKEUP
 #ifdef CONFIG_ENABLE_GESTURE_INFORMATION_MODE
-static void _DrvFwCtrlCoordinate(u8 *pRawData, u32 *pTranX, u32 *pTranY);
+static void _DrvFwCtrlCoordinate(u8 *pRawData, U32 *pTranX, U32 *pTranY);
 #endif //CONFIG_ENABLE_GESTURE_INFORMATION_MODE
 #endif //CONFIG_ENABLE_GESTURE_WAKEUP
 
@@ -464,10 +468,10 @@ static void _DrvFwCtrlMsg22xxRestoreVoltage(void)
 #ifdef CONFIG_UPDATE_FIRMWARE_BY_SW_ID
 static void _DrvFwCtrlMsg22xxEraseEmem(EmemType_e eEmemType)
 {
-    u32 i = 0;
-    u32 nEraseCount = 0;
-    u32 nMaxEraseTimes = 0;
-    u32 nTimeOut = 0;
+    U32 i = 0;
+    U32 nEraseCount = 0;
+    U32 nMaxEraseTimes = 0;
+    U32 nTimeOut = 0;
     u16 nRegData = 0;
     u16 nTrimByte1 = 0;
     
@@ -665,24 +669,24 @@ static void _DrvFwCtrlMsg22xxEraseEmem(EmemType_e eEmemType)
 
 static void _DrvFwCtrlMsg22xxProgramEmem(EmemType_e eEmemType) 
 {
-    u32 i, j; 
-    u32 nRemainSize = 0, nBlockSize = 0, nSize = 0, index = 0;
-    u32 nTimeOut = 0;
+    U32 i, j; 
+    U32 nRemainSize = 0, nBlockSize = 0, nSize = 0, index = 0;
+    U32 nTimeOut = 0;
     u16 nRegData = 0;
     s32 rc = 0;
 #if defined(CONFIG_TOUCH_DRIVER_RUN_ON_QCOM_PLATFORM) || defined(CONFIG_TOUCH_DRIVER_RUN_ON_MTK_PLATFORM)
     u8 szDbBusTxData[128] = {0};
 #ifdef CONFIG_ENABLE_UPDATE_FIRMWARE_WITH_SUPPORT_I2C_SPEED_400K
-    u32 nSizePerWrite = 1;
+    U32 nSizePerWrite = 1;
 #else 
-    u32 nSizePerWrite = 125;
+    U32 nSizePerWrite = 125;
 #endif //CONFIG_ENABLE_UPDATE_FIRMWARE_WITH_SUPPORT_I2C_SPEED_400K
 #elif defined(CONFIG_TOUCH_DRIVER_RUN_ON_SPRD_PLATFORM)
     u8 szDbBusTxData[1024] = {0};
 #ifdef CONFIG_ENABLE_UPDATE_FIRMWARE_WITH_SUPPORT_I2C_SPEED_400K
-    u32 nSizePerWrite = 1;
+    U32 nSizePerWrite = 1;
 #else
-    u32 nSizePerWrite = 1021;
+    U32 nSizePerWrite = 1021;
 #endif //CONFIG_ENABLE_UPDATE_FIRMWARE_WITH_SUPPORT_I2C_SPEED_400K
 #endif
 
@@ -820,11 +824,11 @@ static void _DrvFwCtrlMsg22xxProgramEmem(EmemType_e eEmemType)
 }
 #endif //CONFIG_UPDATE_FIRMWARE_BY_SW_ID
 
-static u32 _DrvFwCtrlMsg22xxGetFirmwareCrcByHardware(EmemType_e eEmemType) 
+static U32 _DrvFwCtrlMsg22xxGetFirmwareCrcByHardware(EmemType_e eEmemType) 
 {
     u16 nCrcDown = 0;
-    u32 nTimeOut = 0;
-    u32 nRetVal = 0; 
+    U32 nTimeOut = 0;
+    U32 nRetVal = 0; 
 
     DBG(&g_I2cClient->dev, "*** %s() eEmemType = %d ***\n", __func__, eEmemType);
 
@@ -911,7 +915,7 @@ static u32 _DrvFwCtrlMsg22xxGetFirmwareCrcByHardware(EmemType_e eEmemType)
 
 static void _DrvFwCtrlMsg22xxConvertFwDataTwoDimenToOneDimen(u8 szTwoDimenFwData[][1024], u8* pOneDimenFwData)
 {
-    u32 i, j;
+    U32 i, j;
 
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -935,9 +939,9 @@ static void _DrvFwCtrlMsg22xxConvertFwDataTwoDimenToOneDimen(u8 szTwoDimenFwData
 }
 
 #ifdef CONFIG_ENABLE_TYPE_B_PROTOCOL 
-static u32 _DrvFwCtrlPointDistance(u16 nX, u16 nY, u16 nPrevX, u16 nPrevY)
+static U32 _DrvFwCtrlPointDistance(u16 nX, u16 nY, u16 nPrevX, u16 nPrevY)
 { 
-    u32 nRetVal = 0;
+    U32 nRetVal = 0;
 	
     nRetVal = (((nX-nPrevX)*(nX-nPrevX))+((nY-nPrevY)*(nY-nPrevY)));
     
@@ -948,19 +952,19 @@ static u32 _DrvFwCtrlPointDistance(u16 nX, u16 nY, u16 nPrevX, u16 nPrevY)
 static s32 _DrvFwCtrlSelfParsePacket(u8 *pPacket, u16 nLength, SelfTouchInfo_t *pInfo) // for MSG21xxA/MSG22xx
 {
     u8 nCheckSum = 0;
-    u32 nDeltaX = 0, nDeltaY = 0;
-    u32 nX = 0;
-    u32 nY = 0;
+    U32 nDeltaX = 0, nDeltaY = 0;
+    U32 nX = 0;
+    U32 nY = 0;
 #ifdef CONFIG_SWAP_X_Y
-    u32 nTempX;
-    u32 nTempY;
+    U32 nTempX;
+    U32 nTempY;
 #endif
 #ifdef CONFIG_ENABLE_TYPE_B_PROTOCOL
     static u8 nPrevTouchNum = 0; 
     static u16 szPrevX[SELF_MAX_TOUCH_NUM] = {0xFFFF, 0xFFFF};
     static u16 szPrevY[SELF_MAX_TOUCH_NUM] = {0xFFFF, 0xFFFF};
     static u8  szPrevPress[SELF_MAX_TOUCH_NUM] = {0};
-    u32 i = 0;
+    U32 i = 0;
     u16 szX[SELF_MAX_TOUCH_NUM] = {0};
     u16 szY[SELF_MAX_TOUCH_NUM] = {0};
     u16 nTemp = 0;
@@ -1038,7 +1042,7 @@ static s32 _DrvFwCtrlSelfParsePacket(u8 *pPacket, u16 nLength, SelfTouchInfo_t *
 #ifdef CONFIG_ENABLE_GESTURE_DEBUG_MODE
         else if (g_ChipType == CHIP_TYPE_MSG22XX && pPacket[0] == 0xA7 && pPacket[1] == 0x00 && pPacket[2] == 0x80 && pPacket[3] == PACKET_TYPE_GESTURE_DEBUG)
         {
-            u32 a = 0;
+            U32 a = 0;
 
             nWakeupMode = pPacket[4];
             bIsCorrectFormat = 1;
@@ -1059,8 +1063,8 @@ static s32 _DrvFwCtrlSelfParsePacket(u8 *pPacket, u16 nLength, SelfTouchInfo_t *
 #ifdef CONFIG_ENABLE_GESTURE_INFORMATION_MODE
         else if (g_ChipType == CHIP_TYPE_MSG22XX && pPacket[0] == 0xA7 && pPacket[1] == 0x00 && pPacket[2] == 0x80 && pPacket[3] == PACKET_TYPE_GESTURE_INFORMATION)
         {
-            u32 a = 0;
-            u32 nTmpCount = 0;
+            U32 a = 0;
+            U32 nTmpCount = 0;
 
             nWakeupMode = pPacket[4];
             bIsCorrectFormat = 1;
@@ -1073,8 +1077,8 @@ static s32 _DrvFwCtrlSelfParsePacket(u8 *pPacket, u16 nLength, SelfTouchInfo_t *
 
             for (a = 6; a < 126; a = a+3)//parse packet to coordinate
             {
-                u32 nTranX = 0;
-                u32 nTranY = 0;
+                U32 nTranX = 0;
+                U32 nTranY = 0;
                 
                 _DrvFwCtrlCoordinate(&pPacket[a], &nTranX, &nTranY);
                 g_LogGestureInfor[nTmpCount] = nTranX;
@@ -1996,8 +2000,8 @@ static s32 _DrvFwCtrlSelfParsePacket(u8 *pPacket, u16 nLength, SelfTouchInfo_t *
 #elif defined(CONFIG_TOUCH_DRIVER_RUN_ON_MTK_PLATFORM)
                 if (g_EnableTpProximity && ((pPacket[5] == 0x80) || (pPacket[5] == 0x40)))
                 {
-                    int nErr;
-                    hwm_sensor_data tSensorData;
+                    //int nErr;
+                    //hwm_sensor_data tSensorData;
 
                     if (pPacket[5] == 0x80) // close to
                     {
@@ -2011,6 +2015,7 @@ static s32 _DrvFwCtrlSelfParsePacket(u8 *pPacket, u16 nLength, SelfTouchInfo_t *
                     DBG(&g_I2cClient->dev, "g_FaceClosingTp = %d\n", g_FaceClosingTp);
 
                     // map and store data to hwm_sensor_data
+                    /*
                     tSensorData.values[0] = DrvPlatformLyrGetTpPsData();
                     tSensorData.value_divide = 1;
                     tSensorData.status = SENSOR_STATUS_ACCURACY_MEDIUM;
@@ -2018,7 +2023,7 @@ static s32 _DrvFwCtrlSelfParsePacket(u8 *pPacket, u16 nLength, SelfTouchInfo_t *
                     if ((nErr = hwmsen_get_interrupt_data(ID_PROXIMITY, &tSensorData)))
                     {
                         DBG(&g_I2cClient->dev, "call hwmsen_get_interrupt_data() failed = %d\n", nErr);
-                    }
+                    }*/
                     
                     return -1;
                 }
@@ -2041,7 +2046,8 @@ static s32 _DrvFwCtrlSelfParsePacket(u8 *pPacket, u16 nLength, SelfTouchInfo_t *
 #ifdef CONFIG_PLATFORM_USE_ANDROID_SDK_6_UPWARD
                 if (tpd_dts_data.use_tpd_button)
                 {
-                    if (pPacket[5] == 4) // TOUCH_KEY_HOME
+                   // if (pPacket[5] == 4) // TOUCH_KEY_HOME
+                     if (pPacket[5] == 2) // TOUCH_KEY_HOME
                     {
                         pInfo->tPoint[0].nX = tpd_dts_data.tpd_key_dim_local[1].key_x;
                         pInfo->tPoint[0].nY = tpd_dts_data.tpd_key_dim_local[1].key_y;
@@ -2051,7 +2057,8 @@ static s32 _DrvFwCtrlSelfParsePacket(u8 *pPacket, u16 nLength, SelfTouchInfo_t *
                         pInfo->tPoint[0].nX = tpd_dts_data.tpd_key_dim_local[0].key_x;
                         pInfo->tPoint[0].nY = tpd_dts_data.tpd_key_dim_local[0].key_y;
                     }           
-                    else if (pPacket[5] == 2) // TOUCH_KEY_BACK
+                    //else if (pPacket[5] == 2) // TOUCH_KEY_BACK
+                     else if (pPacket[5] == 4) // TOUCH_KEY_BACK
                     {
                         pInfo->tPoint[0].nX = tpd_dts_data.tpd_key_dim_local[2].key_x;
                         pInfo->tPoint[0].nY = tpd_dts_data.tpd_key_dim_local[2].key_y;
@@ -2144,7 +2151,7 @@ static s32 _DrvFwCtrlSelfParsePacket(u8 *pPacket, u16 nLength, SelfTouchInfo_t *
             }
             else
             {   /* two touch points */
-                u32 nX2, nY2;
+                U32 nX2, nY2;
                 
                 pInfo->nFingerNum = 2; // two touch
                 /* Finger 1 */
@@ -2162,8 +2169,8 @@ static s32 _DrvFwCtrlSelfParsePacket(u8 *pPacket, u16 nLength, SelfTouchInfo_t *
                     nDeltaY -= 4096;
                 }
 
-                nX2 = (u32)(nX + nDeltaX);
-                nY2 = (u32)(nY + nDeltaY);
+                nX2 = (U32)(nX + nDeltaX);
+                nY2 = (U32)(nY + nDeltaY);
 
                 pInfo->tPoint[1].nX = (nX2 * TOUCH_SCREEN_X_MAX) / TPD_WIDTH; 
                 pInfo->tPoint[1].nY = (nY2 * TOUCH_SCREEN_Y_MAX) / TPD_HEIGHT;
@@ -2410,7 +2417,7 @@ static s32 _DrvFwCtrlSelfParsePacket(u8 *pPacket, u16 nLength, SelfTouchInfo_t *
             }
             else
             {   /* two touch points */
-                u32 nX2, nY2;
+                U32 nX2, nY2;
                 
                 pInfo->nFingerNum = 2; // two touch
                 /* Finger 1 */
@@ -2428,8 +2435,8 @@ static s32 _DrvFwCtrlSelfParsePacket(u8 *pPacket, u16 nLength, SelfTouchInfo_t *
                     nDeltaY -= 4096;
                 }
 
-                nX2 = (u32)(nX + nDeltaX);
-                nY2 = (u32)(nY + nDeltaY);
+                nX2 = (U32)(nX + nDeltaX);
+                nY2 = (U32)(nY + nDeltaY);
 
                 pInfo->tPoint[1].nX = (nX2 * TOUCH_SCREEN_X_MAX) / TPD_WIDTH; 
                 pInfo->tPoint[1].nY = (nY2 * TOUCH_SCREEN_Y_MAX) / TPD_HEIGHT;
@@ -2559,9 +2566,9 @@ static s32 _DrvFwCtrlSelfParsePacket(u8 *pPacket, u16 nLength, SelfTouchInfo_t *
 
 static s32 _DrvFwCtrlMutualParsePacket(u8 *pPacket, u16 nLength, MutualTouchInfo_t *pInfo) // for MSG26xxM/MSG28xx
 {
-    u32 i;
+    U32 i;
     u8 nCheckSum = 0;
-    u32 nX = 0, nY = 0;
+    U32 nX = 0, nY = 0;
 
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -2619,7 +2626,7 @@ static s32 _DrvFwCtrlMutualParsePacket(u8 *pPacket, u16 nLength, MutualTouchInfo
 #ifdef CONFIG_ENABLE_GESTURE_DEBUG_MODE
         else if (pPacket[0] == 0xA7 && pPacket[1] == 0x00 && pPacket[2] == 0x80 && pPacket[3] == PACKET_TYPE_GESTURE_DEBUG)
         {
-            u32 a = 0;
+            U32 a = 0;
 
             nWakeupMode = pPacket[4];
             bIsCorrectFormat = 1;
@@ -2640,8 +2647,8 @@ static s32 _DrvFwCtrlMutualParsePacket(u8 *pPacket, u16 nLength, MutualTouchInfo
 #ifdef CONFIG_ENABLE_GESTURE_INFORMATION_MODE
         else if (pPacket[0] == 0xA7 && pPacket[1] == 0x00 && pPacket[2] == 0x80 && pPacket[3] == PACKET_TYPE_GESTURE_INFORMATION)
         {
-            u32 a = 0;
-            u32 nTmpCount = 0;
+            U32 a = 0;
+            U32 nTmpCount = 0;
 
             nWakeupMode = pPacket[4];
             bIsCorrectFormat = 1;
@@ -2654,8 +2661,8 @@ static s32 _DrvFwCtrlMutualParsePacket(u8 *pPacket, u16 nLength, MutualTouchInfo
 
             for (a = 6; a < 126; a = a+3)//parse packet to coordinate
             {
-                u32 nTranX = 0;
-                u32 nTranY = 0;
+                U32 nTranX = 0;
+                U32 nTranY = 0;
 				
                 _DrvFwCtrlCoordinate(&pPacket[a], &nTranX, &nTranY);
                 g_LogGestureInfor[nTmpCount] = nTranX;
@@ -3721,8 +3728,8 @@ static s32 _DrvFwCtrlMutualParsePacket(u8 *pPacket, u16 nLength, MutualTouchInfo
 #elif defined(CONFIG_TOUCH_DRIVER_RUN_ON_MTK_PLATFORM)
             if (g_EnableTpProximity && ((pPacket[nLength-2] == 0x80) || (pPacket[nLength-2] == 0x40)))
             {
-                int nErr;
-                hwm_sensor_data tSensorData;
+                //int nErr;
+                //hwm_sensor_data tSensorData;
 
                 if (pPacket[nLength-2] == 0x80) // close to
                 {
@@ -3736,6 +3743,7 @@ static s32 _DrvFwCtrlMutualParsePacket(u8 *pPacket, u16 nLength, MutualTouchInfo
                 DBG(&g_I2cClient->dev, "g_FaceClosingTp = %d\n", g_FaceClosingTp);
 
                 // map and store data to hwm_sensor_data
+                /*
                 tSensorData.values[0] = DrvPlatformLyrGetTpPsData();
                 tSensorData.value_divide = 1;
                 tSensorData.status = SENSOR_STATUS_ACCURACY_MEDIUM;
@@ -3743,7 +3751,7 @@ static s32 _DrvFwCtrlMutualParsePacket(u8 *pPacket, u16 nLength, MutualTouchInfo
                 if ((nErr = hwmsen_get_interrupt_data(ID_PROXIMITY, &tSensorData)))
                 {
                     DBG(&g_I2cClient->dev, "call hwmsen_get_interrupt_data() failed = %d\n", nErr);
-                }
+                }*/
                 
                 return -1;
             }
@@ -3887,11 +3895,11 @@ static s32 _DrvFwCtrlMutualParsePacket(u8 *pPacket, u16 nLength, MutualTouchInfo
     return 0;
 }
 
-static void _DrvFwCtrlStoreFirmwareData(u8 *pBuf, u32 nSize)
+static void _DrvFwCtrlStoreFirmwareData(u8 *pBuf, U32 nSize)
 {
-    u32 nCount = nSize / 1024;
-    u32 nRemainder = nSize % 1024;
-    u32 i;
+    U32 nCount = nSize / 1024;
+    U32 nRemainder = nSize % 1024;
+    U32 i;
 
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -4168,9 +4176,9 @@ static u16 _DrvFwCtrlMsg26xxmGetSwId(EmemType_e eEmemType)
 
 static s32 _DrvFwCtrlMsg26xxmUpdateFirmware(u8 szFwData[][1024], EmemType_e eEmemType)
 {
-    u32 i, j;
-    u32 nCrcMain, nCrcMainTp;
-    u32 nCrcInfo, nCrcInfoTp;
+    U32 i, j;
+    U32 nCrcMain, nCrcMainTp;
+    U32 nCrcInfo, nCrcInfoTp;
     u16 nRegData = 0;
 
     DBG(&g_I2cClient->dev, "*** %s() eEmemType = %d ***\n", __func__, eEmemType);
@@ -4373,7 +4381,7 @@ static s32 _DrvFwCtrlMsg26xxmUpdateFirmware(u8 szFwData[][1024], EmemType_e eEme
 
 static void _DrvFwCtrlMsg28xxConvertFwDataTwoDimenToOneDimen(u8 szTwoDimenFwData[][1024], u8* pOneDimenFwData)
 {
-    u32 i, j;
+    U32 i, j;
 
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -4386,11 +4394,11 @@ static void _DrvFwCtrlMsg28xxConvertFwDataTwoDimenToOneDimen(u8 szTwoDimenFwData
     }
 }
 
-static u32 _DrvFwCtrlMsg28xxCalculateCrc(u8 *pFwData, u32 nOffset, u32 nSize)
+static U32 _DrvFwCtrlMsg28xxCalculateCrc(u8 *pFwData, U32 nOffset, U32 nSize)
 {
-    u32 i;
-    u32 nData = 0, nCrc = 0;
-    u32 nCrcRule = 0x0C470C06; // 0000 1100 0100 0111 0000 1100 0000 0110
+    U32 i;
+    U32 nData = 0, nCrc = 0;
+    U32 nCrcRule = 0x0C470C06; // 0000 1100 0100 0111 0000 1100 0000 0110
 
     for (i = 0; i < nSize; i += 4)
     {
@@ -4415,7 +4423,7 @@ static void _DrvFwCtrlMsg28xxAccessEFlashInit(void)
     RegSet16BitValue(0x1618, 0xA55A);
 }
 
-static void _DrvFwCtrlMsg28xxIspBurstWriteEFlashStart(u16 nStartAddr, u8 *pFirstData, u32 nBlockSize, u16 nPageNum, EmemType_e eEmemType)
+static void _DrvFwCtrlMsg28xxIspBurstWriteEFlashStart(u16 nStartAddr, u8 *pFirstData, U32 nBlockSize, u16 nPageNum, EmemType_e eEmemType)
 {
     u16 nWriteAddr = nStartAddr/4;
     u8  szDbBusTxData[3] = {0};
@@ -4472,9 +4480,9 @@ static void _DrvFwCtrlMsg28xxIspBurstWriteEFlashStart(u16 nStartAddr, u8 *pFirst
     IicWriteData(SLAVE_I2C_ID_DBBUS, &szDbBusTxData[0], 1);
 }	
 
-static void _DrvFwCtrlMsg28xxIspBurstWriteEFlashDoWrite(u8 *pBufferData, u32 nLength)
+static void _DrvFwCtrlMsg28xxIspBurstWriteEFlashDoWrite(u8 *pBufferData, U32 nLength)
 {
-    u32 i;
+    U32 i;
     u8  szDbBusTxData[3+MSG28XX_EMEM_SIZE_BYTES_PER_ONE_PAGE] = {0};
 
     DBG(&g_I2cClient->dev, "*** %s() nLength = %d ***\n", __func__, nLength);
@@ -4791,8 +4799,8 @@ static void _DrvFwCtrlMsg28xxSetProtectBit(void)
 
 static void _DrvFwCtrlMsg28xxEraseEmem(EmemType_e eEmemType)
 {
-    u32 nInfoAddr = 0x20;
-    u32 nTimeOut = 0;
+    U32 nInfoAddr = 0x20;
+    U32 nTimeOut = 0;
     u8 nRegData = 0;
     
     DBG(&g_I2cClient->dev, "*** %s() eEmemType = %d ***\n", __func__, eEmemType);
@@ -4932,12 +4940,12 @@ static void _DrvFwCtrlMsg28xxEraseEmem(EmemType_e eEmemType)
 
 static void _DrvFwCtrlMsg28xxProgramEmem(EmemType_e eEmemType)
 {
-    u32 i, j;
+    U32 i, j;
 #if defined(CONFIG_ENABLE_UPDATE_FIRMWARE_WITH_8_BYTE_EACH_TIME) || defined(CONFIG_ENABLE_UPDATE_FIRMWARE_WITH_32_BYTE_EACH_TIME)
-    u32 k;
+    U32 k;
 #endif
-    u32 nPageNum = 0, nLength = 0, nIndex = 0, nWordNum = 0;
-    u32 nRetryTime = 0;
+    U32 nPageNum = 0, nLength = 0, nIndex = 0, nWordNum = 0;
+    U32 nRetryTime = 0;
     u8  nRegData = 0;
     u8  szFirstData[MSG28XX_EMEM_SIZE_BYTES_ONE_WORD] = {0};
     u8  szBufferData[MSG28XX_EMEM_SIZE_BYTES_PER_ONE_PAGE] = {0};
@@ -5381,11 +5389,11 @@ static u16 _DrvFwCtrlMsg28xxGetSwId(EmemType_e eEmemType)
     return nRetVal;		
 }
 
-static u32 _DrvFwCtrlMsg28xxGetFirmwareCrcByHardware(EmemType_e eEmemType) 
+static U32 _DrvFwCtrlMsg28xxGetFirmwareCrcByHardware(EmemType_e eEmemType) 
 {
-    u32 nRetVal = 0; 
-    u32 nRetryTime = 0;
-    u32 nCrcEndAddr = 0;
+    U32 nRetVal = 0; 
+    U32 nRetryTime = 0;
+    U32 nCrcEndAddr = 0;
     u16 nCrcDown = 0;
 
     DBG(&g_I2cClient->dev, "*** %s() eEmemType = %d ***\n", __func__, eEmemType);
@@ -5503,9 +5511,9 @@ static u32 _DrvFwCtrlMsg28xxGetFirmwareCrcByHardware(EmemType_e eEmemType)
     return nRetVal;	
 }
 
-static u32 _DrvFwCtrlMsg28xxRetrieveFirmwareCrcFromEFlash(EmemType_e eEmemType) 
+static U32 _DrvFwCtrlMsg28xxRetrieveFirmwareCrcFromEFlash(EmemType_e eEmemType) 
 {
-    u32 nRetVal = 0; 
+    U32 nRetVal = 0; 
     u16 nReadAddr = 0;
     u8  szTmpData[4] = {0};
 
@@ -5557,9 +5565,9 @@ static u32 _DrvFwCtrlMsg28xxRetrieveFirmwareCrcFromEFlash(EmemType_e eEmemType)
     return nRetVal;	
 }
 
-static u32 _DrvFwCtrlMsg28xxRetrieveFrimwareCrcFromBinFile(u8 szTmpBuf[][1024], EmemType_e eEmemType) 
+static U32 _DrvFwCtrlMsg28xxRetrieveFrimwareCrcFromBinFile(u8 szTmpBuf[][1024], EmemType_e eEmemType) 
 {
-    u32 nRetVal = 0; 
+    U32 nRetVal = 0; 
     
     DBG(&g_I2cClient->dev, "*** %s() eEmemType = %d ***\n", __func__, eEmemType);
     
@@ -5586,9 +5594,9 @@ static u32 _DrvFwCtrlMsg28xxRetrieveFrimwareCrcFromBinFile(u8 szTmpBuf[][1024], 
 
 static s32 _DrvFwCtrlMsg28xxCheckFirmwareBinIntegrity(u8 szFwData[][1024])
 {
-    u32 nCrcMain = 0, nCrcMainBin = 0;
-    u32 nCrcInfo = 0, nCrcInfoBin = 0;
-    u32 nRetVal = 0;
+    U32 nCrcMain = 0, nCrcMainBin = 0;
+    U32 nCrcInfo = 0, nCrcInfoBin = 0;
+    U32 nRetVal = 0;
 
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 	
@@ -5623,8 +5631,8 @@ static s32 _DrvFwCtrlMsg28xxCheckFirmwareBinIntegrity(u8 szFwData[][1024])
 
 static s32 _DrvFwCtrlMsg28xxUpdateFirmware(u8 szFwData[][1024], EmemType_e eEmemType)
 {
-    u32 nCrcMain = 0, nCrcMainHardware = 0, nCrcMainEflash = 0;
-    u32 nCrcInfo = 0, nCrcInfoHardware = 0, nCrcInfoEflash = 0;
+    U32 nCrcMain = 0, nCrcMainHardware = 0, nCrcMainEflash = 0;
+    U32 nCrcInfo = 0, nCrcInfoHardware = 0, nCrcInfoEflash = 0;
 
     DBG(&g_I2cClient->dev, "*** %s() eEmemType = %d ***\n", __func__, eEmemType);
 
@@ -5972,10 +5980,10 @@ static s32 _DrvFwCtrlUpdateFirmwareBySdCard(const char *pFilePath)
 
 #ifdef CONFIG_ENABLE_GESTURE_WAKEUP
 
-void DrvFwCtrlOpenGestureWakeup(u32 *pMode)
+void DrvFwCtrlOpenGestureWakeup(U32 *pMode)
 {
     u8 szDbBusTxData[4] = {0};
-    u32 i = 0;
+    U32 i = 0;
     s32 rc;
 
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
@@ -6163,13 +6171,13 @@ void DrvFwCtrlCloseGestureDebugMode(void)
 #endif //CONFIG_ENABLE_GESTURE_DEBUG_MODE
 
 #ifdef CONFIG_ENABLE_GESTURE_INFORMATION_MODE
-static void _DrvFwCtrlCoordinate(u8 *pRawData, u32 *pTranX, u32 *pTranY)
+static void _DrvFwCtrlCoordinate(u8 *pRawData, U32 *pTranX, U32 *pTranY)
 {
-   	u32 nX;
-   	u32 nY;
+   	U32 nX;
+   	U32 nY;
 #ifdef CONFIG_SWAP_X_Y
-   	u32 nTempX;
-   	u32 nTempY;
+   	U32 nTempX;
+   	U32 nTempY;
 #endif
 
    	nX = (((pRawData[0] & 0xF0) << 4) | pRawData[1]);         // parse the packet to coordinate
@@ -6245,7 +6253,7 @@ static void _DrvFwCtrlReadReadDQMemEnd(void)
     IicWriteData(SLAVE_I2C_ID_DBBUS, &nParCmdNSelUseCfg, 1);
 }
 
-u32 DrvFwCtrlReadDQMemValue(u16 nAddr)
+U32 DrvFwCtrlReadDQMemValue(u16 nAddr)
 {
     if (g_ChipType == CHIP_TYPE_MSG28XX)
     {
@@ -6291,7 +6299,7 @@ u32 DrvFwCtrlReadDQMemValue(u16 nAddr)
     }
 }
 
-void DrvFwCtrlWriteDQMemValue(u16 nAddr, u32 nData)
+void DrvFwCtrlWriteDQMemValue(u16 nAddr, U32 nData)
 {
     if (g_ChipType == CHIP_TYPE_MSG28XX)
     {
@@ -6345,9 +6353,9 @@ void DrvFwCtrlWriteDQMemValue(u16 nAddr, u32 nData)
 
 //-------------------------Start of SW ID for MSG22XX----------------------------//
 
-static u32 _DrvFwCtrlMsg22xxRetrieveFirmwareCrcFromEFlash(EmemType_e eEmemType) 
+static U32 _DrvFwCtrlMsg22xxRetrieveFirmwareCrcFromEFlash(EmemType_e eEmemType) 
 {
-    u32 nRetVal = 0; 
+    U32 nRetVal = 0; 
     u16 nRegData1 = 0, nRegData2 = 0;
 
     DBG(&g_I2cClient->dev, "*** %s() eEmemType = %d ***\n", __func__, eEmemType);
@@ -6420,9 +6428,9 @@ static u32 _DrvFwCtrlMsg22xxRetrieveFirmwareCrcFromEFlash(EmemType_e eEmemType)
     return nRetVal;	
 }
 
-static u32 _DrvFwCtrlMsg22xxRetrieveFrimwareCrcFromBinFile(u8 szTmpBuf[], EmemType_e eEmemType) 
+static U32 _DrvFwCtrlMsg22xxRetrieveFrimwareCrcFromBinFile(u8 szTmpBuf[], EmemType_e eEmemType) 
 {
-    u32 nRetVal = 0; 
+    U32 nRetVal = 0; 
     
     DBG(&g_I2cClient->dev, "*** %s() eEmemType = %d ***\n", __func__, eEmemType);
     
@@ -6450,7 +6458,7 @@ static u32 _DrvFwCtrlMsg22xxRetrieveFrimwareCrcFromBinFile(u8 szTmpBuf[], EmemTy
 static s32 _DrvFwCtrlMsg22xxUpdateFirmwareBySwId(void) 
 {
     s32 nRetVal = -1;
-    u32 nCrcInfoA = 0, nCrcInfoB = 0, nCrcMainA = 0, nCrcMainB = 0;
+    U32 nCrcInfoA = 0, nCrcInfoB = 0, nCrcMainA = 0, nCrcMainB = 0;
     
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
     
@@ -6580,8 +6588,8 @@ static s32 _DrvFwCtrlMsg22xxUpdateFirmwareBySwId(void)
 
 void _DrvFwCtrlMsg22xxCheckFirmwareUpdateBySwId(void)
 {
-    u32 nCrcMainA, nCrcInfoA, nCrcMainB, nCrcInfoB;
-    u32 i;
+    U32 nCrcMainA, nCrcInfoA, nCrcMainB, nCrcInfoB;
+    U32 i;
     u16 nUpdateBinMajor = 0, nUpdateBinMinor = 0;
     u16 nMajor = 0, nMinor = 0;
     u8 *pVersion = NULL;
@@ -6606,7 +6614,13 @@ void _DrvFwCtrlMsg22xxCheckFirmwareUpdateBySwId(void)
     {
         eSwId = _DrvFwCtrlMsg22xxGetSwId(EMEM_MAIN);
     		
-        if (eSwId == MSG22XX_SW_ID_JL)
+     if (eSwId == MSG22XX_SW_ID_HLT)
+        {
+            nUpdateBinMajor = msg22xx_hlt_update_bin[0xBFF5]<<8 | msg22xx_hlt_update_bin[0xBFF4];
+            nUpdateBinMinor = msg22xx_hlt_update_bin[0xBFF7]<<8 | msg22xx_hlt_update_bin[0xBFF6];
+        }
+#if 0
+        else if (eSwId == MSG22XX_SW_ID_JL)
         {
             nUpdateBinMajor = msg22xx_jl_update_bin[0xBFF5]<<8 | msg22xx_jl_update_bin[0xBFF4];
             nUpdateBinMinor = msg22xx_jl_update_bin[0xBFF7]<<8 | msg22xx_jl_update_bin[0xBFF6];
@@ -6616,11 +6630,7 @@ void _DrvFwCtrlMsg22xxCheckFirmwareUpdateBySwId(void)
             nUpdateBinMajor = msg22xx_sy_update_bin[0xBFF5]<<8 | msg22xx_sy_update_bin[0xBFF4];
             nUpdateBinMinor = msg22xx_sy_update_bin[0xBFF7]<<8 | msg22xx_sy_update_bin[0xBFF6];
         }
-		 else if (eSwId == MSG22XX_SW_ID_HLT)
-        {
-            nUpdateBinMajor = msg22xx_hlt_update_bin[0xBFF5]<<8 | msg22xx_hlt_update_bin[0xBFF4];
-            nUpdateBinMinor = msg22xx_hlt_update_bin[0xBFF7]<<8 | msg22xx_hlt_update_bin[0xBFF6];
-        }
+#endif
         else //eSwId == MSG22XX_SW_ID_UNDEFINED
         {
             DBG(&g_I2cClient->dev, "eSwId = 0x%x is an undefined SW ID.\n", eSwId);
@@ -6636,7 +6646,22 @@ void _DrvFwCtrlMsg22xxCheckFirmwareUpdateBySwId(void)
 
         if (nUpdateBinMinor > nMinor)
         {
-            if (eSwId == MSG22XX_SW_ID_JL)
+    		if (eSwId == MSG22XX_SW_ID_HLT)
+	            {
+	                for (i = 0; i < (MSG22XX_FIRMWARE_MAIN_BLOCK_SIZE+1); i ++)
+	                {
+	                    if (i < MSG22XX_FIRMWARE_MAIN_BLOCK_SIZE) // i < 48
+	                    {
+	                        _DrvFwCtrlStoreFirmwareData(&(msg22xx_hlt_update_bin[i*1024]), 1024);
+	                    }
+	                    else // i == 48
+	                    {
+	                        _DrvFwCtrlStoreFirmwareData(&(msg22xx_hlt_update_bin[i*1024]), 512);
+	                    }
+	                }
+            	}
+#if 0
+         else   if (eSwId == MSG22XX_SW_ID_JL)
             {
                 for (i = 0; i < (MSG22XX_FIRMWARE_MAIN_BLOCK_SIZE+1); i ++)
                 {
@@ -6664,20 +6689,7 @@ void _DrvFwCtrlMsg22xxCheckFirmwareUpdateBySwId(void)
                     }
                 }
             }
-			else if (eSwId == MSG22XX_SW_ID_HLT)
-            {
-                for (i = 0; i < (MSG22XX_FIRMWARE_MAIN_BLOCK_SIZE+1); i ++)
-                {
-                    if (i < MSG22XX_FIRMWARE_MAIN_BLOCK_SIZE) // i < 48
-                    {
-                        _DrvFwCtrlStoreFirmwareData(&(msg22xx_hlt_update_bin[i*1024]), 1024);
-                    }
-                    else // i == 48
-                    {
-                        _DrvFwCtrlStoreFirmwareData(&(msg22xx_hlt_update_bin[i*1024]), 512);
-                    }
-                }
-            }
+#endif
             else
             {
                 DBG(&g_I2cClient->dev, "eSwId = 0x%x is an undefined SW ID.\n", eSwId);
@@ -6707,12 +6719,13 @@ void _DrvFwCtrlMsg22xxCheckFirmwareUpdateBySwId(void)
             DBG(&g_I2cClient->dev, "Go to normal boot up process.\n");
         }
     }
+ 
     else if (nCrcMainA == nCrcMainB && nCrcInfoA != nCrcInfoB) // Case 2. Main Block:OK, Info Block:FAIL
     {
         eSwId = _DrvFwCtrlMsg22xxGetSwId(EMEM_MAIN);
     		
         DBG(&g_I2cClient->dev, "eSwId=0x%x\n", eSwId);
-
+#if 0
         if (eSwId == MSG22XX_SW_ID_JL)
         {
             for (i = 0; i < (MSG22XX_FIRMWARE_MAIN_BLOCK_SIZE+1); i ++)
@@ -6741,7 +6754,9 @@ void _DrvFwCtrlMsg22xxCheckFirmwareUpdateBySwId(void)
                 }
             }
         }
-		else if (eSwId == MSG22XX_SW_ID_HLT)
+		else 
+#endif
+	if (eSwId == MSG22XX_SW_ID_HLT)
         {
             for (i = 0; i < (MSG22XX_FIRMWARE_MAIN_BLOCK_SIZE+1); i ++)
             {
@@ -6777,13 +6792,14 @@ void _DrvFwCtrlMsg22xxCheckFirmwareUpdateBySwId(void)
             DBG(&g_I2cClient->dev, "The sw id is invalid.\n");
             DBG(&g_I2cClient->dev, "Go to normal boot up process.\n");
         }
-    }
-    else if (nCrcMainA != nCrcMainB && nCrcInfoA == nCrcInfoB) // Case 3. Main Block:FAIL, Info Block:OK
+    
+    } else if (nCrcMainA != nCrcMainB && nCrcInfoA == nCrcInfoB) // Case 3. Main Block:FAIL, Info Block:OK
     {
         eSwId = _DrvFwCtrlMsg22xxGetSwId(EMEM_INFO);
 		
         DBG(&g_I2cClient->dev, "eSwId=0x%x\n", eSwId);
 
+#if 0
         if (eSwId == MSG22XX_SW_ID_JL)
         {
             for (i = 0; i < (MSG22XX_FIRMWARE_MAIN_BLOCK_SIZE+1); i ++)
@@ -6812,7 +6828,9 @@ void _DrvFwCtrlMsg22xxCheckFirmwareUpdateBySwId(void)
                 }
             }
         }
-		else if (eSwId == MSG22XX_SW_ID_HLT)
+		else
+#endif
+	 if (eSwId == MSG22XX_SW_ID_HLT)
         {
             for (i = 0; i < (MSG22XX_FIRMWARE_MAIN_BLOCK_SIZE+1); i ++)
             {
@@ -6849,6 +6867,7 @@ void _DrvFwCtrlMsg22xxCheckFirmwareUpdateBySwId(void)
             DBG(&g_I2cClient->dev, "Go to normal boot up process.\n");
         }
     }
+
     else // Case 4. Main Block:FAIL, Info Block:FAIL
     {
         DBG(&g_I2cClient->dev, "Main block and Info block are broken.\n");
@@ -6865,9 +6884,9 @@ void _DrvFwCtrlMsg22xxCheckFirmwareUpdateBySwId(void)
 //-------------------------Start of SW ID for MSG21XXA----------------------------//
 
 #if 0
-static u32 _DrvFwCtrlMsg21xxaCalculateMainCrcFromEFlash(void) 
+static U32 _DrvFwCtrlMsg21xxaCalculateMainCrcFromEFlash(void) 
 {
-    u32 nRetVal = 0; 
+    U32 nRetVal = 0; 
     u16 nRegData = 0;
 
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
@@ -6919,9 +6938,9 @@ static u32 _DrvFwCtrlMsg21xxaCalculateMainCrcFromEFlash(void)
 #endif
 
 #if 0
-static u32 _DrvFwCtrlMsg21xxaRetrieveMainCrcFromMainBlock(void) 
+static U32 _DrvFwCtrlMsg21xxaRetrieveMainCrcFromMainBlock(void) 
 {
-    u32 nRetVal = 0; 
+    U32 nRetVal = 0; 
     u16 nRegData = 0;
     u8 szDbBusTxData[5] = {0};
     u8 szDbBusRxData[4] = {0};
@@ -6985,10 +7004,10 @@ static u32 _DrvFwCtrlMsg21xxaRetrieveMainCrcFromMainBlock(void)
 
 static s32 _DrvFwCtrlMsg21xxaUpdateFirmwareBySwId(u8 szFwData[][1024], EmemType_e eEmemType) 
 {
-    u32 i, j, nCalculateCrcSize;
-    u32 nCrcMain = 0, nCrcMainTp = 0;
-    u32 nCrcInfo = 0, nCrcInfoTp = 0;
-    u32 nCrcTemp = 0;
+    U32 i, j, nCalculateCrcSize;
+    U32 nCrcMain = 0, nCrcMainTp = 0;
+    U32 nCrcInfo = 0, nCrcInfoTp = 0;
+    U32 nCrcTemp = 0;
     u16 nRegData = 0;
 
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
@@ -7227,8 +7246,8 @@ static s32 _DrvFwCtrlMsg21xxaUpdateFirmwareBySwId(u8 szFwData[][1024], EmemType_
 void _DrvFwCtrlMsg21xxaCheckFirmwareUpdateBySwId(void) 
 {
 #if 0
-    u32 nCrcMainA, nCrcMainB;
-    u32 i;
+    U32 nCrcMainA, nCrcMainB;
+    U32 i;
     u16 nUpdateBinMajor = 0, nUpdateBinMinor = 0;
     u16 nMajor = 0, nMinor = 0;
     u8 nIsCompareVersion = 0;
@@ -7411,9 +7430,9 @@ void _DrvFwCtrlMsg21xxaCheckFirmwareUpdateBySwId(void)
 
 //-------------------------Start of SW ID for MSG26XXM----------------------------//
 
-static u32 _DrvFwCtrlMsg26xxmCalculateFirmwareCrcFromEFlash(EmemType_e eEmemType, u8 nIsNeedResetHW)
+static U32 _DrvFwCtrlMsg26xxmCalculateFirmwareCrcFromEFlash(EmemType_e eEmemType, u8 nIsNeedResetHW)
 {
-    u32 nRetVal = 0; 
+    U32 nRetVal = 0; 
     u16 nRegData = 0;
 
     DBG(&g_I2cClient->dev, "*** %s() eEmemType = %d, nIsNeedResetHW = %d ***\n", __func__, eEmemType, nIsNeedResetHW);
@@ -7475,9 +7494,9 @@ static u32 _DrvFwCtrlMsg26xxmCalculateFirmwareCrcFromEFlash(EmemType_e eEmemType
 }
 
 #if 0
-static u32 _DrvFwCtrlMsg26xxmRetrieveFirmwareCrcFromMainBlock(EmemType_e eEmemType)
+static U32 _DrvFwCtrlMsg26xxmRetrieveFirmwareCrcFromMainBlock(EmemType_e eEmemType)
 {
-    u32 nRetVal = 0; 
+    U32 nRetVal = 0; 
     u16 nRegData = 0;
     u8 szDbBusTxData[5] = {0};
     u8 szDbBusRxData[4] = {0};
@@ -7553,9 +7572,9 @@ static u32 _DrvFwCtrlMsg26xxmRetrieveFirmwareCrcFromMainBlock(EmemType_e eEmemTy
     return nRetVal;	
 }
 
-static u32 _DrvFwCtrlMsg26xxmRetrieveInfoCrcFromInfoBlock(void)
+static U32 _DrvFwCtrlMsg26xxmRetrieveInfoCrcFromInfoBlock(void)
 {
-    u32 nRetVal = 0; 
+    U32 nRetVal = 0; 
     u16 nRegData = 0;
     u8 szDbBusTxData[5] = {0};
     u8 szDbBusRxData[4] = {0};
@@ -7619,9 +7638,9 @@ static u32 _DrvFwCtrlMsg26xxmRetrieveInfoCrcFromInfoBlock(void)
 }
 #endif
 
-static u32 _DrvFwCtrlMsg26xxmRetrieveFrimwareCrcFromBinFile(u8 szTmpBuf[][1024], EmemType_e eEmemType)
+static U32 _DrvFwCtrlMsg26xxmRetrieveFrimwareCrcFromBinFile(u8 szTmpBuf[][1024], EmemType_e eEmemType)
 {
-    u32 nRetVal = 0; 
+    U32 nRetVal = 0; 
     
     DBG(&g_I2cClient->dev, "*** %s() eEmemType = %d ***\n", __func__, eEmemType);
     
@@ -7647,10 +7666,10 @@ static u32 _DrvFwCtrlMsg26xxmRetrieveFrimwareCrcFromBinFile(u8 szTmpBuf[][1024],
 }
 
 #if 0
-static u32 _DrvFwCtrlMsg26xxmCalculateInfoCrcByDeviceDriver(void)
+static U32 _DrvFwCtrlMsg26xxmCalculateInfoCrcByDeviceDriver(void)
 {
-    u32 nRetVal = 0xffffffff; 
-    u32 i, j;
+    U32 nRetVal = 0xffffffff; 
+    U32 i, j;
     u16 nRegData = 0;
     u8 szDbBusTxData[5] = {0};
 
@@ -7911,8 +7930,8 @@ static void _DrvFwCtrlMsg26xxmEraseFirmwareOnEFlash(EmemType_e eEmemType)
 
 static void _DrvFwCtrlMsg26xxmProgramFirmwareOnEFlash(EmemType_e eEmemType)
 {
-    u32 nStart = 0, nEnd = 0; 
-    u32 i, j; 
+    U32 nStart = 0, nEnd = 0; 
+    U32 i, j; 
     u16 nRegData = 0;
 //    u16 nRegData2 = 0, nRegData3 = 0; // add for debug
 
@@ -8060,7 +8079,7 @@ static void _DrvFwCtrlMsg26xxmProgramFirmwareOnEFlash(EmemType_e eEmemType)
 static s32 _DrvFwCtrlMsg26xxmUpdateFirmwareBySwId(void)
 {
     s32 nRetVal = -1;
-    u32 nCrcInfoA = 0, nCrcInfoB = 0, nCrcMainA = 0, nCrcMainB = 0;
+    U32 nCrcInfoA = 0, nCrcInfoB = 0, nCrcMainA = 0, nCrcMainB = 0;
     
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
     
@@ -8221,8 +8240,8 @@ static s32 _DrvFwCtrlMsg26xxmUpdateFirmwareBySwId(void)
 void _DrvFwCtrlMsg26xxmCheckFirmwareUpdateBySwId(void)
 {
 #if 0
-    u32 nCrcMainA, nCrcInfoA, nCrcMainB, nCrcInfoB;
-    u32 i;
+    U32 nCrcMainA, nCrcInfoA, nCrcMainB, nCrcInfoB;
+    U32 i;
     u16 nUpdateBinMajor = 0, nUpdateBinMinor = 0;
     u16 nMajor = 0, nMinor = 0;
     u8 *pVersion = NULL;
@@ -8464,7 +8483,7 @@ void _DrvFwCtrlMsg26xxmCheckFirmwareUpdateBySwId(void)
 static s32 _DrvFwCtrlMsg28xxUpdateFirmwareBySwId(void) 
 {
     s32 nRetVal = -1;
-    u32 nCrcInfoA = 0, nCrcInfoB = 0, nCrcMainA = 0, nCrcMainB = 0;
+    U32 nCrcInfoA = 0, nCrcInfoB = 0, nCrcMainA = 0, nCrcMainB = 0;
     
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
     
@@ -8594,8 +8613,8 @@ static s32 _DrvFwCtrlMsg28xxUpdateFirmwareBySwId(void)
 void _DrvFwCtrlMsg28xxCheckFirmwareUpdateBySwId(void) 
 {
 #if 0
-    u32 nCrcMainA, nCrcMainB;
-    u32 i;
+    U32 nCrcMainA, nCrcMainB;
+    U32 i;
     u16 nUpdateBinMajor = 0, nUpdateBinMinor = 0;
     u16 nMajor = 0, nMinor = 0;
     u8 *pVersion = NULL;
@@ -8920,7 +8939,7 @@ static void _DrvFwCtrlReadInfoC33(void)
     u8 szDbBusTxData[5] = {0};
     u16 nRegData = 0;
 #if defined(CONFIG_TOUCH_DRIVER_RUN_ON_QCOM_PLATFORM) || defined(CONFIG_TOUCH_DRIVER_RUN_ON_MTK_PLATFORM)
-    u32 i;
+    U32 i;
 #endif 
 
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
@@ -8986,10 +9005,10 @@ static void _DrvFwCtrlReadInfoC33(void)
 
 static s32 _DrvFwCtrlUpdateFirmwareC32(u8 szFwData[][1024], EmemType_e eEmemType)
 {
-    u32 i, j;
-    u32 nCrcMain, nCrcMainTp;
-    u32 nCrcInfo, nCrcInfoTp;
-    u32 nCrcTemp;
+    U32 i, j;
+    U32 nCrcMain, nCrcMainTp;
+    U32 nCrcInfo, nCrcInfoTp;
+    U32 nCrcTemp;
     u16 nRegData = 0;
 
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
@@ -9150,10 +9169,10 @@ static s32 _DrvFwCtrlUpdateFirmwareC32(u8 szFwData[][1024], EmemType_e eEmemType
 static s32 _DrvFwCtrlUpdateFirmwareC33(u8 szFwData[][1024], EmemType_e eEmemType)
 {
     u8 szLifeCounter[2];
-    u32 i, j;
-    u32 nCrcMain, nCrcMainTp;
-    u32 nCrcInfo, nCrcInfoTp;
-    u32 nCrcTemp;
+    U32 i, j;
+    U32 nCrcMain, nCrcMainTp;
+    U32 nCrcInfo, nCrcInfoTp;
+    U32 nCrcTemp;
     u16 nRegData = 0;
 
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
@@ -9397,29 +9416,29 @@ static s32 _DrvFwCtrlUpdateFirmwareC33(u8 szFwData[][1024], EmemType_e eEmemType
 
 static s32 _DrvFwCtrlMsg22xxUpdateFirmware(u8 szFwData[][1024], EmemType_e eEmemType)
 {
-    u32 i = 0, index = 0;
-    u32 nEraseCount = 0;
-    u32 nMaxEraseTimes = 0;
-    u32 nCrcMain = 0, nCrcMainTp = 0;
-    u32 nCrcInfo = 0, nCrcInfoTp = 0;
-    u32 nRemainSize, nBlockSize, nSize;
-    u32 nTimeOut = 0;
+    U32 i = 0, index = 0;
+    U32 nEraseCount = 0;
+    U32 nMaxEraseTimes = 0;
+    U32 nCrcMain = 0, nCrcMainTp = 0;
+    U32 nCrcInfo = 0, nCrcInfoTp = 0;
+    U32 nRemainSize, nBlockSize, nSize;
+    U32 nTimeOut = 0;
     u16 nRegData = 0;
     u16 nTrimByte1 = 0;
     s32 rc = 0;
 #if defined(CONFIG_TOUCH_DRIVER_RUN_ON_QCOM_PLATFORM) || defined(CONFIG_TOUCH_DRIVER_RUN_ON_MTK_PLATFORM)
     u8 szDbBusTxData[128] = {0};
 #ifdef CONFIG_ENABLE_UPDATE_FIRMWARE_WITH_SUPPORT_I2C_SPEED_400K
-    u32 nSizePerWrite = 1;
+    U32 nSizePerWrite = 1;
 #else 
-    u32 nSizePerWrite = 125;
+    U32 nSizePerWrite = 125;
 #endif //CONFIG_ENABLE_UPDATE_FIRMWARE_WITH_SUPPORT_I2C_SPEED_400K
 #elif defined(CONFIG_TOUCH_DRIVER_RUN_ON_SPRD_PLATFORM)
     u8 szDbBusTxData[1024] = {0};
 #ifdef CONFIG_ENABLE_UPDATE_FIRMWARE_WITH_SUPPORT_I2C_SPEED_400K
-    u32 nSizePerWrite = 1;
+    U32 nSizePerWrite = 1;
 #else
-    u32 nSizePerWrite = 1021;
+    U32 nSizePerWrite = 1021;
 #endif //CONFIG_ENABLE_UPDATE_FIRMWARE_WITH_SUPPORT_I2C_SPEED_400K
 #endif
 
@@ -9951,7 +9970,7 @@ void DrvFwCtrlVariableInitialize(void)
 
 void DrvFwCtrlOptimizeCurrentConsumption(void)
 {
-    u32 i;
+    U32 i;
     u8 szDbBusTxData[35] = {0};
 
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
@@ -10383,7 +10402,7 @@ void DrvFwCtrlGetPlatformFirmwareVersion(u8 **ppVersion)
 
     if (g_ChipType == CHIP_TYPE_MSG22XX) 
     {
-        u32 i;
+        U32 i;
         u16 nRegData1, nRegData2;
         u8 szDbBusRxData[12] = {0};
 
@@ -10471,7 +10490,7 @@ void DrvFwCtrlGetPlatformFirmwareVersion(u8 **ppVersion)
     }
     else if (g_ChipType == CHIP_TYPE_MSG26XXM)   
     {
-        u32 i;
+        U32 i;
         u16 nRegData = 0;
         u8 szDbBusTxData[5] = {0};
         u8 szDbBusRxData[16] = {0};
@@ -10674,7 +10693,7 @@ u16 DrvFwCtrlChangeFirmwareMode(u16 nMode)
     else if (g_ChipType == CHIP_TYPE_MSG21XXA || g_ChipType == CHIP_TYPE_MSG22XX || g_ChipType == CHIP_TYPE_MSG28XX)  
     {
         u8 szDbBusTxData[2] = {0};
-        u32 i = 0;
+        U32 i = 0;
         s32 rc;
 
         _gIsDisableFinagerTouch = 1; // Disable finger touch ISR handling temporarily for device driver can send change firmware mode i2c command to firmware. 
@@ -10715,7 +10734,7 @@ void DrvFwCtrlSelfGetFirmwareInfo(SelfFirmwareInfo_t *pInfo) // for MSG21xxA/MSG
 {
     u8 szDbBusTxData[1] = {0};
     u8 szDbBusRxData[8] = {0};
-    u32 i = 0;
+    U32 i = 0;
     s32 rc;
     
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
@@ -10777,7 +10796,7 @@ void DrvFwCtrlMutualGetFirmwareInfo(MutualFirmwareInfo_t *pInfo) // for MSG26xxM
     {
         u8 szDbBusTxData[3] = {0};
         u8 szDbBusRxData[8] = {0};
-        u32 i = 0;
+        U32 i = 0;
         s32 rc;
 
         _gIsDisableFinagerTouch = 1; // Disable finger touch ISR handling temporarily for device driver can send get firmware info i2c command to firmware. 
@@ -10914,7 +10933,7 @@ void DrvFwCtrlMutualGetFirmwareInfo(MutualFirmwareInfo_t *pInfo) // for MSG26xxM
     {
         u8 szDbBusTxData[1] = {0};
         u8 szDbBusRxData[10] = {0};
-        u32 i = 0;
+        U32 i = 0;
         s32 rc;
     
         _gIsDisableFinagerTouch = 1; // Disable finger touch ISR handling temporarily for device driver can send get firmware info i2c command to firmware. 
@@ -11135,7 +11154,7 @@ void DrvFwCtrlCheckFirmwareUpdateBySwId(void)
 void DrvFwCtrlGetTouchPacketAddress(u16* pDataAddress, u16* pFlagAddress)
 {
     s32 rc = 0;
-    u32 i = 0;
+    U32 i = 0;
     u8 szDbBusTxData[1] = {0};
     u8 szDbBusRxData[4] = {0};
 
@@ -11348,7 +11367,7 @@ void DrvFwCtrlOpenGloveMode(void) // used for MSG28xx only
 {
     s32 rc = 0;
     u8 szDbBusTxData[3] = {0};
-    u32 i = 0;
+    U32 i = 0;
 
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -11386,7 +11405,7 @@ void DrvFwCtrlCloseGloveMode(void) // used for MSG28xx only
 {
     s32 rc = 0;
     u8 szDbBusTxData[3] = {0};
-    u32 i = 0;
+    U32 i = 0;
 
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -11424,7 +11443,7 @@ void DrvFwCtrlGetGloveInfo(u8 *pGloveMode) // used for MSG28xx only
 {
     u8 szDbBusTxData[3] = {0};
     u8 szDbBusRxData[2] = {0};
-    u32 i = 0;
+    U32 i = 0;
     s32 rc;
 
     _gIsDisableFinagerTouch = 1; // Disable finger touch ISR handling temporarily for device driver can send get firmware info i2c command to firmware.
@@ -11483,7 +11502,7 @@ void DrvFwCtrlGetGloveInfo(u8 *pGloveMode) // used for MSG28xx only
 
 void DrvFwCtrlChargerDetection(u8 nChargerStatus)
 {
-    u32 i = 0;
+    U32 i = 0;
     u8 szDbBusTxData[2] = {0};
     s32 rc = 0;
 
@@ -11635,11 +11654,11 @@ static s32 _DrvFwCtrlReadFingerTouchData(u8 *pPacket, u16 nReportPacketLength)
 void _DrvFwCtrlSelfHandleFingerTouch(void) // for MSG21xxA/MSG22xx
 {
     SelfTouchInfo_t tInfo;
-    u32 i;
+    U32 i;
 #ifdef CONFIG_TP_HAVE_KEY
     u8 nTouchKeyCode = 0;
 #endif //CONFIG_TP_HAVE_KEY
-    static u32 nLastKeyCode = 0;
+    static U32 nLastKeyCode = 0;
     u8 *pPacket = NULL;
     u16 nReportPacketLength = 0;
     s32 rc;
@@ -11784,7 +11803,7 @@ void _DrvFwCtrlSelfHandleFingerTouch(void) // for MSG21xxA/MSG22xx
 #ifdef CONFIG_ENABLE_GESTURE_WAKEUP
     if (g_GestureWakeupFlag == 1)
     {
-        u32 i = 0
+        U32 i = 0
         
         while (i < 5)
         {
@@ -12019,11 +12038,11 @@ void _DrvFwCtrlSelfHandleFingerTouch(void) // for MSG21xxA/MSG22xx
 void _DrvFwCtrlMutualHandleFingerTouch(void) // for MSG26xxM/MSG28xx
 {
     MutualTouchInfo_t tInfo;
-    u32 i = 0;
+    U32 i = 0;
 #ifdef CONFIG_TP_HAVE_KEY
-    static u32 nLastKeyCode = 0xFF;
+    static U32 nLastKeyCode = 0xFF;
 #endif //CONFIG_TP_HAVE_KEY
-    static u32 nLastCount = 0;
+    static U32 nLastCount = 0;
     u8 *pPacket = NULL;
     u16 nReportPacketLength = 0;
 

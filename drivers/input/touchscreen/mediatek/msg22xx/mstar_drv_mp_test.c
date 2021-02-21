@@ -107,8 +107,8 @@
 // EXTERN VARIABLE DECLARATION
 /*=============================================================*/
 
-extern u32 SLAVE_I2C_ID_DBBUS;
-extern u32 SLAVE_I2C_ID_DWI2C;
+extern U32 SLAVE_I2C_ID_DBBUS;
+extern U32 SLAVE_I2C_ID_DWI2C;
 
 extern u8 g_ChipType;
 
@@ -119,20 +119,20 @@ extern struct mutex g_Mutex;
 // GLOBAL VARIABLE DEFINITION
 /*=============================================================*/
 
-u32 g_IsInMpTest = 0;
+U32 g_IsInMpTest = 0;
 
 /*=============================================================*/
 // LOCAL VARIABLE DEFINITION
 /*=============================================================*/
 
-static u32 _gTestRetryCount = CTP_MP_TEST_RETRY_COUNT;
+static U32 _gTestRetryCount = CTP_MP_TEST_RETRY_COUNT;
 static ItoTestMode_e _gItoTestMode = 0;
 
 static s32 _gCtpMpTestStatus = ITO_TEST_UNDER_TESTING;
 
 static u8 _gSelfICTestFailChannel[SELF_IC_MAX_CHANNEL_NUM] = {0};
 static u8 _gMutualICTestFailChannel[MUTUAL_IC_MAX_MUTUAL_NUM] = {0};
-static u32 _gTestFailChannelCount = 0;
+static U32 _gTestFailChannelCount = 0;
 
 static struct work_struct _gCtpItoTestWork;
 static struct workqueue_struct *_gCtpMpTestWorkQueue = NULL;
@@ -183,14 +183,14 @@ static u16 *_gMsg21xxaShort_4_GPO = NULL;
 static u8 _gIsOldFirmwareVersion = 0;
 
 // _gMsg22xxOpenRIU1~_gMsg22xxOpenRIU3 are for MSG22XX
-static u32 *_gMsg22xxOpenRIU1 = NULL;
-static u32 *_gMsg22xxOpenRIU2 = NULL;
-static u32 *_gMsg22xxOpenRIU3 = NULL;
+static U32 *_gMsg22xxOpenRIU1 = NULL;
+static U32 *_gMsg22xxOpenRIU2 = NULL;
+static U32 *_gMsg22xxOpenRIU3 = NULL;
 
 // _gMsg22xxShort_RIU1~_gMsg22xxShort_RIU4 are for MSG22XX
-static u32 *_gMsg22xxShort_RIU1 = NULL;
-static u32 *_gMsg22xxShort_RIU2 = NULL;
-static u32 *_gMsg22xxShort_RIU3 = NULL;
+static U32 *_gMsg22xxShort_RIU1 = NULL;
+static U32 *_gMsg22xxShort_RIU2 = NULL;
+static U32 *_gMsg22xxShort_RIU3 = NULL;
 
 // _gMsg22xxOpenSubFrameNum1~_gMsg22xxShortSubFrameNum4 are for MSG22XX
 static u8 _gMsg22xxOpenSubFrameNum1 = 0;
@@ -201,7 +201,7 @@ static u8 _gMsg22xxShortSubFrameNum2 = 0;
 static u8 _gMsg22xxShortSubFrameNum3 = 0;
 
 #ifdef CONFIG_ENABLE_MP_TEST_ITEM_FOR_2R_TRIANGLE
-static u32 *_gMsg22xxShort_RIU4 = NULL;
+static U32 *_gMsg22xxShort_RIU4 = NULL;
 static u8 _gMsg22xxShortSubFrameNum4 = 0;
 #endif //CONFIG_ENABLE_MP_TEST_ITEM_FOR_2R_TRIANGLE
 
@@ -387,7 +387,7 @@ static u16 _DrvMpTestItoTestSelfICGetTpType(void)
 static u16 _DrvMpTestItoTestSelfICChooseTpType(void)
 {
     u16 nTpType = 0;
-    u32 i = 0;
+    U32 i = 0;
     
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -707,7 +707,7 @@ static void _DrvMpTestItoTestSelfICAnaSwReset(void)
 
 static u16 _DrvMpTestItoTestMsg21xxaGetNum(void)
 {
-    u32 i;
+    U32 i;
     u16 nSensorNum = 0;
     u16 nRegVal1, nRegVal2;
  
@@ -810,7 +810,7 @@ static void _DrvMpTestItoOpenTestMsg21xxaSetV(u8 nEnable, u8 nPrs)
 
 static u16 _DrvMpTestItoTestMsg21xxaGetDataOut(s16 *pRawData)
 {
-    u32 i;
+    U32 i;
     u16 szRawData[SELF_IC_MAX_CHANNEL_NUM] = {0};
     u16 nSensorNum;
     u16 nRegInt;
@@ -859,7 +859,7 @@ static u16 _DrvMpTestItoTestMsg21xxaGetDataOut(s16 *pRawData)
 
 static void _DrvMpTestItoTestMsg21xxaSendDataIn(u8 nStep)
 {
-    u32	i;
+    U32	i;
     u16 *pType = NULL;        
     u8 	szDbBusTxData[512] = {0};
 
@@ -981,7 +981,7 @@ static void _DrvMpTestItoTestMsg21xxaSendDataIn(u8 nStep)
 
 static void _DrvMpTestItoOpenTestMsg21xxaSetC(u8 nCSubStep)
 {
-    u32 i;
+    U32 i;
     u8 szDbBusTxData[SELF_IC_MAX_CHANNEL_NUM+3];
     u8 nHighLevelCSub = 0;
     u8 nCSubNew;
@@ -1017,7 +1017,7 @@ static void _DrvMpTestItoOpenTestMsg21xxaSetC(u8 nCSubStep)
 
 static void _DrvMpTestItoOpenTestMsg21xxaFirst(u8 nItemId, s16 *pRawData, s8 *pDataFlag)		
 {
-    u32 i, j;
+    U32 i, j;
     s16 szTmpRawData[SELF_IC_MAX_CHANNEL_NUM] = {0};
     u16	nRegVal;
     u8  nLoop;
@@ -1141,7 +1141,7 @@ static void _DrvMpTestItoShortTestMsg21xxaChangeGPOSetting(u8 nItemId)
 {
     u8 szDbBusTxData[3+MSG21XXA_GPO_SETTING_SIZE*2] = {0};
     u16 szGPOSetting[3] = {0};
-    u32 i;
+    U32 i;
     
     DBG(&g_I2cClient->dev, "*** %s() nItemId = %d ***\n", __func__, nItemId);
     
@@ -1236,7 +1236,7 @@ static void _DrvMpTestItoShortTestMsg21xxaChangeRmodeSetting(u8 nMode)
 
 static void _DrvMpTestItoShortTestMsg21xxaFirst(u8 nItemId, s16 *pRawData, s8 *pDataFlag)		
 {
-    u32 i;
+    U32 i;
     s16 szTmpRawData[SELF_IC_MAX_CHANNEL_NUM] = {0};
     s16 szTmpRawData2[SELF_IC_MAX_CHANNEL_NUM] = {0};
     u8  nSensorNum, nSensorNum2, nNumOfSensorMapping1, nNumOfSensorMapping2, nSensorCount = 0;
@@ -1318,7 +1318,7 @@ static void _DrvMpTestItoShortTestMsg21xxaFirst(u8 nItemId, s16 *pRawData, s8 *p
 
 static u16 _DrvMpTestItoTestMsg22xxGetDataOut(s16 *pRawData, u16 nSubFrameNum)
 {
-    u32 i;
+    U32 i;
     u16 szRawData[SELF_IC_MAX_CHANNEL_NUM*2] = {0};
     u16 nRegInt = 0x0000;
     u16 nSize = nSubFrameNum * 4;  // 1SF 4AFE
@@ -1372,8 +1372,8 @@ static u16 _DrvMpTestItoTestMsg22xxGetDataOut(s16 *pRawData, u16 nSubFrameNum)
 
 static void _DrvMpTestItoTestMsg22xxSendDataIn(u8 nStep, u16 nRiuWriteLength)
 {
-    u32	i;
-    u32 *pType = NULL;
+    U32	i;
+    U32 *pType = NULL;
 
     DBG(&g_I2cClient->dev, "*** %s() nStep = %d, nRiuWriteLength = %d ***\n", __func__, nStep, nRiuWriteLength);
 
@@ -1424,9 +1424,9 @@ static void _DrvMpTestItoTestMsg22xxSendDataIn(u8 nStep, u16 nRiuWriteLength)
 
 static void _DrvMpTestItoTestMsg22xxSetC(u8 nCSubStep)
 {
-    u32 i;
+    U32 i;
     u16 nRegVal;
-    u32 nCSubNew; 
+    U32 nCSubNew; 
      
     DBG(&g_I2cClient->dev, "*** %s() nCSubStep = %d ***\n", __func__, nCSubStep);
     
@@ -1626,7 +1626,7 @@ static void _DrvMpTestItoTestMsg22xxGetChargeDumpTime(u16 nMode, u16 *pChargeTim
 
 static void _DrvMpTestItoOpenTestMsg22xxFirst(u8 nItemId, s16 *pRawData, s8 *pDataFlag)		
 {
-    u32 i;
+    U32 i;
     s16 szTmpRawData[SELF_IC_MAX_CHANNEL_NUM*2] = {0};
     u16 nSubFrameNum = 0;
     u16 nChargeTime, nDumpTime;
@@ -1707,7 +1707,7 @@ static void _DrvMpTestItoOpenTestMsg22xxFirst(u8 nItemId, s16 *pRawData, s8 *pDa
 
 static void _DrvMpTestItoShortTestMsg22xxFirst(u8 nItemId, s16 *pRawData, s8 *pDataFlag)		
 {
-    u32 i, j;
+    U32 i, j;
     s16 szIIR1[MSG22XX_MAX_SUBFRAME_NUM*MSG22XX_MAX_AFE_NUM] = {32767};
     s16 szIIR2[MSG22XX_MAX_SUBFRAME_NUM*MSG22XX_MAX_AFE_NUM] = {32767};
     s16 szIIRTmp[MSG22XX_MAX_SUBFRAME_NUM*MSG22XX_MAX_AFE_NUM] = {32767};
@@ -1855,7 +1855,7 @@ static void _DrvMpTestItoShortTestMsg22xxFirst(u8 nItemId, s16 *pRawData, s8 *pD
 
 static u8 _DrvMpTestMsg22xxCheckFirmwareVersion(void) // Only MSG22XX support platform firmware version
 {
-    u32 i;
+    U32 i;
     s32 nDiff;
     u16 nRegData1, nRegData2;
     u8 szDbBusRxData[12] = {0};
@@ -1949,7 +1949,7 @@ static u8 _DrvMpTestMsg22xxCheckFirmwareVersion(void) // Only MSG22XX support pl
 static ItoTestResult_e _DrvMpTestItoOpenTestSelfICSecond(u8 nItemId)
 {
     ItoTestResult_e nRetVal = ITO_TEST_OK;
-    u32 i;
+    U32 i;
     s32 nTmpRawDataJg1 = 0;
     s32 nTmpRawDataJg2 = 0;
     s32 nTmpJgAvgThMax1 = 0;
@@ -2043,7 +2043,7 @@ static ItoTestResult_e _DrvMpTestItoOpenTestSelfICSecond(u8 nItemId)
 static ItoTestResult_e _DrvMpTestItoOpenTestSelfICSecond2r(u8 nItemId)
 {
     ItoTestResult_e nRetVal = ITO_TEST_OK;
-    u32 i;
+    U32 i;
     s32 nTmpRawDataJg1 = 0;
     s32 nTmpRawDataJg2 = 0;
     s32 nTmpRawDataJg3 = 0;
@@ -2208,7 +2208,7 @@ static ItoTestResult_e _DrvMpTestItoOpenTestSelfICSecond2r(u8 nItemId)
 static ItoTestResult_e _DrvMpTestItoShortTestSelfICSecond(u8 nItemId)
 {
     ItoTestResult_e nRetVal = ITO_TEST_OK;
-    u32 i;
+    U32 i;
     u8 nSensorCount = 0;
     u8 nNumOfSensorMapping1 = 0, nNumOfSensorMapping2 = 0;
 	
@@ -2327,7 +2327,7 @@ static ItoTestResult_e _DrvMpTestItoShortTestSelfICSecond(u8 nItemId)
 static ItoTestResult_e _DrvMpTestSelfICItoOpenTestEntry(void) 
 {
     ItoTestResult_e nRetVal1 = ITO_TEST_OK, nRetVal2 = ITO_TEST_OK, nRetVal3 = ITO_TEST_OK;
-    u32 i;
+    U32 i;
 
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -2444,7 +2444,7 @@ static ItoTestResult_e _DrvMpTestSelfICItoOpenTestEntry(void)
 static ItoTestResult_e _DrvMpTestSelfICItoShortTestEntry(void)
 {
     ItoTestResult_e nRetVal1 = ITO_TEST_OK, nRetVal2 = ITO_TEST_OK, nRetVal3 = ITO_TEST_OK, nRetVal4 = ITO_TEST_OK, nRetVal5 = ITO_TEST_OK;
-    u32 i = 0;
+    U32 i = 0;
 
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -2684,7 +2684,7 @@ void _ItoTestMsg28xxDebugShowArray(void *pBuf, u16 nLen, int nDataType, int nCar
     s8 * pS8Buf = NULL;
     u16 * pU16Buf = NULL;
     s16 * pS16Buf = NULL;
-    u32 * pU32Buf = NULL;
+    U32 * pU32Buf = NULL;
     s32 * pS32Buf = NULL;
     int i;
 
@@ -2697,7 +2697,7 @@ void _ItoTestMsg28xxDebugShowArray(void *pBuf, u16 nLen, int nDataType, int nCar
     else if(nDataType == -16)
         pS16Buf = (s16 *)pBuf;    
     else if(nDataType == 32)
-        pU32Buf = (u32 *)pBuf;    
+        pU32Buf = (U32 *)pBuf;    
     else if(nDataType == -32)
         pS32Buf = (s32 *)pBuf;    
 
@@ -3050,7 +3050,7 @@ static void _DrvMpTestItoTestMsg26xxmGetDeltaC(s32 *pTarget)
     }
 }
 
-static s32 _DrvMpTestItoTestMsg26xxmReadTrunkFwVersion(u32* pVersion)
+static s32 _DrvMpTestItoTestMsg26xxmReadTrunkFwVersion(U32* pVersion)
 {
     u16 nMajor = 0;
     u16 nMinor = 0;
@@ -3084,7 +3084,7 @@ static s32 _DrvMpTestItoTestMsg26xxmReadTrunkFwVersion(u32* pVersion)
 
 static s32 _DrvMpTestItoTestMsg26xxmGetSwitchFlag(void)
 {
-    u32 nFwVersion = 0;
+    U32 nFwVersion = 0;
 
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -3108,7 +3108,7 @@ static s32 _DrvMpTestItoTestMsg26xxmGetSwitchFlag(void)
 
 static s32 _DrvMpTestItoTestMsg26xxmCheckSwitchStatus(void)
 {
-    u32 nRegData = 0;
+    U32 nRegData = 0;
     int nTimeOut = 100;
     int nT = 0;
 
@@ -3837,7 +3837,7 @@ static s32 _DrvMpTestItoOpenTestMsg28xxOpenJudge(u16 nItemID, s8 pNormalTestResu
     s32 nRetVal = 0;
     u16 nCSub = _gMsg28xx_CSUB_REF;
     u16 nRowNum = 0, nColumnNum = 0;
-    u32 nSum=0, nAvg=0, nDelta=0, nPrev=0;
+    U32 nSum=0, nAvg=0, nDelta=0, nPrev=0;
     u16 i, j, k;
 
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
@@ -3947,7 +3947,7 @@ static s32 _DrvMpTestItoOpenTestMsg28xxOpenJudge(u16 nItemID, s8 pNormalTestResu
 
 static s32 _DrvMpTestItoTestMsg28xxCheckSwitchStatus(void)
 {
-    u32 nRegData = 0;
+    U32 nRegData = 0;
     int nTimeOut = 280;
     int nT = 0;
 
@@ -4069,7 +4069,7 @@ u16 _DrvMpTestMsg28xxItoTestGetTpType(void)
 
 static u16 _DrvMpTestMsg28xxItoTestChooseTpType(void)
 {
-    u32 i = 0;
+    U32 i = 0;
 
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -4648,8 +4648,8 @@ static ItoTestResult_e _DrvMpTestItoShortTestMsg26xxmJudge(u8 nItemID)
 static ItoTestResult_e _DrvMpTestMsg26xxmItoShortTestEntry(void)
 {
     ItoTestResult_e nRetVal1 = ITO_TEST_OK, nRetVal2 = ITO_TEST_OK, nRetVal3 = ITO_TEST_OK, nRetVal4 = ITO_TEST_OK, nRetVal5 = ITO_TEST_OK;
-    u32 i = 0;
-    u32 j = 0;
+    U32 i = 0;
+    U32 j = 0;
     u16 nTestPinCount = 0;
     s32 nShortThreshold = 0;
 
@@ -5289,7 +5289,7 @@ static s32 _DrvMpTestMsg28xxItoShortTestEntry(void)
     u16 nTestPinMap[6][13] = {{0}};        //6:max subframe    13:max afe
     u16 nTestPinNum = 0;
 //    s32 nThrs = 0;
-    u32 nRetVal = 0;
+    U32 nRetVal = 0;
         
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -5469,7 +5469,7 @@ static s32 _DrvMpTestItoTestMsg26xxmGetWaterProofOneShotRawIir(u16 wszResultData
     u16 i;
     u16 nTemp;
     u8 szDbBusTxData[3];
-	u32 nGetdataNum = 12;
+	U32 nGetdataNum = 12;
     u8 szShotData[24] = {0}; //Get 12 FIR data
 
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
@@ -5558,7 +5558,7 @@ static s32 _DrvMpTestMsg26xxmItoWaterProofTest(void)
 static s32 _DrvMpTestMsg26xxmItoWaterProofTestJudge(void)
 {
 	u16 i;
-	u32 nGetdataNum = 12;
+	U32 nGetdataNum = 12;
 
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -5578,7 +5578,7 @@ static s32 _DrvMpTestMsg26xxmItoWaterProofTestJudge(void)
 s32 _DrvMpTestMsg26xxmItoWaterProofTestEntry(void)
 {
     s32 nRetVal = 0;
-	u32 nRegData = 0;
+	U32 nRegData = 0;
     u16 i = 0;
 	s32 nResultTemp[12] = {0};
 
@@ -5675,7 +5675,7 @@ s32 _DrvMpTestMsg26xxmItoWaterProofTestEntry(void)
     return nRetVal;
 }
 
-static s32 _DrvMpTestItoWaterProofTestMsg28xxTriggerWaterProofOneShot(s16 * pResultData, u32 nDelay)
+static s32 _DrvMpTestItoWaterProofTestMsg28xxTriggerWaterProofOneShot(s16 * pResultData, U32 nDelay)
 {
     u16 nAddr = 0x5000, nAddrNextSF = 0x1A4;
     u16 nSF = 0, nAfeOpening = 0, nDriOpening = 0;
@@ -5762,12 +5762,12 @@ static s32 _DrvMpTestItoWaterProofTestMsg28xxTriggerWaterProofOneShot(s16 * pRes
     return 0;
 }
 
-static s32 _DrvMpTestItoWaterProofTesMsg28xxtGetWaterProofOneShotRawIIR(s16 * pRawDataWP, u32 nDelay)
+static s32 _DrvMpTestItoWaterProofTesMsg28xxtGetWaterProofOneShotRawIIR(s16 * pRawDataWP, U32 nDelay)
 {
     return _DrvMpTestItoWaterProofTestMsg28xxTriggerWaterProofOneShot(pRawDataWP, nDelay);
 }
 
-static s32 _DrvMpTestItoWaterProofTestMsg28xxGetDeltaCWP(s32 *pTarget, s8 nSwap, u32 nDelay)
+static s32 _DrvMpTestItoWaterProofTestMsg28xxGetDeltaCWP(s32 *pTarget, s8 nSwap, U32 nDelay)
 {
     s16 nRawDataWP[12] = {0};
     s16 i;
@@ -5788,7 +5788,7 @@ static s32 _DrvMpTestItoWaterProofTestMsg28xxGetDeltaCWP(s32 *pTarget, s8 nSwap,
     return 0;
 }
 
-static s32 _DrvMpTestMsg28xxItoWaterProofTest(u32 nDelay)
+static s32 _DrvMpTestMsg28xxItoWaterProofTest(U32 nDelay)
 {
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -5822,9 +5822,9 @@ static void _DrvMpTestMsg28xxItoWaterProofTestMsgJudge(void)
 static s32 _DrvMpTestMsg28xxItoWaterProofTestEntry(void)
 {
     s16 i = 0;
-    u32 nRetVal = 0;
+    U32 nRetVal = 0;
     u16 nRegDataWP = 0;
-    u32 nDelay = 0;
+    U32 nDelay = 0;
 
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
 
@@ -6038,9 +6038,9 @@ s32 DrvMpTestGetTestResult(void)
     return _gCtpMpTestStatus;
 }
 
-void DrvMpTestGetTestFailChannel(ItoTestMode_e eItoTestMode, u8 *pFailChannel, u32 *pFailChannelCount)
+void DrvMpTestGetTestFailChannel(ItoTestMode_e eItoTestMode, u8 *pFailChannel, U32 *pFailChannelCount)
 {
-    u32 i;
+    U32 i;
     
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
     DBG(&g_I2cClient->dev, "_gTestFailChannelCount = %d\n", _gTestFailChannelCount);
@@ -6070,13 +6070,13 @@ void DrvMpTestGetTestFailChannel(ItoTestMode_e eItoTestMode, u8 *pFailChannel, u
     }
 }
 
-void DrvMpTestGetTestDataLog(ItoTestMode_e eItoTestMode, u8 *pDataLog, u32 *pLength)
+void DrvMpTestGetTestDataLog(ItoTestMode_e eItoTestMode, u8 *pDataLog, U32 *pLength)
 {
     DBG(&g_I2cClient->dev, "*** %s() ***\n", __func__);
     
     if (g_ChipType == CHIP_TYPE_MSG21XXA || g_ChipType == CHIP_TYPE_MSG22XX) 
     {
-        u32 i;
+        U32 i;
         u8 nHighByte, nLowByte;
     
         if (eItoTestMode == ITO_TEST_MODE_OPEN_TEST)
@@ -6259,7 +6259,7 @@ void DrvMpTestGetTestDataLog(ItoTestMode_e eItoTestMode, u8 *pDataLog, u32 *pLen
     }
     else if (g_ChipType == CHIP_TYPE_MSG26XXM || g_ChipType == CHIP_TYPE_MSG28XX) 
     {
-        u32 i, j, k;
+        U32 i, j, k;
     
         if (eItoTestMode == ITO_TEST_MODE_OPEN_TEST)
         {
