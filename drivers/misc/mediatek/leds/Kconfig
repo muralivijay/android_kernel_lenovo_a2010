@@ -21,3 +21,6 @@ config BACKLIGHT_SUPPORT_LM3697
 	default n
  	---help---
 	  charge pump driver for external backlight
+
+config FLASHLIGHT_SGM3785
+	bool "config flashlight sgm3785"

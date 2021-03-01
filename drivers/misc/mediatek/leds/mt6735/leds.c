@@ -47,6 +47,33 @@
 #include "leds_hal.h"
 #include "ddp_pwm.h"
 #include "mtkfb.h"
+/*----CONFIG_FLASHLIGHT_SGM3785 is to avoid the error happened when some projects have no the module"sgm3785"----*/
+/*****-------------------------add by yinyapeng 2016/01/16----------------------*********/
+#ifdef CONFIG_FLASHLIGHT_SGM3785
+	typedef enum{
+		SGM_GPIO_ENM_MODE0,
+		SGM_GPIO_ENM_MODE5,
+		SGM_GPIO_ENF_MODE0,
+		SGM_GPIO_ENF_MODE5,
+	}PinType;
+
+	#define Flash_GPIO_EN SGM_GPIO_ENF_MODE0
+	#define Torch_GPIO_EN SGM_GPIO_ENM_MODE0
+extern void mt_set_flashlight_gpio(int PinType,int val);
+#endif
+#ifndef kal_bool
+typedef enum {
+   KAL_FALSE = 0,
+   KAL_TRUE  = 1,
+} kal_bool;
+#endif
+extern int FL_Enable(void);
+extern int FL_Disable(void);
+extern int FL_init(void);
+extern int sgm3785_set_torch_mode(unsigned short duty);
+extern void sgm3785_set_gpio(int PinType,int val);
+extern signed int sgm3785_shutoff(void);
+/*----------------------------add by yinyapeng 2016/01/16-----------------------------*/
 
 /* for LED&Backlight bringup, define the dummy API */
 #ifndef CONFIG_MTK_PMIC
@@ -836,8 +863,43 @@ int mt_mt65xx_led_set_cust(struct cust_mt65xx_led *cust, int level)
 
 	case MT65XX_LED_MODE_GPIO:
 		LEDS_DEBUG("brightness_set_cust:go GPIO mode!!!!!\n");
-		return ((cust_set_brightness) (cust->data)) (level);
+//		return ((cust_set_brightness) (cust->data)) (level);
+//add by yinyapeng 2016-01-12
+#ifdef CONFIG_FLASHLIGHT_SGM3785
+		printk("yinyapeng add flashlight_sgm3785 already define\n");
 
+		if (strcmp(cust->name, "torch") == 0) {
+			printk("by yinyapeng level=%d\n",level);
+			if (level == 0) {
+					//mt_set_flashlight_gpio(Flash_GPIO_EN,0);
+					//mt_set_flashlight_gpio(Torch_GPIO_EN,0);
+					//sgm3785_set_gpio(SGM_GPIO_ENF_MODE0,0);
+					//sgm3785_set_gpio(SGM_GPIO_ENM_MODE0,0);
+
+					sgm3785_shutoff();
+			} else {
+					//mt_set_flashlight_gpio(Torch_GPIO_EN,1);
+					//sgm3785_set_gpio(SGM_GPIO_ENF_MODE0,0);
+					//sgm3785_set_gpio(SGM_GPIO_ENM_MODE0,1);
+					sgm3785_set_torch_mode(2);
+				   }
+		}
+
+		return 1;
+//add by yinyapeng (torch control of 710) 2016/01/20
+#else
+		if (strcmp(cust->name, "torch") == 0) {
+			if (level == 0) {
+				FL_Disable();
+			} else {
+				FL_init();
+				FL_Enable();
+			}
+		}
+		return 1;
+
+		//return ((cust_set_brightness) (cust->data)) (level);
+#endif
 	case MT65XX_LED_MODE_PMIC:
 		/* for button baclight used SINK channel, when set button ISINK,
 			don't do disable other ISINK channel */
