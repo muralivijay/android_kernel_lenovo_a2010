@@ -70,6 +70,7 @@ memory@00000000 {
 		};
 
 };
+
 /* sensor gpio standization */
 &pio {
 	alsps_intpin_cfg: alspspincfg {
@@ -105,6 +106,99 @@ memory@00000000 {
 	status = "okay";
 
 };
+
+/********flashlight gpio start************/
+
+&flashlight_gpio {
+	pinctrl-names = "flashlight_default", "flashlight_enm_mode0_l", "flashlight_enm_mode0_h", "flashlight_enm_mode5_l", "flashlight_enm_mode5_h",
+	"flashlight_enf_mode0_l","flashlight_enf_mode0_h","flashlight_enf_mode5_l","flashlight_enf_mode5_h";
+	pinctrl-0 = <&flashlight_pins_default>;	
+	pinctrl-1 = <&flashlight_pins_enm_mode0_output0>;
+	pinctrl-2 = <&flashlight_pins_enm_mode0_output1>;
+	pinctrl-3 = <&flashlight_pins_enm_mode5_output0>;
+	pinctrl-4 = <&flashlight_pins_enm_mode5_output1>;
+	
+	pinctrl-5 = <&flashlight_pins_enf_mode0_output0>;
+	pinctrl-6 = <&flashlight_pins_enf_mode0_output1>;
+	pinctrl-7 = <&flashlight_pins_enf_mode5_output0>;
+	pinctrl-8 = <&flashlight_pins_enf_mode5_output1>;
+	
+	
+	
+	status = "okay";
+
+};
+
+&pio {
+	flashlight_pins_default: flashlight_default {
+	};
+	/*torch_en*/
+	flashlight_pins_enm_mode0_output0: enm_mode0@0 {
+	    pins_cmd_dat {
+			pins = <PINMUX_GPIO78__FUNC_GPIO78>;/*GPIO_FL_ENM_PIN*/
+			slew-rate = <1>; /*direction 0:in, 1:out*/
+			output-low;/*direction out used only. output_low or high*/
+		};
+	};
+	
+	flashlight_pins_enm_mode0_output1: enm_mode0@1 {
+	    pins_cmd_dat {
+			pins = <PINMUX_GPIO78__FUNC_GPIO78>;/*GPIO_DISP_ENN_PIN*/
+			slew-rate = <1>; /*direction 0:in, 1:out*/
+			output-high;/*direction out used only. output_low or high*/
+		};
+	};
+	flashlight_pins_enm_mode5_output0: enm_mode5@0 {
+	    pins_cmd_dat {
+			pins = <PINMUX_GPIO78__FUNC_PWM0>;/*GPIO_DISP_ENP_PIN*/
+			slew-rate = <1>;
+			bias-disable;
+		};
+	};
+	flashlight_pins_enm_mode5_output1: enm_mode5@1 {
+	    pins_cmd_dat {
+			pins = <PINMUX_GPIO78__FUNC_PWM0>;/*GPIO_DISP_ENP_PIN*/
+			slew-rate = <1>;
+			bias-disable;
+		};
+	};
+	
+	/*flash*/
+	flashlight_pins_enf_mode0_output0: enf_mode0@0 {
+	    pins_cmd_dat {
+			pins = <PINMUX_GPIO80__FUNC_GPIO80>;/*GPIO_DISP_ENP_PIN*/
+			slew-rate = <1>;
+			output-low;
+		};
+	};
+	flashlight_pins_enf_mode0_output1: enf_mode0@1 {
+	    pins_cmd_dat {
+			pins = <PINMUX_GPIO80__FUNC_GPIO80>;/*GPIO_DISP_ENP_PIN*/
+			slew-rate = <1>;
+			output-high;
+		};
+	};
+	flashlight_pins_enf_mode5_output0: enf_mode5@0 {
+	    pins_cmd_dat {
+			pins = <PINMUX_GPIO80__FUNC_PWM4>;/*GPIO_DISP_ENP_PIN*/
+			slew-rate = <1>;
+			output-high;
+		};
+	};
+	flashlight_pins_enf_mode5_output1: enf_mode5@1 {
+	    pins_cmd_dat {
+			pins = <PINMUX_GPIO80__FUNC_PWM4>;/*GPIO_DISP_ENP_PIN*/
+			slew-rate = <1>;
+			output-high;
+		};
+	};
+	
+	
+
+	
+};
+/*****flashlight gpio end********/
+
 /* sensor end */
 
 &accdet {

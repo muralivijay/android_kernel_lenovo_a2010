@@ -1783,6 +1783,11 @@
 			reg = <0x11006000 0x1000>;
 			interrupts = <GIC_SPI 77 IRQ_TYPE_LEVEL_LOW>;
 		};
+
+		flashlight_gpio:flashlight_gpio {
+			compatible = "mediatek,sgmxx","mediatek,flashlight";		
+		};
+
 	};
 	lcm: lcm {
 		compatible = "mediatek,lcm";
