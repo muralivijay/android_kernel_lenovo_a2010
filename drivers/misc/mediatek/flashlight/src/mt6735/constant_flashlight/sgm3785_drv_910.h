@@ -20,15 +20,15 @@
 #define T_DUTY 5   		// 0,1,2,3,4,5,6,7,8,9,10
 
 /*
-#ifndef GPIO_CAMERA_FLASH_EN_PIN 
+#ifndef GPIO_CAMERA_FLASH_EN_PIN
 #define GPIO_CAMERA_FLASH_EN_PIN (GPIO78 | 0x80000000)
 #endif
 
-#ifndef GPIO_CAMERA_FLASH_EN_PIN_M_GPIO 
+#ifndef GPIO_CAMERA_FLASH_EN_PIN_M_GPIO
 #define GPIO_CAMERA_FLASH_EN_PIN_M_GPIO GPIO_MODE_00
 #endif
 
-#ifndef GPIO_CAMERA_FLASH_MODE_PIN 
+#ifndef GPIO_CAMERA_FLASH_MODE_PIN
 #define GPIO_CAMERA_FLASH_MODE_PIN (GPIO80 | 0x80000000)
 #endif
 
@@ -55,7 +55,7 @@ typedef enum{
 }PinType;
 
 
-EXPORT_SYMBOL_GPL(flashlight_ControlPin);
+//EXPORT_SYMBOL_GPL(flashlight_ControlPin);
 //EXPORT_SYMBOL_GPL(Torch_GPIO_EN);
 
 
