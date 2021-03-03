@@ -52,6 +52,10 @@
 #define LOG_2 LOG_INF("preview 1280*960@30fps,864Mbps/lane; video 1280*960@30fps,864Mbps/lane; capture 5M@30fps,864Mbps/lane\n")
 /****************************   Modify end    *******************************************/
 
+//yinyapeng add  20160513 ==>
+extern UsedSubCameraType g_CurrUsedSubCameraName;
+//<==end
+
 #define LOG_INF(format, args...)    pr_debug(PFX "[%s] " format, __FUNCTION__, ##args)
 
 static DEFINE_SPINLOCK(imgsensor_drv_lock);
@@ -960,6 +964,9 @@ static kal_uint32 get_imgsensor_id(UINT32 *sensor_id)
             *sensor_id = return_sensor_id();
             if (*sensor_id == imgsensor_info.sensor_id) {
                 LOG_INF("i2c write id: 0x%x, sensor id: 0x%x\n", imgsensor.i2c_write_id,*sensor_id);
+		  // printk("yinyapeng add get gc2355 id\n");
+		    g_CurrUsedSubCameraName =SUB_GC2355;
+		   // printk("yinyapeng add  g_CurrSensorName = %d", g_CurrSensorName);
                 return ERROR_NONE;
             }
             LOG_INF("Read sensor id fail, write id: 0x%x, id: 0x%x\n", imgsensor.i2c_write_id,*sensor_id);

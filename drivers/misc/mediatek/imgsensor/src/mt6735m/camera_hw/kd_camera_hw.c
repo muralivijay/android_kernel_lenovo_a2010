@@ -1,15 +1,3 @@
-/*
-* Copyright (C) 2016 MediaTek Inc.
-*
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU General Public License version 2 as
-* published by the Free Software Foundation.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-* See http://www.gnu.org/licenses/gpl-2.0.html for more details.
-*/
 #include <linux/videodev2.h>
 #include <linux/i2c.h>
 #include <linux/platform_device.h>
@@ -137,7 +125,6 @@ int mtkcam_gpio_init(struct platform_device *pdev)
 	}
 	return ret;
 }
-EXPORT_SYMBOL(mtkcam_gpio_init);
 
 int mtkcam_gpio_set(int PinIdx, int PwrType, int Val)
 {
@@ -269,7 +256,6 @@ void checkPowerBeforClose(char *mode_name)
 	cntVCAMD_SUB = 0;
 
 }
-EXPORT_SYMBOL(checkPowerBeforClose);
 
 
 
@@ -332,12 +318,17 @@ int kdCISModulePowerOn(CAMERA_DUAL_CAMERA_SENSOR_ENUM SensorIdx, char *currSenso
 		pinSetIdx = 2;
 
 	if (On) {
-		if(currSensorName && (0 == strcmp(currSensorName,"imx135mipiraw"))&&(pinSetIdx != 0))
-			PK_DBG("[PowerON]135 not main\n");
-		else
-			ISP_MCLK1_EN(1);
 
-		PK_DBG("[PowerON]pinSetIdx:%d, currSensorName: %s\n", pinSetIdx, currSensorName);
+
+		//ISP_MCLK1_EN(1);
+		
+		// mtk patch
+		//if((0 == strcmp(currSensorName,"imx135mipiraw"))&&(pinSetIdx != 0))
+		//	PK_DBG("[PowerON]135 not main\n");
+		//else
+		//	ISP_MCLK1_EN(1);
+		
+		printk(KERN_EMERG "[PowerON]pinSetIdx:%d, currSensorName: %s\n", pinSetIdx, currSensorName);
 
 		if ((currSensorName && (0 == strcmp(currSensorName, "imx135mipiraw"))) ||
 		    (currSensorName && (0 == strcmp(currSensorName, "imx220mipiraw")))) {
@@ -404,7 +395,312 @@ int kdCISModulePowerOn(CAMERA_DUAL_CAMERA_SENSOR_ENUM SensorIdx, char *currSenso
 				}
 			}
 
-		} else if (currSensorName
+		}
+
+                       else if (currSensorName && (0 == strcmp(SENSOR_DRVNAME_OV8865_MIPI_RAW, currSensorName)))
+		{
+			printk(KERN_EMERG "[PowerON] 8865");
+
+             //VCAM_A
+            if(TRUE != _hwPowerOnCnt(VCAMA, VOL_2800,mode_name))
+            {
+                PK_DBG("[CAMERA SENSOR] Fail to enable analog power (VCAM_A), power id = %d\n", VCAMA);
+                goto _kdCISModulePowerOn_exit_;
+            }
+
+            mdelay(10);
+
+            //VCAM_IO
+            if(TRUE != _hwPowerOnCnt(VCAMIO, VOL_1800, mode_name))
+            {
+                PK_DBG("[CAMERA SENSOR] Fail to enable digital power (VCAM_IO), power id = %d \n", VCAMIO);
+                goto _kdCISModulePowerOn_exit_;
+            }
+
+               mdelay(10);
+
+           if(TRUE != _hwPowerOnCnt(VCAMD, VOL_1200,mode_name))
+            {
+                 PK_DBG("[CAMERA SENSOR] Fail to enable digital power (VCAM_D), power id = %d \n", VCAMD);
+                 goto _kdCISModulePowerOn_exit_;
+            }
+
+               mdelay(10);
+
+                if (TRUE != _hwPowerOnCnt(VCAMAF, VOL_2800, mode_name)) {
+				PK_DBG
+				    ("[CAMERA SENSOR] Fail to enable analog power (VCAM_AF), power id = %d\n",
+				     VCAMAF);
+				goto _kdCISModulePowerOn_exit_;
+			}
+
+		mdelay(15);
+
+		   if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMPDN]) {
+				mtkcam_gpio_set(pinSetIdx, CAMPDN,
+						pinSet[pinSetIdx][IDX_PS_CMPDN + IDX_PS_OFF]);
+			}
+               mdelay(10);
+
+		if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMPDN]) {
+					mtkcam_gpio_set(pinSetIdx, CAMPDN,
+							pinSet[pinSetIdx][IDX_PS_CMPDN +
+									  IDX_PS_ON]);
+		    }
+
+               mdelay(10);
+
+
+			if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMRST]) {
+				mtkcam_gpio_set(pinSetIdx, CAMRST,
+						pinSet[pinSetIdx][IDX_PS_CMPDN + IDX_PS_OFF]);
+			}
+		
+		   mdelay(10);
+
+           if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMRST]) {
+				mtkcam_gpio_set(pinSetIdx, CAMRST,
+						pinSet[pinSetIdx][IDX_PS_CMRST + IDX_PS_ON]);
+           	}
+		   mdelay(10);
+		   ISP_MCLK1_EN(1);
+
+		} 
+
+                else if (currSensorName && (0 == strcmp(SENSOR_DRVNAME_OV8865_SUNNY_MIPI_RAW, currSensorName)))
+		{
+			printk(KERN_EMERG "[PowerON] 8865 SUNNY");
+
+             //VCAM_A
+            if(TRUE != _hwPowerOnCnt(VCAMA, VOL_2800,mode_name))
+            {
+                PK_DBG("[CAMERA SENSOR] Fail to enable analog power (VCAM_A), power id = %d\n", VCAMA);
+                goto _kdCISModulePowerOn_exit_;
+            }
+
+            mdelay(10);
+
+            //VCAM_IO
+            if(TRUE != _hwPowerOnCnt(VCAMIO, VOL_1800, mode_name))
+            {
+                PK_DBG("[CAMERA SENSOR] Fail to enable digital power (VCAM_IO), power id = %d \n", VCAMIO);
+                goto _kdCISModulePowerOn_exit_;
+            }
+
+               mdelay(10);
+
+           if(TRUE != _hwPowerOnCnt(VCAMD, VOL_1200,mode_name))
+            {
+                 PK_DBG("[CAMERA SENSOR] Fail to enable digital power (VCAM_D), power id = %d \n", VCAMD);
+                 goto _kdCISModulePowerOn_exit_;
+            }
+
+               mdelay(10);
+
+                if (TRUE != _hwPowerOnCnt(VCAMAF, VOL_2800, mode_name)) {
+				PK_DBG
+				    ("[CAMERA SENSOR] Fail to enable analog power (VCAM_AF), power id = %d\n",
+				     VCAMAF);
+				goto _kdCISModulePowerOn_exit_;
+			}
+
+		mdelay(15);
+
+		   if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMPDN]) {
+				mtkcam_gpio_set(pinSetIdx, CAMPDN,
+						pinSet[pinSetIdx][IDX_PS_CMPDN + IDX_PS_OFF]);
+			}
+               mdelay(10);
+
+		if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMPDN]) {
+					mtkcam_gpio_set(pinSetIdx, CAMPDN,
+							pinSet[pinSetIdx][IDX_PS_CMPDN +
+									  IDX_PS_ON]);
+		    }
+
+               mdelay(10);
+
+
+			if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMRST]) {
+				mtkcam_gpio_set(pinSetIdx, CAMRST,
+						pinSet[pinSetIdx][IDX_PS_CMPDN + IDX_PS_OFF]);
+			}
+		
+		   mdelay(10);
+
+           if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMRST]) {
+				mtkcam_gpio_set(pinSetIdx, CAMRST,
+						pinSet[pinSetIdx][IDX_PS_CMRST + IDX_PS_ON]);
+           	}
+		   mdelay(10);
+		   ISP_MCLK1_EN(1);
+
+		} 
+
+        else if (currSensorName && (0 == strcmp(SENSOR_DRVNAME_OV2680_MIPI_RAW, currSensorName)))
+		{
+			printk(KERN_EMERG "[PowerON] 2680");
+
+                    ISP_MCLK1_EN(1);
+		   
+            //VCAM_IO
+            if(TRUE != _hwPowerOnCnt(VCAMIO, VOL_1800, mode_name))
+            {
+                PK_DBG("[CAMERA SENSOR] Fail to enable digital power (VCAM_IO), power id = %d \n", VCAMIO);
+                goto _kdCISModulePowerOn_exit_;
+            }
+
+            mdelay(5);
+
+            //VCAM_A
+            if(TRUE != _hwPowerOnCnt(VCAMA, VOL_2800,mode_name))
+            {
+                PK_DBG("[CAMERA SENSOR] Fail to enable analog power (VCAM_A), power id = %d\n", VCAMA);
+                goto _kdCISModulePowerOn_exit_;
+            }
+
+            mdelay(5);
+
+            if(TRUE != _hwPowerOnCnt(SUB_VCAMD, VOL_1500,mode_name))
+            {
+                 PK_DBG("[CAMERA SENSOR] Fail to enable digital power (VCAM_D), power id = %d \n", VCAMD);
+                 goto _kdCISModulePowerOn_exit_;
+            }
+
+            mdelay(5);
+
+            if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMPDN]) {
+				mtkcam_gpio_set(pinSetIdx, CAMPDN,
+						pinSet[pinSetIdx][IDX_PS_CMPDN + IDX_PS_OFF]);
+			}
+
+            mdelay(2);
+			if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMRST]) {
+				mtkcam_gpio_set(pinSetIdx, CAMRST,
+						pinSet[pinSetIdx][IDX_PS_CMPDN + IDX_PS_OFF]);
+			}
+		
+	    mdelay(2);
+
+            if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMPDN]) {
+					mtkcam_gpio_set(pinSetIdx, CAMPDN,
+							pinSet[pinSetIdx][IDX_PS_CMPDN +
+									  IDX_PS_ON]);
+		    }
+		
+
+            mdelay(2);
+
+           if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMRST]) {
+				mtkcam_gpio_set(pinSetIdx, CAMRST,
+						pinSet[pinSetIdx][IDX_PS_CMRST + IDX_PS_ON]);
+           	}
+		   
+		   mdelay(2);
+				
+		}             
+ 
+
+           else if (currSensorName && (0 == strcmp(SENSOR_DRVNAME_HI551_MIPI_RAW, currSensorName)))
+		{
+			printk(KERN_EMERG "[PowerON] HI551");
+		   if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMPDN]) {
+				mtkcam_gpio_set(pinSetIdx, CAMPDN,
+						pinSet[pinSetIdx][IDX_PS_CMPDN + IDX_PS_OFF]);
+			}
+
+
+			if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMRST]) {
+				mtkcam_gpio_set(pinSetIdx, CAMRST,
+						pinSet[pinSetIdx][IDX_PS_CMPDN + IDX_PS_OFF]);
+			}
+		
+		   mdelay(20);
+            //VCAM_IO
+            if(TRUE != _hwPowerOnCnt(VCAMIO, VOL_1800, mode_name))
+            {
+                PK_DBG("[CAMERA SENSOR] Fail to enable digital power (VCAM_IO), power id = %d \n", VCAMIO);
+                goto _kdCISModulePowerOn_exit_;
+            }
+
+            mdelay(1);
+
+            //VCAM_A
+            if(TRUE != _hwPowerOnCnt(VCAMA, VOL_2800,mode_name))
+            {
+                PK_DBG("[CAMERA SENSOR] Fail to enable analog power (VCAM_A), power id = %d\n", VCAMA);
+                goto _kdCISModulePowerOn_exit_;
+            }
+
+            mdelay(1);
+
+            if(TRUE != _hwPowerOnCnt(VCAMD, VOL_1200,mode_name))
+            {
+                 PK_DBG("[CAMERA SENSOR] Fail to enable digital power (VCAM_D), power id = %d \n", VCAMD);
+                 goto _kdCISModulePowerOn_exit_;
+            }
+
+            mdelay(5);
+
+           if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMRST]) {
+				mtkcam_gpio_set(pinSetIdx, CAMRST,
+						pinSet[pinSetIdx][IDX_PS_CMRST + IDX_PS_ON]);
+           	}
+		   ISP_MCLK1_EN(1);
+		   mdelay(20);
+				if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMPDN]) {
+					mtkcam_gpio_set(pinSetIdx, CAMPDN,
+							pinSet[pinSetIdx][IDX_PS_CMPDN +
+									  IDX_PS_ON]);
+		    }
+		
+
+            mdelay(20);
+        }else if (currSensorName && (0 == strcmp(SENSOR_DRVNAME_GC0310_MIPI_YUV, currSensorName))) 
+        {
+	  	printk(KERN_EMERG "gc0310 hwPoweron \n");		
+	    //ISP_MCLK1_EN(1);
+	    //VCAM_IO
+        if(TRUE != _hwPowerOnCnt(VCAMIO, VOL_1800, mode_name)) {
+            PK_DBG("[CAMERA SENSOR] Fail to enable digital power (VCAM_IO), power id = %d \n", VCAMIO);
+            goto _kdCISModulePowerOn_exit_;
+        }
+        mdelay(10);
+        //VCAM_A
+        if(TRUE != _hwPowerOnCnt(VCAMA, VOL_2800,mode_name)) {
+            PK_DBG("[CAMERA SENSOR] Fail to enable analog power (VCAM_A), power id = %d\n", VCAMA);
+            goto _kdCISModulePowerOn_exit_;
+        }
+	  mdelay(5);
+	 ISP_MCLK1_EN(1);
+        mdelay(10);
+        if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMPDN]) {
+					mtkcam_gpio_set(pinSetIdx, CAMPDN,
+							pinSet[pinSetIdx][IDX_PS_CMPDN +
+									  IDX_PS_OFF]);
+		    }
+		mdelay(5);	
+		if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMPDN]) {
+					mtkcam_gpio_set(pinSetIdx, CAMPDN,
+							pinSet[pinSetIdx][IDX_PS_CMPDN +
+									  IDX_PS_ON]);
+		    }
+		mdelay(5);	
+		if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMPDN]) {
+					mtkcam_gpio_set(pinSetIdx, CAMPDN,
+							pinSet[pinSetIdx][IDX_PS_CMPDN +
+									  IDX_PS_OFF]);
+		    }
+        mdelay(20);
+		if(pinSetIdx == 0) {
+			if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMPDN]) {
+					mtkcam_gpio_set(pinSetIdx, CAMPDN,
+							pinSet[pinSetIdx][IDX_PS_CMPDN +
+									  IDX_PS_ON]);
+		    }
+    	}
+	}
+		else if (currSensorName
 			   && (0 == strcmp(SENSOR_DRVNAME_OV5648_MIPI_RAW, currSensorName))) {
 			mtkcam_gpio_set(pinSetIdx, CAMLDO, 1);
 
@@ -473,26 +769,15 @@ int kdCISModulePowerOn(CAMERA_DUAL_CAMERA_SENSOR_ENUM SensorIdx, char *currSenso
 			   && (0 == strcmp(SENSOR_DRVNAME_GC2355_MIPI_RAW, currSensorName))) {
 			mtkcam_gpio_set(pinSetIdx, CAMLDO, 1);
 			/* First Power Pin low and Reset Pin Low */
-			if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMPDN])
-				mtkcam_gpio_set(pinSetIdx, CAMPDN,
-						pinSet[pinSetIdx][IDX_PS_CMPDN + IDX_PS_OFF]);
+			if (GPIO_CAMERA_INVALID != pinSet[0][IDX_PS_CMPDN])
+				mtkcam_gpio_set(0, CAMPDN,
+						pinSet[0][IDX_PS_CMPDN + IDX_PS_OFF]);
 
-			if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMRST])
-				mtkcam_gpio_set(pinSetIdx, CAMRST,
-						pinSet[pinSetIdx][IDX_PS_CMRST + IDX_PS_OFF]);
-
-			mdelay(50);
-
-			/* VCAM_A */
-			if (TRUE != _hwPowerOnCnt(VCAMA, VOL_2800, mode_name)) {
-				PK_DBG
-				    ("[CAMERA SENSOR] Fail to enable analog power (VCAM_A),power id = %d\n",
-				     VCAMA);
-				goto _kdCISModulePowerOn_exit_;
-			}
+			if (GPIO_CAMERA_INVALID != pinSet[0][IDX_PS_CMRST])
+				mtkcam_gpio_set(0, CAMRST,
+						pinSet[0][IDX_PS_CMRST + IDX_PS_OFF]);
 
 			mdelay(10);
-
 			/* VCAM_IO */
 			if (TRUE != _hwPowerOnCnt(VCAMIO, VOL_1800, mode_name)) {
 				PK_DBG
@@ -503,7 +788,7 @@ int kdCISModulePowerOn(CAMERA_DUAL_CAMERA_SENSOR_ENUM SensorIdx, char *currSenso
 
 			mdelay(10);
 
-			if (TRUE != _hwPowerOnCnt(VCAMD, VOL_1500, mode_name)) {
+			if (TRUE != _hwPowerOnCnt(SUB_VCAMD, VOL_1800, mode_name)) {
 				PK_DBG
 				    ("[CAMERA SENSOR] Fail to enable digital power (VCAM_D),power id = %d\n",
 				     VCAMD);
@@ -511,37 +796,93 @@ int kdCISModulePowerOn(CAMERA_DUAL_CAMERA_SENSOR_ENUM SensorIdx, char *currSenso
 			}
 
 			mdelay(10);
-
-			/* AF_VCC */
-			if (TRUE != _hwPowerOnCnt(VCAMAF, VOL_2800, mode_name)) {
+			/* VCAM_A */
+			if (TRUE != _hwPowerOnCnt(VCAMA, VOL_2800, mode_name)) {
 				PK_DBG
-				    ("[CAMERA SENSOR] Fail to enable analog power (VCAM_AF),power id = %d\n",
-				     VCAMAF);
+				    ("[CAMERA SENSOR] Fail to enable analog power (VCAM_A),power id = %d\n",
+				     VCAMA);
 				goto _kdCISModulePowerOn_exit_;
 			}
 
-
-			mdelay(50);
-
-			if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMRST]) {
+			mdelay(10);
+			ISP_MCLK1_EN(1);
+            mdelay(5);
+           
+            if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMRST]) {
 				mtkcam_gpio_set(pinSetIdx, CAMRST,
-						pinSet[pinSetIdx][IDX_PS_CMRST + IDX_PS_OFF]);
-				mdelay(5);
-				mtkcam_gpio_set(pinSetIdx, CAMRST,
-						pinSet[pinSetIdx][IDX_PS_CMRST + IDX_PS_ON]);
+						pinSet[pinSetIdx][IDX_PS_CMPDN + IDX_PS_OFF]);
 			}
-			mdelay(5);
-			/* enable active sensor */
-			if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMPDN]) {
-				mtkcam_gpio_set(pinSetIdx, CAMPDN,
-						pinSet[pinSetIdx][IDX_PS_CMPDN + IDX_PS_ON]);
-				mdelay(5);
+
+			 if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMPDN]) {
+					mtkcam_gpio_set(pinSetIdx, CAMPDN,
+							pinSet[pinSetIdx][IDX_PS_CMPDN +
+									  IDX_PS_ON]);
+		    }
+			mdelay(1);
+
+            if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMPDN]) {
 				mtkcam_gpio_set(pinSetIdx, CAMPDN,
 						pinSet[pinSetIdx][IDX_PS_CMPDN + IDX_PS_OFF]);
 			}
 
-			mdelay(5);
+	        if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMRST]) {
+				mtkcam_gpio_set(pinSetIdx, CAMRST,
+						pinSet[pinSetIdx][IDX_PS_CMRST + IDX_PS_ON]);
+           	}
+            mdelay(1);
+//gc5005 power on
+		} else if (currSensorName && (0 == strcmp(SENSOR_DRVNAME_GC5005_MIPI_RAW, currSensorName))) {
+		
+				//mtkcam_gpio_set(pinSetIdx, CAMLDO, 1);
+				   
+				/* First Power Pin low and Reset Pin Low */
+				printk("\r\n chenjun=>gc5005 power on");
+				if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMPDN]) {
+					mtkcam_gpio_set(pinSetIdx, CAMPDN,pinSet[pinSetIdx][IDX_PS_CMPDN + IDX_PS_ON]);
+				}			
 
+				if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMRST]) {
+					mtkcam_gpio_set(pinSetIdx, CAMRST,pinSet[pinSetIdx][IDX_PS_CMRST + IDX_PS_OFF]);
+				}
+						
+				mdelay(20);
+
+				/* VCAM_IO */
+				if (TRUE != _hwPowerOnCnt(VCAMIO, VOL_1800, mode_name)) {
+					PK_DBG ("[CAMERA SENSOR] Fail to enable IO power (VCAM_IO),power id = %d\n",VCAMIO);
+					goto _kdCISModulePowerOn_exit_;
+				}
+				mdelay(5);
+				
+				if (TRUE != _hwPowerOnCnt(VCAMD, VOL_1200, mode_name)) {
+					PK_DBG("[CAMERA SENSOR] Fail to enable digital power (VCAM_D),power id = %d\n",VCAMD);    
+					goto _kdCISModulePowerOn_exit_;
+				}
+			
+				mdelay(5);
+				
+				/* VCAM_A */
+				if (TRUE != _hwPowerOnCnt(VCAMA, VOL_2800, mode_name)) {
+					PK_DBG("[CAMERA SENSOR] Fail to enable analog power (VCAM_A),power id = %d\n", VCAMA);	    
+					goto _kdCISModulePowerOn_exit_;
+				}
+
+				
+				ISP_MCLK1_EN(1);
+				mdelay(5);
+				if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMPDN]) {
+					//mtkcam_gpio_set(pinSetIdx, CAMPDN,pinSet[pinSetIdx][IDX_PS_CMPDN + IDX_PS_ON]);
+					//mdelay(5);
+					mtkcam_gpio_set(pinSetIdx, CAMPDN,pinSet[pinSetIdx][IDX_PS_CMPDN + IDX_PS_OFF]);
+				}			
+
+
+				if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMRST]) {	
+					//mtkcam_gpio_set(pinSetIdx, CAMRST,pinSet[pinSetIdx][IDX_PS_CMRST + IDX_PS_OFF]);
+					//mdelay(5);
+					mtkcam_gpio_set(pinSetIdx, CAMRST,pinSet[pinSetIdx][IDX_PS_CMRST + IDX_PS_ON]);			
+				}
+				mdelay(20);
 		} else {
 			/* First Power Pin low and Reset Pin Low */
 			if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMPDN]) {
@@ -661,7 +1002,299 @@ int kdCISModulePowerOn(CAMERA_DUAL_CAMERA_SENSOR_ENUM SensorIdx, char *currSenso
 				goto _kdCISModulePowerOn_exit_;
 			}
 
-		} else if (currSensorName
+		}
+
+
+                		 else if (currSensorName && (0 == strcmp(SENSOR_DRVNAME_OV8865_MIPI_RAW, currSensorName)))
+				{
+					
+                                        ISP_MCLK1_EN(0);
+                                        mdelay(10);
+                                   if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMRST]) {
+				mtkcam_gpio_set(pinSetIdx, CAMRST,
+						pinSet[pinSetIdx][IDX_PS_CMRST + IDX_PS_ON]);
+           	                        }
+                                        mdelay(10);
+				   if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMRST]) {
+					mtkcam_gpio_set(pinSetIdx, CAMRST,pinSet[pinSetIdx][IDX_PS_CMRST + IDX_PS_OFF]);
+					}
+					mdelay(10);
+					
+					//Set Power Pin low and Reset Pin Low
+
+                               if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMPDN]) {
+					mtkcam_gpio_set(pinSetIdx, CAMPDN,
+							pinSet[pinSetIdx][IDX_PS_CMPDN +
+									  IDX_PS_ON]);
+		                     }
+
+                                        mdelay(10);
+
+				if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMPDN]) {
+				    mtkcam_gpio_set(pinSetIdx, CAMPDN,pinSet[pinSetIdx][IDX_PS_CMPDN + IDX_PS_OFF]);
+					}
+					mdelay(15);
+                                  //AF
+                 if(TRUE != _hwPowerDownCnt(VCAMAF, mode_name)) {
+						PK_DBG
+				    ("[CAMERA SENSOR] Fail to OFF AF power (VCAM_AF), power id = %d\n",
+				     VCAMAF);
+						//return -EIO;
+						goto _kdCISModulePowerOn_exit_;
+					}
+					mdelay(10);
+
+					if(TRUE != _hwPowerDownCnt(VCAMD,mode_name))
+					{
+						 PK_DBG("[CAMERA SENSOR] Fail to OFF core power (VCAM_D), power id = %d \n",VCAMD);
+						 goto _kdCISModulePowerOn_exit_;
+					}
+		                         mdelay(10);
+
+                                        //VCAM_IO
+					if(TRUE != _hwPowerDownCnt(VCAMIO, mode_name)) {
+						PK_DBG("[CAMERA SENSOR] Fail to OFF digital power (VCAM_IO), power id = %d \n", VCAMIO);
+						//return -EIO;
+						goto _kdCISModulePowerOn_exit_;
+					}
+					mdelay(10);
+                                        //VCAM_A
+					if(TRUE != _hwPowerDownCnt(VCAMA,mode_name)) {
+						PK_DBG("[CAMERA SENSOR] Fail to OFF analog power (VCAM_A), power id= (%d) \n", VCAMA);
+						//return -EIO;
+						goto _kdCISModulePowerOn_exit_;
+					}
+		
+					
+					mdelay(10);
+		/*
+					//AF_VCC
+					if(TRUE != _hwPowerDown(CAMERA_POWER_VCAM_AF,mode_name))
+					{
+						PK_DBG("[CAMERA SENSOR] Fail to OFF AF power (VCAM_AF), power id = %d \n", CAMERA_POWER_VCAM_AF);
+						//return -EIO;
+						goto _kdCISModulePowerOn_exit_;
+					}*/
+					
+		} 
+
+                else if (currSensorName && (0 == strcmp(SENSOR_DRVNAME_OV8865_SUNNY_MIPI_RAW, currSensorName)))
+				{
+					
+                                        ISP_MCLK1_EN(0);
+                                        mdelay(10);
+                                   if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMRST]) {
+				mtkcam_gpio_set(pinSetIdx, CAMRST,
+						pinSet[pinSetIdx][IDX_PS_CMRST + IDX_PS_ON]);
+           	                        }
+                                        mdelay(10);
+				   if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMRST]) {
+					mtkcam_gpio_set(pinSetIdx, CAMRST,pinSet[pinSetIdx][IDX_PS_CMRST + IDX_PS_OFF]);
+					}
+					mdelay(10);
+					
+					//Set Power Pin low and Reset Pin Low
+
+                               if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMPDN]) {
+					mtkcam_gpio_set(pinSetIdx, CAMPDN,
+							pinSet[pinSetIdx][IDX_PS_CMPDN +
+									  IDX_PS_ON]);
+		                     }
+
+                                        mdelay(10);
+
+				if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMPDN]) {
+				    mtkcam_gpio_set(pinSetIdx, CAMPDN,pinSet[pinSetIdx][IDX_PS_CMPDN + IDX_PS_OFF]);
+					}
+					mdelay(15);
+                                  //AF
+                                 if(TRUE != _hwPowerDownCnt(VCAMAF, mode_name)) {
+						PK_DBG
+				    ("[CAMERA SENSOR] Fail to OFF AF power (VCAM_AF), power id = %d\n",
+				     VCAMAF);
+						//return -EIO;
+						goto _kdCISModulePowerOn_exit_;
+					}
+					mdelay(10);
+
+					if(TRUE != _hwPowerDownCnt(VCAMD,mode_name))
+					{
+						 PK_DBG("[CAMERA SENSOR] Fail to OFF core power (VCAM_D), power id = %d \n",VCAMD);
+						 goto _kdCISModulePowerOn_exit_;
+					}
+		                         mdelay(10);
+
+                                        //VCAM_IO
+					if(TRUE != _hwPowerDownCnt(VCAMIO, mode_name)) {
+						PK_DBG("[CAMERA SENSOR] Fail to OFF digital power (VCAM_IO), power id = %d \n", VCAMIO);
+						//return -EIO;
+						goto _kdCISModulePowerOn_exit_;
+					}
+					mdelay(10);
+                                        //VCAM_A
+					if(TRUE != _hwPowerDownCnt(VCAMA,mode_name)) {
+						PK_DBG("[CAMERA SENSOR] Fail to OFF analog power (VCAM_A), power id= (%d) \n", VCAMA);
+						//return -EIO;
+						goto _kdCISModulePowerOn_exit_;
+					}
+		
+					
+					mdelay(10);
+		/*
+					//AF_VCC
+					if(TRUE != _hwPowerDown(CAMERA_POWER_VCAM_AF,mode_name))
+					{
+						PK_DBG("[CAMERA SENSOR] Fail to OFF AF power (VCAM_AF), power id = %d \n", CAMERA_POWER_VCAM_AF);
+						//return -EIO;
+						goto _kdCISModulePowerOn_exit_;
+					}*/
+					
+		} 
+
+        else if (currSensorName && (0 == strcmp(SENSOR_DRVNAME_OV2680_MIPI_RAW, currSensorName)))
+				{
+				
+                         if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMRST]) {
+				mtkcam_gpio_set(pinSetIdx, CAMRST,
+						pinSet[pinSetIdx][IDX_PS_CMRST + IDX_PS_ON]);
+           	           }
+		   
+		            mdelay(2);	
+
+                         if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMPDN]) {
+					mtkcam_gpio_set(pinSetIdx, CAMPDN,
+							pinSet[pinSetIdx][IDX_PS_CMPDN +
+									  IDX_PS_ON]);
+		           }
+                            mdelay(2);
+   
+				   if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMRST]) {
+					mtkcam_gpio_set(pinSetIdx, CAMRST,pinSet[pinSetIdx][IDX_PS_CMRST + IDX_PS_OFF]);
+					}
+					mdelay(2);
+					
+					//Set Power Pin low and Reset Pin Low
+						if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMPDN]) {
+				    mtkcam_gpio_set(pinSetIdx, CAMPDN,pinSet[pinSetIdx][IDX_PS_CMPDN + IDX_PS_OFF]);
+					}
+					mdelay(5);
+					if(TRUE != _hwPowerDownCnt(SUB_VCAMD,mode_name))
+					{
+						 PK_DBG("[CAMERA SENSOR] Fail to OFF core power (VCAM_D), power id = %d \n",VCAMD);
+						 goto _kdCISModulePowerOn_exit_;
+					}
+		                        mdelay(5);
+					//VCAM_A
+					if(TRUE != _hwPowerDownCnt(VCAMA,mode_name)) {
+						PK_DBG("[CAMERA SENSOR] Fail to OFF analog power (VCAM_A), power id= (%d) \n", VCAMA);
+						//return -EIO;
+						goto _kdCISModulePowerOn_exit_;
+					}
+		                        mdelay(5);
+					//VCAM_IO
+					if(TRUE != _hwPowerDownCnt(VCAMIO, mode_name)) {
+						PK_DBG("[CAMERA SENSOR] Fail to OFF digital power (VCAM_IO), power id = %d \n", VCAMIO);
+						//return -EIO;
+						goto _kdCISModulePowerOn_exit_;
+					}
+		                        ISP_MCLK1_EN(0);
+                                  /*
+					//AF_VCC
+					if(TRUE != _hwPowerDown(CAMERA_POWER_VCAM_AF,mode_name))
+					{
+						PK_DBG("[CAMERA SENSOR] Fail to OFF AF power (VCAM_AF), power id = %d \n", CAMERA_POWER_VCAM_AF);
+						//return -EIO;
+						goto _kdCISModulePowerOn_exit_;
+					}*/
+					
+		} 
+
+
+		 else if (currSensorName && (0 == strcmp(SENSOR_DRVNAME_HI551_MIPI_RAW, currSensorName)))
+				{
+					printk("\r\n chenjun=>HI551 POWER OFF");
+					ISP_MCLK1_EN(0);
+					mdelay(10);
+				   if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMRST]) {
+					mtkcam_gpio_set(pinSetIdx, CAMRST,pinSet[pinSetIdx][IDX_PS_CMRST + IDX_PS_OFF]);
+					}
+					mdelay(10);
+					
+					//Set Power Pin low and Reset Pin Low
+						if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMPDN]) {
+				    mtkcam_gpio_set(pinSetIdx, CAMPDN,pinSet[pinSetIdx][IDX_PS_CMPDN + IDX_PS_OFF]);
+					}
+					mdelay(10);
+					if(TRUE != _hwPowerDownCnt(VCAMD,mode_name))
+					{
+						 PK_DBG("[CAMERA SENSOR] Fail to OFF core power (VCAM_D), power id = %d \n",VCAMD);
+						 goto _kdCISModulePowerOn_exit_;
+					}
+
+					//VCAM_IO
+					if(TRUE != _hwPowerDownCnt(VCAMIO, mode_name)) {
+						PK_DBG("[CAMERA SENSOR] Fail to OFF digital power (VCAM_IO), power id = %d \n", VCAMIO);
+						//return -EIO;
+						goto _kdCISModulePowerOn_exit_;
+					}
+		
+					//VCAM_A
+					if(TRUE != _hwPowerDownCnt(VCAMA,mode_name)) {
+						PK_DBG("[CAMERA SENSOR] Fail to OFF analog power (VCAM_A), power id= (%d) \n", VCAMA);
+						//return -EIO;
+						goto _kdCISModulePowerOn_exit_;
+					}
+		
+					mdelay(10);
+					/* AF_VCC */
+					if (TRUE != _hwPowerDownCnt(VCAMAF, mode_name)) {
+						PK_DBG
+						    ("[CAMERA SENSOR] Fail to OFF AF power (VCAM_AF), power id = %d\n",
+						     VCAMAF);
+						goto _kdCISModulePowerOn_exit_;
+					}
+					  if(pinSetIdx == 0){
+					if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMPDN]) {
+				    		mtkcam_gpio_set(pinSetIdx, CAMPDN,pinSet[pinSetIdx][IDX_PS_CMPDN + IDX_PS_OFF]);
+					}
+				   }
+		
+				}else if (currSensorName && (0 == strcmp(SENSOR_DRVNAME_GC0310_MIPI_YUV, currSensorName)))
+			{
+				printk("gc0310 hwPowerDown \n");
+				  
+					if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMPDN]) {
+				    mtkcam_gpio_set(pinSetIdx, CAMPDN,pinSet[pinSetIdx][IDX_PS_CMPDN + IDX_PS_OFF]);
+					}
+				mdelay(1);
+					if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMPDN]) {
+				    mtkcam_gpio_set(pinSetIdx, CAMPDN,pinSet[pinSetIdx][IDX_PS_CMPDN + IDX_PS_ON]);
+					}
+				mdelay(5);
+				ISP_MCLK1_EN(0);
+				mdelay(10);
+				//VCAM_A
+				if(TRUE != _hwPowerDownCnt(VCAMA,mode_name)) {
+					PK_DBG("[CAMERA SENSOR] Fail to OFF analog power (VCAM_A), power id= (%d) \n", VCAMA);
+					//return -EIO;
+					goto _kdCISModulePowerOn_exit_;
+				}
+		
+				//VCAM_IO
+				if(TRUE != _hwPowerDownCnt(VCAMIO, mode_name)) {
+					PK_DBG("[CAMERA SENSOR] Fail to OFF digital power (VCAM_IO), power id = %d \n", VCAMIO);
+					//return -EIO;
+					goto _kdCISModulePowerOn_exit_;
+				}
+				mdelay(10);
+					if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMPDN]) {
+				    mtkcam_gpio_set(pinSetIdx, CAMPDN,pinSet[pinSetIdx][IDX_PS_CMPDN + IDX_PS_OFF]);
+					}
+				mdelay(10);
+			}
+
+
+		else if (currSensorName
 			   && (0 == strcmp(SENSOR_DRVNAME_OV5648_MIPI_RAW, currSensorName))) {
 			mtkcam_gpio_set(pinSetIdx, CAMLDO, 0);
 			/* Set Power Pin low and Reset Pin Low */
@@ -706,26 +1339,34 @@ int kdCISModulePowerOn(CAMERA_DUAL_CAMERA_SENSOR_ENUM SensorIdx, char *currSenso
 
 		} else if (currSensorName
 			   && (0 == strcmp(SENSOR_DRVNAME_GC2355_MIPI_RAW, currSensorName))) {
+
+            if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMRST]) {
+				mtkcam_gpio_set(pinSetIdx, CAMRST,
+						pinSet[pinSetIdx][IDX_PS_CMRST + IDX_PS_ON]);
+           	}
+
+            if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMPDN]) {
+				mtkcam_gpio_set(pinSetIdx, CAMPDN,
+						pinSet[pinSetIdx][IDX_PS_CMPDN + IDX_PS_OFF]);
+			}
+            mdelay(1);
+
 			/* Set Power Pin low and Reset Pin Low */
 			if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMPDN]) {
 				mtkcam_gpio_set(pinSetIdx, CAMPDN,
 						pinSet[pinSetIdx][IDX_PS_CMPDN + IDX_PS_ON]);
 			}
-			/* Set Reset Pin Low */
+			
+            /* Set Reset Pin Low */
 			if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMRST]) {
 				mtkcam_gpio_set(pinSetIdx, CAMRST,
 						pinSet[pinSetIdx][IDX_PS_CMRST + IDX_PS_OFF]);
 			}
-
+			mdelay(5);
+			
 			ISP_MCLK1_EN(0);
+            mdelay(10);
 
-			mtkcam_gpio_set(pinSetIdx, CAMLDO, 0);
-			if (TRUE != _hwPowerDownCnt(VCAMD, mode_name)) {
-				PK_DBG
-				    ("[CAMERA SENSOR] Fail to OFF core power (VCAM_D), power id = %d\n",
-				     VCAMD);
-				goto _kdCISModulePowerOn_exit_;
-			}
 			/* VCAM_A */
 			if (TRUE != _hwPowerDownCnt(VCAMA, mode_name)) {
 				PK_DBG
@@ -733,6 +1374,15 @@ int kdCISModulePowerOn(CAMERA_DUAL_CAMERA_SENSOR_ENUM SensorIdx, char *currSenso
 				     VCAMA);
 				goto _kdCISModulePowerOn_exit_;
 			}
+			mdelay(10);
+			//mtkcam_gpio_set(pinSetIdx, CAMLDO, 0);
+			if (TRUE != _hwPowerDownCnt(SUB_VCAMD, mode_name)) {
+				PK_DBG
+				    ("[CAMERA SENSOR] Fail to OFF core power (VCAM_D), power id = %d\n",
+				     VCAMD);
+				goto _kdCISModulePowerOn_exit_;
+			}
+			mdelay(10);
 			/* VCAM_IO */
 			if (TRUE != _hwPowerDownCnt(VCAMIO, mode_name)) {
 				PK_DBG
@@ -740,13 +1390,12 @@ int kdCISModulePowerOn(CAMERA_DUAL_CAMERA_SENSOR_ENUM SensorIdx, char *currSenso
 				     VCAMIO);
 				goto _kdCISModulePowerOn_exit_;
 			}
-			/* AF_VCC */
-			if (TRUE != _hwPowerDownCnt(VCAMAF, mode_name)) {
-				PK_DBG
-				    ("[CAMERA SENSOR] Fail to OFF AF power (VCAM_AF), power id = %d\n",
-				     VCAMAF);
-				goto _kdCISModulePowerOn_exit_;
+            mdelay(5);
+			if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMPDN]) {
+				mtkcam_gpio_set(pinSetIdx, CAMPDN,
+						pinSet[pinSetIdx][IDX_PS_CMPDN + IDX_PS_OFF]);
 			}
+            mdelay(5);
 
 		} else {
 			if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMPDN]) {
@@ -800,7 +1449,7 @@ int kdCISModulePowerOn(CAMERA_DUAL_CAMERA_SENSOR_ENUM SensorIdx, char *currSenso
 			}
 
 		}
-		if(currSensorName && (0 == strcmp(currSensorName,"imx135mipiraw"))&&(pinSetIdx != 0))
+		if((0 == strcmp(currSensorName,"imx135mipiraw"))&&(pinSetIdx != 0))
 			PK_DBG("[PowerOFF]135 not main\n");
 		else
 			ISP_MCLK1_EN(0);
@@ -1674,15 +2323,50 @@ int kdCISModulePowerOn(CAMERA_DUAL_CAMERA_SENSOR_ENUM SensorIdx, char *currSenso
 				}
 			}
 
-			if (currSensorName
-			    && (0 == strcmp(SENSOR_DRVNAME_IMX219_MIPI_RAW, currSensorName))) {
-				if (pinSetIdx == 0
-				    && TRUE != _hwPowerDown(CAMERA_POWER_VCAM_D, mode_name)) {
-					PK_DBG
-					    ("[CAMERA SENSOR] main imx220 Fail to OFF core power (VCAM_D), power id = %d\n",
-					     CAMERA_POWER_VCAM_D);
+			if (currSensorName && (0 == strcmp(SENSOR_DRVNAME_IMX219_MIPI_RAW, currSensorName))) {
+			    
+				if (pinSetIdx == 0 && TRUE != _hwPowerDown(CAMERA_POWER_VCAM_D, mode_name)) {
+				   PK_DBG ("[CAMERA SENSOR] main imx220 Fail to OFF core power (VCAM_D), power id = %d\n", CAMERA_POWER_VCAM_D);
+				   goto _kdCISModulePowerOn_exit_;
+				}
+				
+/**GC5005 poweroff**/				
+		} else if (currSensorName && (0 == strcmp(SENSOR_DRVNAME_GC5005_MIPI_RAW, currSensorName))) {
+
+				/* Set Power Pin low and Reset Pin Low */
+				if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMPDN]) {
+					mtkcam_gpio_set(pinSetIdx, CAMPDN,pinSet[pinSetIdx][IDX_PS_CMPDN + IDX_PS_ON]);
+				}
+				/* Set Reset Pin Low */
+				if (GPIO_CAMERA_INVALID != pinSet[pinSetIdx][IDX_PS_CMRST]) {
+					mtkcam_gpio_set(pinSetIdx, CAMRST,pinSet[pinSetIdx][IDX_PS_CMRST + IDX_PS_OFF]);
+				}
+
+				ISP_MCLK1_EN(0);
+
+				//mtkcam_gpio_set(pinSetIdx, CAMLDO, 0);
+				
+				/* VCAM_A */
+				if (TRUE != _hwPowerDownCnt(VCAMA, mode_name)) {
+					PK_DBG("[CAMERA SENSOR] Fail to OFF analog power (VCAM_A), power id= (%d)\n",VCAMA);
 					goto _kdCISModulePowerOn_exit_;
 				}
+				 
+				if (TRUE != _hwPowerDownCnt(VCAMD, mode_name)) {
+					PK_DBG("[CAMERA SENSOR] Fail to OFF core power (VCAM_D), power id = %d\n",VCAMD);
+					goto _kdCISModulePowerOn_exit_;
+				}
+				
+				/* VCAM_IO */
+				if (TRUE != _hwPowerDownCnt(VCAMIO, mode_name)) {
+					PK_DBG("[CAMERA SENSOR] Fail to OFF digital power (VCAM_IO), power id = %d\n",VCAMIO);
+					goto _kdCISModulePowerOn_exit_;
+				}
+				if (TRUE != _hwPowerDownCnt(VCAMAF, mode_name)) {
+					PK_DBG ("[CAMERA SENSOR] Fail to OFF AF power (VCAM_AF), power id = %d\n", VCAMAF);  
+					goto _kdCISModulePowerOn_exit_;
+				}
+				
 			} else {
 
 				if (TRUE != _hwPowerDown(CAMERA_POWER_VCAM_D, mode_name)) {

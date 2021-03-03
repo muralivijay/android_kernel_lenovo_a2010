@@ -1,16 +1,3 @@
-/*
- * Copyright (C) 2015 MediaTek Inc.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- */
-
 //s_add new sensor driver here
 //export funtions
 /*IMX*/
@@ -125,7 +112,6 @@ UINT32 T4KA7_MIPI_RAW_SensorInit(PSENSOR_FUNCTION_STRUCT *pfFunc);
 /*Others*/
 UINT32 ISX012_MIPI_YUV_SensorInit(PSENSOR_FUNCTION_STRUCT *pfFunc);
 UINT32 T8EV5_YUV_SensorInit(PSENSOR_FUNCTION_STRUCT *pfFunc);
-UINT32 IMX258_MIPI_RAW_SensorInit(PSENSOR_FUNCTION_STRUCT *pfFunc);
 
 //! Add Sensor Init function here
 //! Note:
@@ -161,12 +147,7 @@ ACDK_KD_SENSOR_INIT_FUNCTION_STRUCT kdSensorList[MAX_NUM_OF_SUPPORT_SENSOR+1] =
     {IMX073_SENSOR_ID, SENSOR_DRVNAME_IMX073_MIPI_RAW, IMX073_MIPI_RAW_SensorInit},
 #endif
 #if defined(IMX278_MIPI_RAW)
-	{IMX278_SENSOR_ID, SENSOR_DRVNAME_IMX278_MIPI_RAW, IMX278_MIPI_RAW_SensorInit}
-	,
-#endif
-#if defined(IMX258_MIPI_RAW)
-	{IMX258_SENSOR_ID, SENSOR_DRVNAME_IMX258_MIPI_RAW, IMX258_MIPI_RAW_SensorInit}
-	,
+    {IMX278_SENSOR_ID, SENSOR_DRVNAME_IMX278_MIPI_RAW, IMX278_MIPI_RAW_SensorInit},
 #endif
 /*OV (OmniVision)*/
 #if defined(OV16825_MIPI_RAW)

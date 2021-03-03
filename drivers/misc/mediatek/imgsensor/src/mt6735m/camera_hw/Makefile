@@ -1,5 +1,5 @@
 
-HQ_PROJECT_NAME ?= a2010
+HQ_PROJECT_NAME ?= al732row
 
 $(warning "CONFIG_TABLET_PROJECT:$(CONFIG_TABLET_PROJECT)")
 ifeq ($(CONFIG_TABLET_PROJECT),y)
@@ -7,8 +7,8 @@ ifeq ($(CONFIG_TABLET_PROJECT),y)
 obj-y				+= tb_kd_camera_hw.o
 else
 # not tablet project
-	ifeq ($(HQ_PROJECT_NAME),a2010)
-		obj-y				+= kd_camera_hw_a2010.o
+	ifeq ($(HQ_PROJECT_NAME),al732row)
+		obj-y				+= kd_camera_hw_732.o
 	else
 		obj-y				+= kd_camera_hw.o
     endif

@@ -12,10 +12,6 @@
 #
 
 
-HQ_PROJECT_NAME ?= a2010
-ifeq ($(HQ_PROJECT_NAME),a2010)
-	obj-y += gc2355mipi_Sensor_a2010.o
-else
-	obj-y	+= gc2355mipi_Sensor.o
-endif
+obj-y += gc2355mipi_Sensor.o
+
 
