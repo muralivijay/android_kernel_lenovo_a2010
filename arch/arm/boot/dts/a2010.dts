@@ -204,7 +204,7 @@ memory@00000000 {
 	tpd-resolution = <480 854>;
 	use-tpd-button = <1>;
 	tpd-key-num = <3>;
-	tpd-key-local= <139 172 158 0>;
+	tpd-key-local= <139 158 172 0>;
 	tpd-key-dim-local = <80 900 100 100 240 900 100 100 400 900 100 100 0 0 0 0>;
 	tpd-max-touch-num = <5>;
 	tpd-filter-enable = <0>;
